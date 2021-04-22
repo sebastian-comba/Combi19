@@ -2,11 +2,25 @@
 
 const express = require("express");
 const port = process.env.PORT || 3000;
+const mongoose = require("mongoose");
 const ejs = require("ejs");
+
+const Usuario = require('./js/esquema/usuarios');
+const Insumo = require('./js/esquema/insumo');
+const Combi = require('./js/esquema/combi');
+const Lugar = require('./js/esquema/lugar');
+const Viaje = require('./js/esquema/viaje');
+const Ruta = require('./js/esquema/ruta');
 
 const app = express();
 
 app.set("view engine", "ejs");
+
+mongoose.connect("mongodb://localhost:27017/combi19DB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+mongoose.set("useCreateIndex", true);
 
 app.use(
   express.urlencoded({

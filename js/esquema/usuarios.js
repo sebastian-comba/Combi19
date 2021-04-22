@@ -3,12 +3,17 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const userSchema = new mongoose.Schema({
-  nombre: String,
-  apellido: String,
+  nombre: { type: String, required: true },
+  apellido: { type: String, required: true},
   email: { type: String, required: true, unique: true },
-  clave: String,
-  rol: String,
-  borrado: Boolean
+  clave: { type: String, required: true },
+  dni: {type: String, required: true},
+  fechaN: {type: Date, required: true},
+  rol: { type: String, required: true},
+  borrado: Boolean,
+  suspendido: Boolean,
+  categoria: String,
+  telefono: String
 });
 
 userSchema.pre("save", function (next) {
@@ -36,6 +41,6 @@ userSchema.methods.claveCorrecta = function (clave, callback) {
   });
 };
 
-const Usuario = mongoose.model("Usuarios", userSchema);
+const Usuario = mongoose.model("Usuario", userSchema);
 
 module.exports = Usuario;

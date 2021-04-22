@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const combiSchema = new mongoose.Schema({
-  patente: { type: String, required: true },
+  patente: { type: String, required: true, unique: true },
   marca: { type: String, required: true },
   modelo: { type: String, required: true },
   chofer: {type: String, required: true},

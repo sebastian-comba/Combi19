@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const insumoSchema = new mongoose.Schema({
-  nombre: { type: String, required: true},
+  nombre: { type: String, required: true, unique: true },
   tipo: { type: String, required: true },
   precio: { type: String, required: true },
   borrado: Boolean,

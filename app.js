@@ -20,7 +20,7 @@ mongoose.connect("mongodb://localhost:27017/combi19DB", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
- mongoose.set("useCreateIndex", true);
+//mongoose.set("useCreateIndex", true);
 
 app.use(
   express.urlencoded({

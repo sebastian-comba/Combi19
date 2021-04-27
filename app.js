@@ -5,12 +5,12 @@ const port = process.env.PORT || 3000;
 const mongoose = require("mongoose");
 const ejs = require("ejs");
 
-const Usuario = require('./js/esquema/usuarios');
-const Insumo = require('./js/esquema/insumo');
-const Combi = require('./js/esquema/combi');
-const Lugar = require('./js/esquema/lugar');
-const Viaje = require('./js/esquema/viaje');
-const Ruta = require('./js/esquema/ruta');
+const Usuario = require("./js/esquema/usuarios");
+const Insumo = require("./js/esquema/insumo");
+const Combi = require("./js/esquema/combi");
+const Lugar = require("./js/esquema/lugar");
+const Viaje = require("./js/esquema/viaje");
+const Ruta = require("./js/esquema/ruta");
 
 const app = express();
 
@@ -29,48 +29,63 @@ app.use(
 );
 app.use(express.json());
 
-app.get("/", (req, res) => {
+// GET request al home/inicio de la pagina
+app.get("/home", (req, res) => {
   res.render("home", {});
 });
 
+//
+// NO HACER EL MISMO SAVE MAS DE 1 VEZ, TIRA ERROR DE REPETIDO (como deberia), 
+// CAMBIAR VALOR DEL CAMPO QUE SEA UNIQUE O BORRAR EL DOCUMENTO VIEJO ANTES DE HACER UN NUEVO SAVE
+
 // var u = new Usuario({
-//     nombre: "pedro",
-//     apellido: "perez",
-//     email: "adsadas",
-//     clave: "asdasda",
-//     dni: "21312321",
-//     fechaN: (new Date),
-//     rol: "1",
-//     borrado: false,
-//     suspendido: false,
-//     categoria: "gold",
-//     telefono: "12345"
-
+//   nombre: "pedro",
+//   apellido: "perez",
+//   email: "pedro@gmail.com",
+//   clave: "123456",
+//   dni: "21312321",
+//   fechaN: new Date(),
+//   rol: "1",
+//   borrado: false,
+//   suspendido: false,
+//   categoria: "gold",
+//   telefono: "12345",
 // });
-// u.save(); 
+// u.save((err) => {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     console.log("se guardo");
+//   }
+// });
 // var insumo = new Insumo({
-//    nombre: "papa",
-//     tipo: "salado",
-//     precio: 1.5,
-//     borrado: true,
+//   nombre: "papa",
+//   tipo: "salado",
+//   precio: 1.5,
+//   borrado: true,
 // });
-// var l= new Lugar({
+// var l = new Lugar({
 //   nombre: "asdasd",
-//     provincia: "asdasda",
-//     borrado: false,
+//   provincia: "asdasda",
+//   borrado: false,
 // });
-// l.save();
+// l.save((err) => {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     console.log("se guardo");
+//   }
+// });
 
-// insumo.save((err => {
-//         if (err) {
-//             console.log(err);
-//         } else {
+// insumo.save((err) => {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     console.log("se guardo");
+//   }
+// });
 
-//             console.log(" se guardo");
-//         }
-//       }));
-
+// NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);
-  
 });

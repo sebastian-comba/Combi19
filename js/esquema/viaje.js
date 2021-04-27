@@ -3,31 +3,28 @@ const mongoose = require("mongoose");
 const viajeSchema = new mongoose.Schema({
   ruta: {
     origen: {
-      nombre: String,
-      provincia: String,
+      nombre: { type: String, required: true },
+      provincia: { type: String, required: true },
     },
     destino: {
-      nombre: String,
-      provincia: String,
+      nombre: { type: String, required: true },
+      provincia: { type: String, required: true },
     },
-    required: true,
   },
   combi: {
-    patente: String,
-    marca: String,
-    modelo: String,
-    required: true,
+    patente: { type: String, required: true },
+    marca: { type: String, required: true },
+    modelo: { type: String, required: true },
   },
   chofer: {
-    nombre: String,
-    apellido: String,
-    required: true,
+    nombre: { type: String, required: true },
+    apellido: { type: String, required: true },
   },
   fecha: { type: Date, required: true },
   precio: { type: Number, required: true },
-  asientosDisponibles: Number,
-  estado: String,
-  borrado: Boolean,
+  asientosDisponibles: { type: Number, required: true },
+  estado: { type: String, required: true },
+  borrado: { type: Boolean, required: true },
 });
 
 const Viaje = mongoose.model("Viaje", viajeSchema);

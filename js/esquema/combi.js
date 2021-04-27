@@ -5,13 +5,12 @@ const combiSchema = new mongoose.Schema({
   marca: { type: String, required: true },
   modelo: { type: String, required: true },
   chofer: {
-    nombre: String,
-    apellido: String,
-    required: true
+    nombre: { type: String, required: true },
+    apellido: { type: String, required: true },
   },
   asientos: { type: Number, required: true },
   tipo: { type: String, required: true },
-  borrado: Boolean,
+  borrado: { type: Boolean, required: true},
 });
 
 const Combi = mongoose.model("Combi", combiSchema);

@@ -4,10 +4,12 @@ const rutaSchema = new mongoose.Schema({
   origen: {
     nombre: { type: String, required: true },
     provincia: { type: String, required: true },
+    idLugar: {type: String, required:true}
   },
   destino: {
     nombre: { type: String, required: true },
     provincia: { type: String, required: true },
+    idLugar: {type: String, required:true}
   },
   combi: {
     patente: { type: String, required: true },

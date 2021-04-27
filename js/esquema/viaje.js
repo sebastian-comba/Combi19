@@ -10,6 +10,7 @@ const viajeSchema = new mongoose.Schema({
       nombre: { type: String, required: true },
       provincia: { type: String, required: true },
     },
+    idRuta: { type: String, required: true }
   },
   combi: {
     patente: { type: String, required: true },
@@ -19,6 +20,7 @@ const viajeSchema = new mongoose.Schema({
   chofer: {
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
+    mail: { type: String, required: true },
   },
   fecha: { type: Date, required: true },
   precio: { type: Number, required: true },

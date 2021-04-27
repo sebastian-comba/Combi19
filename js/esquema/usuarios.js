@@ -13,6 +13,12 @@ const userSchema = new mongoose.Schema({
   borrado: { type: Boolean, required: true},
   suspendido: { type: Boolean, required: true},
   categoria: { type: String, required: true},
+  tarjeta: {
+    codigo: String,
+    vencimiento: Date,
+    nombreCompleto: String,
+    dni: Number
+  },
   telefono: String
 });
 

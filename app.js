@@ -33,6 +33,28 @@ app.use(express.json());
 app.get("/home", (req, res) => {
   res.render("home", {});
 });
+ 
+
+app.post("/alta-insumo", (req,res) => {
+  Insumo.find(
+    { nombre: req.body.ciudad },
+    (err, found) => {
+      if (err) {
+        console.log(err);
+      } else {
+        if (!found){
+          var insumo = new Insumo({
+            nombre : req.body.nombre,
+            tipo : req.body.tipo,
+            precio : req.body.precio,
+            borrado : false
+          });
+          insumo.save();
+        }
+      }
+    }
+  )      
+  })
 
 //
 // NO HACER EL MISMO SAVE MAS DE 1 VEZ, TIRA ERROR DE REPETIDO (como deberia),

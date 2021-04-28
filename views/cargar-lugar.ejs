@@ -1,0 +1,13 @@
+<%- include("partials/header"); -%>
+<h2>Alta lugar</h2>
+<div>
+  <form action="/cargar-lugar" method="POST">
+    <p>Ciudad</p>
+    <input type="text" name="ciudad" />
+    <p>Provincia</p>
+    <input type="text" name="provincia" />
+    <br />
+    <button type="submit" name="button">Cargar</button>
+  </form>
+</div>
+<%- include("partials/footer"); -%>

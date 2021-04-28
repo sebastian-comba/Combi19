@@ -34,6 +34,35 @@ app.get("/home", (req, res) => {
   res.render("home", {});
 });
 
+app.get("/lugares", (req, res) => {
+  Lugar.find({}, (err, result) => {
+    res.json(result);
+  });
+});
+
+app.get("/cargar-lugar", (req, res) => {
+  res.render("cargar-lugar", {});
+});
+
+// POST request para dar de alta a un nuevo lugar
+// falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
+// falta normalizar los datos de entrada para que se guarden siempre capitalizados y no en minuscula o mayuscula
+app.post("/cargar-lugar", (req, res) => {
+  var l = new Lugar({
+    ciudad: req.body.ciudad,
+    provincia: req.body.provincia,
+    borrado: false,
+  });
+  l.save((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("lugar guardado");
+    }
+    res.redirect("/home");
+  });
+});
+
 //
 // NO HACER EL MISMO SAVE MAS DE 1 VEZ, TIRA ERROR DE REPETIDO (como deberia),
 // CAMBIAR VALOR DEL CAMPO QUE SEA UNIQUE O BORRAR EL DOCUMENTO VIEJO ANTES DE HACER UN NUEVO SAVE

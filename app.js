@@ -63,57 +63,6 @@ app.post("/cargar-lugar", (req, res) => {
   });
 });
 
-//
-// NO HACER EL MISMO SAVE MAS DE 1 VEZ, TIRA ERROR DE REPETIDO (como deberia),
-// CAMBIAR VALOR DEL CAMPO QUE SEA UNIQUE O BORRAR EL DOCUMENTO VIEJO ANTES DE HACER UN NUEVO SAVE
-
-// var u = new Usuario({
-//   nombre: "pedro",
-//   apellido: "perez",
-//   email: "pedro@gmail.com",
-//   clave: "123456",
-//   dni: "21312321",
-//   fechaN: new Date(),
-//   rol: "1",
-//   borrado: false,
-//   suspendido: false,
-//   categoria: "gold",
-//   telefono: "12345",
-// });
-// u.save((err) => {
-//   if (err) {
-//     console.log(err);
-//   } else {
-//     console.log("se guardo");
-//   }
-// });
-// var insumo = new Insumo({
-//   nombre: "papa",
-//   tipo: "salado",
-//   precio: 1.5,
-//   borrado: true,
-// });
-// var l = new Lugar({
-//   nombre: "asdasd",
-//   provincia: "asdasda",
-//   borrado: false,
-// });
-// l.save((err) => {
-//   if (err) {
-//     console.log(err);
-//   } else {
-//     console.log("se guardo");
-//   }
-// });
-
-// insumo.save((err) => {
-//   if (err) {
-//     console.log(err);
-//   } else {
-//     console.log("se guardo");
-//   }
-// });
-
 // NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);

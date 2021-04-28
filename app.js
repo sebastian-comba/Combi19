@@ -33,11 +33,16 @@ app.use(express.json());
 app.get("/home", (req, res) => {
   res.render("home", {});
 });
- 
+
+
+
+app.get("/alta-insumo", (req, res) => {
+  res.render("alta-insumo", {});
+})
 
 app.post("/alta-insumo", (req,res) => {
   Insumo.find(
-    { nombre: req.body.ciudad },
+    { nombre: req.body.nombre },
     (err, found) => {
       if (err) {
         console.log(err);

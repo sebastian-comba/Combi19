@@ -56,7 +56,6 @@ app.get("/insumos", (req, res) => {
 
 // GET request para listar insumos
 //listar los que no tengan marca de borrado
-<<<<<<< HEAD
 //
 app.get("/listar-insumos", (req,res)=>{
  Insumo.find({borrado:false}, (err,insumos)=> {
@@ -135,44 +134,6 @@ app.put("/insumo/:id", (req, res) => {
 });
 
 
-=======
-app.get("/listar-insumos", (req, res) => {
-  Insumo.find({ borrado: false }, (err, insumos) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("listar-insumos", { data: insumos });
-    }
-  });
-});
-
-//POST request para dar de alta un insumo
-//primero busca si ya hay uno con el mismo nombre
-app.post("/alta-insumo", (req, res) => {
-  Insumo.find({ nombre: req.body.nombre }, (err, found) => {
-    if (err) {
-      console.log(err);
-    } else {
-      if (!found.length) {
-        var insumo = new Insumo({
-          nombre: req.body.nombre,
-          tipo: req.body.tipo,
-          precio: req.body.precio,
-          borrado: false,
-        });
-        insumo.save((err) => {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log("se guardo el insumo");
-          }
-        });
-      }
-    }
-  });
-});
-
->>>>>>> ba36ef55bf6ee6ca6ac7d6dfb8013a5fac1dc56f
 // POST request para dar de alta a un nuevo lugar
 // falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
 // falta normalizar los datos de entrada para que se guarden siempre capitalizados y no en minuscula o mayuscula
@@ -193,12 +154,8 @@ app.post("/cargar-lugar", (req, res) => {
 });
 
 // variable que devuelve la fecha de hoy
-<<<<<<< HEAD
-//let hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
-=======
 let now = new Date();
 let hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
->>>>>>> ba36ef55bf6ee6ca6ac7d6dfb8013a5fac1dc56f
 
 // eliminar lugar
 app.delete("/lugar/:id", (req, res) => {

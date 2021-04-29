@@ -56,9 +56,8 @@ app.get("/insumos", (req, res) => {
 
 // GET request para listar insumos
 //listar los que no tengan marca de borrado
-//
 app.get("/listar-insumos", (req, res) => {
-  Insumo.find({}, (err, insumos) => {
+  Insumo.find({borrado: false}, (err, insumos) => {
     if (err) {
       console.log(err);
     } else {
@@ -69,7 +68,6 @@ app.get("/listar-insumos", (req, res) => {
 
 //POST request para dar de alta un insumo
 //primero busca si ya hay uno con el mismo nombre
-//hay que testear el !found.lenght
 app.post("/alta-insumo", (req, res) => {
   Insumo.find({ nombre: req.body.nombre }, (err, found) => {
     if (err) {
@@ -118,7 +116,6 @@ let now = new Date();
 let hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
 // eliminar lugar
-// //hay que testear el !found.lenght
 app.delete("/lugar/:id", (req, res) => {
   Viaje.find(
     {

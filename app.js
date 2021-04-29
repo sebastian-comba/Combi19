@@ -30,8 +30,11 @@ app.use(
 app.use(express.json());
 
 // GET request al home/inicio de la pagina
-app.get("/home", (req, res) => {
+app.get("/", (req, res) => {
   res.render("home", {});
+});
+app.get("/registro", (req, res) => {
+  res.render("registro", {});
 });
 
 app.get("/lugares", (req, res) => {
@@ -120,8 +123,8 @@ app.post("/cargar-lugar", (req, res) => {
 });
 
 // variable que devuelve la fecha de hoy
+let now =new Date;
 let hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
-
 // eliminar lugar
 // falta testear
 app.delete("/lugar/:id", (req, res) => {

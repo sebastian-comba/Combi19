@@ -46,59 +46,53 @@ app.get("/cargar-lugar", (req, res) => {
 
 app.get("/alta-insumo", (req, res) => {
   res.render("alta-insumo", {});
-})
+});
 
 app.get("/insumos", (req, res) => {
   Insumo.find({}, (err, result) => {
     res.json(result);
   });
-})
+});
 
 // GET request para listar insumos
 //listar los que no tengan marca de borrado
 //
-app.get("/listar-insumos", (req,res)=>{
- Insumo.find({}, (err,insumos)=> {
-   if(err){
-     console.log(err);
-   } else {
-    res.render("listar-insumos", {data:insumos});
-   }
- });
-})
-
-//POST request para dar de alta un insumo
-//primero busca si ya hay uno con el mismo nombre
-app.post("/alta-insumo", (req,res) => {
-  Insumo.find(
-    { nombre: req.body.nombre },
-    (err, found) => {
-      if (err) {
-        console.log(err);
-      } else {
-        if (!found){
-          var insumo = new Insumo({
-            nombre : req.body.nombre,
-            tipo : req.body.tipo,
-            precio : req.body.precio,
-            borrado : false,
-          });
-          insumo.save((err)=>{
-            if(err){
-              console.log(err);
-            } else {
-              console.log("se guardo el insumo");
-            }
-          });
-        }
-     }  
+app.get("/listar-insumos", (req, res) => {
+  Insumo.find({}, (err, insumos) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("listar-insumos", { data: insumos });
+    }
   });
 });
 
-
-//
-// NO HACER EL MISMO SAVE MAS DE 1 VEZ, TIRA ERROR DE REPETIDO (como deberia),
-// CAMBIAR VALOR DEL CAMPO QUE SEA UNIQUE O BORRAR EL DOCUMENTO VIEJO ANTES DE HACER UN NUEVO SAVE
+//POST request para dar de alta un insumo
+//primero busca si ya hay uno con el mismo nombre
+//hay que testear el !found.lenght
+app.post("/alta-insumo", (req, res) => {
+  Insumo.find({ nombre: req.body.nombre }, (err, found) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (!found.length) {
+        var insumo = new Insumo({
+          nombre: req.body.nombre,
+          tipo: req.body.tipo,
+          precio: req.body.precio,
+          borrado: false,
+        });
+        insumo.save((err) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log("se guardo el insumo");
+          }
+        });
+      }
+    }
+  });
+});
 
 // POST request para dar de alta a un nuevo lugar
 // falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
@@ -120,10 +114,11 @@ app.post("/cargar-lugar", (req, res) => {
 });
 
 // variable que devuelve la fecha de hoy
+let now = new Date();
 let hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
 // eliminar lugar
-// falta testear
+// //hay que testear el !found.lenght
 app.delete("/lugar/:id", (req, res) => {
   Viaje.find(
     {

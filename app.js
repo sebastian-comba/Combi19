@@ -63,6 +63,32 @@ app.post("/cargar-lugar", (req, res) => {
   });
 });
 
+// variable que devuelve la fecha de hoy
+let hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
+
+// eliminar lugar
+// falta testear
+app.delete("/lugar/:id", (req, res) => {
+  Viaje.find(
+    {
+      ruta: { origen: { idLugar: req.params.id } },
+      fecha: { $gte: hoy },
+    },
+    (err, result) => {
+      if (result.length) {
+        console.log("No se puede borrar, tiene viaje futuro");
+      } else {
+        Lugar.findOneAndUpdate(
+          {
+            _id: req.params.id,
+          },
+          { borrado: true }
+        );
+      }
+    }
+  );
+});
+
 // NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);

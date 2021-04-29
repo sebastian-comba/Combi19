@@ -1,0 +1,22 @@
+<%- include("partials/header"); -%>
+<h2>Lugar</h2>
+
+<h1>Lista de Lugares</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ciudad</th>
+      <th>Provincia</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% data.forEach((lugar) => { %>
+    <tr>
+      <td><%= lugar.ciudad %></td>
+      <td><%= lugar.provincia %></td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table>
+<%- include("partials/footer"); -%>

@@ -1,0 +1,27 @@
+<%- include("partials/header"); -%>
+<h2>Alta viaje</h2>
+<div>
+  <form action="/cargar-viaje" method="POST">
+    
+    <label for="ruta">Elige una ruta:</label>
+    <select name="ruta" id="ruta">
+      <% data.forEah( (ruta) => { %>
+      <option value="<%= data._id %>">
+        <%= data.origen.nombre %>-<%= data.destino.nombre %>
+      </option>
+      <% }); %>
+    </select>
+
+    <label for="fecha">Fecha:</label>
+    <input type="date" id="fecha" name="fecha" />
+
+    <label for="ruta">Precio:</label>
+    <input type="text" id="precio" name="precio" />
+
+    <label for="asientos">Cantidad de asientos:</label>
+    <input type="text" id="asientos" name="asientos" />
+    <br />
+    <button type="submit" name="button">Cargar</button>
+  </form>
+</div>
+<%- include("partials/footer"); -%>

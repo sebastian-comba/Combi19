@@ -1,0 +1,12 @@
+<%- include("partials/header"); -%>
+<h1>Alta Insumo</h1>
+<form action = "/alta-insumo" method="POST">
+    <label for="nombre">Nombre:</label><br>
+    <input type="text" id="nombre" name="nombre"/><br>
+    <label for="tipo">Tipo:</label><br>
+    <input type="text" id="tipo" name="tipo" /><br>
+    <label for="precio">Precio:</label><br>
+    <input type="text" id="precio" name="precio"/><br>
+    <button type="submit">Agregar</button>
+</form> 
+<%- include("partials/footer"); -%>

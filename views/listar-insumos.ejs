@@ -1,0 +1,22 @@
+<%- include("partials/header"); -%>
+<h1>Lista de Insumos</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Precio</th>
+        </tr>
+    </thead>
+    <tbody>
+    <% data.forEach(function(insumo) { %>
+        <tr>
+            <td><%= insumo.nombre %></td>
+            <td><%= insumo.tipo %></td>
+            <td><%= insumo.precio %></td>
+        </tr>
+    <% }); %>
+    </tbody>
+</table>
+<%- include("partials/footer"); -%>

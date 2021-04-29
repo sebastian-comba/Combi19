@@ -108,7 +108,7 @@ app.delete("/insumo/:id", (req, res) => {
 
 // modificacion de insumo
 // falta testear
-app.update("/insumo/:id", (req, res) => {
+app.put("/insumo/:id", (req, res) => {
   Insumo.find({nombre: req.body.name}, (err,found)=>{
     if(err){
       console.log(err);

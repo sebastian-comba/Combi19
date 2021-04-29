@@ -35,11 +35,31 @@ app.get("/home", (req, res) => {
 });
 
 
-
 app.get("/alta-insumo", (req, res) => {
   res.render("alta-insumo", {});
 })
 
+app.get("/insumos", (req, res) => {
+  Insumo.find({}, (err, result) => {
+    res.json(result);
+  });
+})
+
+// GET request para listar insumos
+//listar los que no tengan marca de borrado
+//
+app.get("/listar-insumos", (req,res)=>{
+ Insumo.find({}, (err,insumos)=> {
+   if(err){
+     console.log(err);
+   } else {
+    res.render("listar-insumos", {data:insumos});
+   }
+ });
+})
+
+//POST request para dar de alta un insumo
+//primero busca si ya hay uno con el mismo nombre
 app.post("/alta-insumo", (req,res) => {
   Insumo.find(
     { nombre: req.body.nombre },
@@ -52,14 +72,20 @@ app.post("/alta-insumo", (req,res) => {
             nombre : req.body.nombre,
             tipo : req.body.tipo,
             precio : req.body.precio,
-            borrado : false
+            borrado : false,
           });
-          insumo.save();
+          insumo.save((err)=>{
+            if(err){
+              console.log(err);
+            } else {
+              console.log("se guardo el insumo");
+            }
+          });
         }
-      }
-    }
-  )      
-  })
+     }  
+  });
+});
+
 
 //
 // NO HACER EL MISMO SAVE MAS DE 1 VEZ, TIRA ERROR DE REPETIDO (como deberia),

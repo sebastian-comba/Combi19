@@ -90,11 +90,21 @@ app.post("/alta-insumo", (req,res) => {
               console.log("se guardo el insumo");
             }
           });
-        } 
+        } else {
+          console.log("el insumo ya existe");
+        }
      } 
      res.redirect("/listar-insumos");
   });
 });
+
+// Eliminar Insumo
+// faltaria verificar que el insumo no está en compras a futuro, cuando hagamos el esquema de la compra/pasaje
+app.delete("/insumo/:nombre", (req, res) => {
+  Insumo.findOneAndUpdate(
+    {nombre:req.params.nombre},
+    {borrado:true});
+})
 
 
 // POST request para dar de alta a un nuevo lugar

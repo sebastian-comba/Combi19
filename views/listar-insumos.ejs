@@ -19,7 +19,11 @@
                 <td><%= insumo.tipo %></td>
                 <td><%= insumo.precio %></td>
                 <td><button >Modificar</button></td>
-                <td><button >Eliminar</button></td>
+                <td>
+                    <form action="baja-insumo" method="POST">
+                        <button type="submit" name="<%= insumo.nombre %>">Eliminar</button>
+                    </form>
+                </td>
             </tr>
         <% }); %>
         </tbody>

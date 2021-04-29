@@ -57,7 +57,7 @@ app.get("/insumos", (req, res) => {
 // GET request para listar insumos
 //listar los que no tengan marca de borrado
 app.get("/listar-insumos", (req, res) => {
-  Insumo.find({borrado: false}, (err, insumos) => {
+  Insumo.find({ borrado: false }, (err, insumos) => {
     if (err) {
       console.log(err);
     } else {
@@ -126,15 +126,62 @@ app.delete("/lugar/:id", (req, res) => {
       if (result.length) {
         console.log("No se puede borrar, tiene viaje futuro");
       } else {
-        Lugar.findOneAndUpdate(
+        Lugar.updateOne(
           {
             _id: req.params.id,
           },
-          { borrado: true }
+          { borrado: true },
+          (err) => {
+            if (err) {
+              console.log(err);
+            }
+          }
         );
       }
     }
   );
+});
+
+//modificar lugar
+app.update("/lugar/:id", (req, res) => {
+  Viaje.find(
+    {
+      ruta: { origen: { idLugar: req.params.id } },
+      fecha: { $gte: hoy },
+    },
+    (err, result) => {
+      if (result.length) {
+        console.log("No se puede modificar, tiene viaje futuro");
+      } else {
+        Lugar.updateOne(
+          {
+            _id: req.params.id,
+          },
+          {
+            ciudad: req.body.ciudad,
+            provincia: req.body.ciudad,
+            borrado: false,
+          },
+          (err) => {
+            if (err) {
+              console.log(err);
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
+//listar lugares
+app.get("/listar-lugares", (req, res) => {
+  Lugar.find({ borrado: false }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("listar-lugares", { data: result });
+    }
+  });
 });
 
 // NO TOCAR

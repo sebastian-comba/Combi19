@@ -13,8 +13,9 @@ const Viaje = require("./js/esquema/viaje");
 const Ruta = require("./js/esquema/ruta");
 
 const app = express();
-
 app.set("view engine", "ejs");
+
+app.use(express.static(__dirname + "/public"));
 
 mongoose.connect("mongodb://localhost:27017/combi19DB", {
   useNewUrlParser: true,

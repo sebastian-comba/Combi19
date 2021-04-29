@@ -100,11 +100,38 @@ app.post("/alta-insumo", (req,res) => {
 
 // Eliminar Insumo
 // faltaria verificar que el insumo no está en compras a futuro, cuando hagamos el esquema de la compra/pasaje
-app.delete("/insumo/:nombre", (req, res) => {
+app.delete("/insumo/:id", (req, res) => {
   Insumo.findOneAndUpdate(
-    {nombre:req.params.nombre},
+    {_id:req.params.id},
     {borrado:true});
-})
+});
+
+// modificacion de insumo
+// falta testear
+app.update("/insumo/:id", (req, res) => {
+  Insumo.find({nombre: req.body.name}, (err,found)=>{
+    if(err){
+      console.log(err);
+    } else {
+      if(!found.length){ //modifica el insumo porque no hay otro con el nuevo nombre
+        Insumo.findOneAndUpdate(
+          {_id:req.params.id},
+          { nombre: req.body.nombre,
+            tipo: req.body.tipo,
+            precio: req.body.precio,
+            borrado: false,
+          },
+          (err) => {
+            if(err){
+              console.log(err);
+            }
+          });
+      } else {
+        console.log("El insumo no se puede modificar porque ya existe uno con el mismo nombre");
+      }
+    }
+  });
+});
 
 
 // POST request para dar de alta a un nuevo lugar

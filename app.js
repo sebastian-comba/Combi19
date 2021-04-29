@@ -58,11 +58,11 @@ app.get("/insumos", (req, res) => {
 //listar los que no tengan marca de borrado
 //
 app.get("/listar-insumos", (req,res)=>{
- Insumo.find({}, (err,insumos)=> {
+ Insumo.find({borrado:false}, (err,insumos)=> {
    if(err){
      console.log(err);
    } else {
-    res.render("listar-insumos", {data:insumos});
+      res.render("listar-insumos", {data:insumos}); 
    }
  });
 })
@@ -76,7 +76,7 @@ app.post("/alta-insumo", (req,res) => {
       if (err) {
         console.log(err);
       } else {
-        if (!found){
+        if (!found.length){
           var insumo = new Insumo({
             nombre : req.body.nombre,
             tipo : req.body.tipo,
@@ -90,15 +90,12 @@ app.post("/alta-insumo", (req,res) => {
               console.log("se guardo el insumo");
             }
           });
-        }
-     }  
+        } 
+     } 
+     res.redirect("/listar-insumos");
   });
 });
 
-
-//
-// NO HACER EL MISMO SAVE MAS DE 1 VEZ, TIRA ERROR DE REPETIDO (como deberia),
-// CAMBIAR VALOR DEL CAMPO QUE SEA UNIQUE O BORRAR EL DOCUMENTO VIEJO ANTES DE HACER UN NUEVO SAVE
 
 // POST request para dar de alta a un nuevo lugar
 // falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
@@ -120,7 +117,7 @@ app.post("/cargar-lugar", (req, res) => {
 });
 
 // variable que devuelve la fecha de hoy
-let hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
+//let hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
 // eliminar lugar
 // falta testear
@@ -128,7 +125,7 @@ app.delete("/lugar/:id", (req, res) => {
   Viaje.find(
     {
       ruta: { origen: { idLugar: req.params.id } },
-      fecha: { $gte: hoy },
+      fecha: { $gte: new Date },
     },
     (err, result) => {
       if (result.length) {

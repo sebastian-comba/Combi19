@@ -79,6 +79,42 @@ app.get("/cargar-rutas", (req, res) => {
     }
   });
 });
+app.post("/cargar-rutas", (req,res) => {
+  Lugar.findOne({_id:req.body.origen}, (err, origen) => {
+    Lugar.findOne({_id:req.body.destino}, (err, destino) => {
+      Combi.findOne({_id:req.body.combi}, (err, combi) => {
+        var ruta = new Ruta({
+          origen : {nombre:origen.ciudad,
+          provincia:origen,provincia,
+          idLugar:req.body.origen,
+        },
+          destino : {nombre:destino.ciudad,
+          provincia:destino.provincia,
+          idLugar:req.body.destino,
+        },
+          combi : {patente:combi.patente,
+          marca: combi.marca,
+          modelo: combi.modelo,
+          idCombi:req.body.combi,
+        },
+        distancia: req.body.distancia,
+        hora: req.body.hora,
+        borrado : false,
+      });
+      ruta.save((err)=>{
+        if(err){
+          console.log(err);
+          console.log("no se guardo la ruta");
+        } else {
+          console.log("se guardo la ruta");
+        }
+      });
+      });
+    });
+  });
+  
+  res.redirect("/listar-rutas");
+});
 
 // GET request para listar rutas
 app.get("/listar-rutas", (req,res)=>{

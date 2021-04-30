@@ -61,6 +61,25 @@ app.get("/rutas", (req, res) => {
   });
 });
 
+//alta de rutas
+app.get("/cargar-rutas", (req, res) => {
+  Lugar.find({ borrado: false }, (err, lugares) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.locals.lugares = lugares;
+      Combi.find({ borrado: false }, (err, combis) => {
+        if(err){
+          console.log(err);
+        } else {
+          res.locals.combis = combis;
+          res.render("cargar-rutas", {});
+        }
+      });
+    }
+  });
+});
+
 // GET request para listar rutas
 app.get("/listar-rutas", (req,res)=>{
   Ruta.find({borrado:false}, (err,rutas)=> {
@@ -71,6 +90,7 @@ app.get("/listar-rutas", (req,res)=>{
     }
   });
  })
+
 
 
 // GET request para listar insumos

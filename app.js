@@ -58,82 +58,82 @@ app.get("/insumos", (req, res) => {
 // GET request para listar insumos
 //listar los que no tengan marca de borrado
 //
-app.get("/listar-insumos", (req,res)=>{
- Insumo.find({borrado:false}, (err,insumos)=> {
-   if(err){
-     console.log(err);
-   } else {
-      res.render("listar-insumos", {data:insumos}); 
-   }
- });
-})
+app.get("/listar-insumos", (req, res) => {
+  Insumo.find({ borrado: false }, (err, insumos) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("listar-insumos", { data: insumos });
+    }
+  });
+});
 
 //POST request para dar de alta un insumo
 //primero busca si ya hay uno con el mismo nombre
-app.post("/alta-insumo", (req,res) => {
-  Insumo.find(
-    { nombre: req.body.nombre },
-    (err, found) => {
-      if (err) {
-        console.log(err);
+app.post("/alta-insumo", (req, res) => {
+  Insumo.find({ nombre: req.body.nombre }, (err, found) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (!found.length) {
+        var insumo = new Insumo({
+          nombre: req.body.nombre,
+          tipo: req.body.tipo,
+          precio: req.body.precio,
+          borrado: false,
+        });
+        insumo.save((err) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log("se guardo el insumo");
+          }
+        });
       } else {
-        if (!found.length){
-          var insumo = new Insumo({
-            nombre : req.body.nombre,
-            tipo : req.body.tipo,
-            precio : req.body.precio,
-            borrado : false,
-          });
-          insumo.save((err)=>{
-            if(err){
-              console.log(err);
-            } else {
-              console.log("se guardo el insumo");
-            }
-          });
-        } else {
-          console.log("el insumo ya existe");
-        }
-     } 
-     res.redirect("/listar-insumos");
+        console.log("el insumo ya existe");
+      }
+    }
+    res.redirect("/listar-insumos");
   });
 });
 
 // Eliminar Insumo
 // faltaria verificar que el insumo no está en compras a futuro, cuando hagamos el esquema de la compra/pasaje
 app.delete("/insumo/:id", (req, res) => {
-  Insumo.findOneAndUpdate(
-    {_id:req.params.id},
-    {borrado:true});
+  Insumo.findOneAndUpdate({ _id: req.params.id }, { borrado: true });
 });
 
 // modificacion de insumo
 // falta testear
 app.put("/insumo/:id", (req, res) => {
-  Insumo.find({nombre: req.body.name}, (err,found)=>{
-    if(err){
+  Insumo.find({ nombre: req.body.name }, (err, found) => {
+    if (err) {
       console.log(err);
     } else {
-      if(!found.length){ //modifica el insumo porque no hay otro con el nuevo nombre
+      if (!found.length) {
+        //modifica el insumo porque no hay otro con el nuevo nombre
         Insumo.findOneAndUpdate(
-          {_id:req.params.id},
-          { nombre: req.body.nombre,
+          { _id: req.params.id },
+          {
+            nombre: req.body.nombre,
             tipo: req.body.tipo,
             precio: req.body.precio,
             borrado: false,
           },
           (err) => {
-            if(err){
+            if (err) {
               console.log(err);
             }
-          });
+          }
+        );
       } else {
-        console.log("El insumo no se puede modificar porque ya existe uno con el mismo nombre");
+        console.log(
+          "El insumo no se puede modificar porque ya existe uno con el mismo nombre"
+        );
       }
     }
   });
 });
-
 
 // POST request para dar de alta a un nuevo lugar
 // falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
@@ -163,7 +163,7 @@ app.delete("/lugar/:id", (req, res) => {
   Viaje.find(
     {
       ruta: { origen: { idLugar: req.params.id } },
-      fecha: { $gte: new Date },
+      fecha: { $gte: new Date() },
     },
     (err, result) => {
       if (result.length) {
@@ -238,7 +238,7 @@ app.get("/cargar-viaje", (req, res) => {
     }
   });
   if (rutas.lenght) {
-    res.render("cargar-viaje", {data= rutas});
+    res.render("cargar-viaje", { data: rutas });
   } else {
     console.log("No se encontraron rutas disponibles");
     res.send("No se encontraron rutas disponibles");
@@ -247,24 +247,30 @@ app.get("/cargar-viaje", (req, res) => {
 app.post("/cargar-viaje", (req, res) => {
   let ruta = [];
   let combi = [];
-  Ruta.find({
-    _id: req.body.ruta
-  }, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      ruta = result;
+  Ruta.find(
+    {
+      _id: req.body.ruta,
+    },
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        ruta = result;
+      }
     }
-  });
-  Combi.find({
-    _id: ruta.combi.idCombi
-  }, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      combi = result;
+  );
+  Combi.find(
+    {
+      _id: ruta.combi.idCombi,
+    },
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        combi = result;
+      }
     }
-  });
+  );
   if (req.body.fecha >= hoy) {
     if (req.body.asientos <= combi.asientos) {
       let v = new Viaje({
@@ -274,7 +280,7 @@ app.post("/cargar-viaje", (req, res) => {
             provincia: ruta.origen.provincia,
           },
           destino: {
-            nombre:  ruta.destino.ciudad,
+            nombre: ruta.destino.ciudad,
             provincia: ruta.destino.provincia,
           },
           idRuta: ruta._id,
@@ -304,13 +310,14 @@ app.post("/cargar-viaje", (req, res) => {
       });
       res.redirect("/home");
     } else {
-      console.log("La cantidad de asientos debe ser menor o igual a " + combi.asientos);
+      console.log(
+        "La cantidad de asientos debe ser menor o igual a " + combi.asientos
+      );
     }
-  }else{
+  } else {
     console.log("La fecha debe ser mayor o igual a la actual");
   }
-  }
-);
+});
 
 // NO TOCAR
 app.listen(3000, function () {

@@ -80,27 +80,32 @@ app.get("/cargar-rutas", (req, res) => {
   });
 });
 app.post("/cargar-rutas", (req,res) => {
-  Lugar.findOne({_id:req.body.origen}, (err, origen) => {
-    Lugar.findOne({_id:req.body.destino}, (err, destino) => {
-      Combi.findOne({_id:req.body.combi}, (err, combi) => {
+  Lugar.findOne({_id:req.body.origen}, (err, origenR) => {
+    Lugar.findOne({_id:req.body.destino}, (err, destinoR) => {
+      Combi.findOne({_id:req.body.combi}, (err, combiR) => {
+        
         var ruta = new Ruta({
-          origen : {nombre:origen.ciudad,
-          provincia:origen,provincia,
-          idLugar:req.body.origen,
-        },
-          destino : {nombre:destino.ciudad,
-          provincia:destino.provincia,
-          idLugar:req.body.destino,
-        },
-          combi : {patente:combi.patente,
-          marca: combi.marca,
-          modelo: combi.modelo,
-          idCombi:req.body.combi,
-        },
-        distancia: req.body.distancia,
-        hora: req.body.hora,
-        borrado : false,
+          origen: {
+            nombre: origenR.ciudad,
+            provincia: origenR.provincia,
+            idLugar: origenR._id,
+          },
+          destino: {
+            nombre: destinoR.ciudad,
+            provincia: destinoR.provincia,
+            idLugar: destinoR._id,
+          },
+          combi: {
+            patente: combiR.patente,
+            marca: combiR.marca,
+            modelo: combiR.modelo,
+            idCombi: combiR._id,
+          },
+          distancia: req.body.distancia,
+          hora: req.body.hora,
+          borrado: false,
       });
+      console.log(ruta);
       ruta.save((err)=>{
         if(err){
           console.log(err);

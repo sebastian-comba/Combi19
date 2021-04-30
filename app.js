@@ -30,113 +30,127 @@ app.use(
 );
 app.use(express.json());
 
+// variable que devuelve la fecha de hoy
+// falta implementar un cron job para que se actualice automaticamente a las 00:00hs
+const now = new Date();
+const hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
+
 // GET request al home/inicio de la pagina
 app.get("/home", (req, res) => {
   res.render("home", {});
 });
 
+// CRUD Lugar
+//
+// READ todos los lugares
 app.get("/lugares", (req, res) => {
   Lugar.find({}, (err, result) => {
     res.json(result);
   });
 });
 
+// READ lugares no borrados
+app.get("/listar-lugares", (req, res) => {
+  Lugar.find({ borrado: false }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("listar-lugares", { data: result });
+    }
+  });
+});
+
+// CREATE lugar
+// falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
+// falta normalizar los datos de entrada para que se guarden siempre capitalizados y no en minuscula o mayuscula
 app.get("/cargar-lugar", (req, res) => {
   res.render("cargar-lugar", {});
 });
 
-app.get("/alta-insumo", (req, res) => {
-  res.render("alta-insumo", {});
+app.post("/cargar-lugar", (req, res) => {
+  var l = new Lugar({
+    ciudad: req.body.ciudad,
+    provincia: req.body.provincia,
+    borrado: false,
+  });
+  l.save((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("lugar guardado");
+    }
+    res.redirect("/home");
+  });
 });
 
+// DELETE lugar
+app.delete("/lugar/:id", (req, res) => {
+  Viaje.find(
+    {
+      ruta: { origen: { idLugar: req.params.id } },
+      fecha: { $gte: new Date() },
+    },
+    (err, result) => {
+      if (result.length) {
+        console.log("No se puede borrar, tiene viaje futuro");
+      } else {
+        Lugar.updateOne(
+          {
+            _id: req.params.id,
+          },
+          { borrado: true },
+          (err) => {
+            if (err) {
+              console.log(err);
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
+//UPDATE lugar
+app.put("/lugar/:id", (req, res) => {
+  Viaje.find(
+    {
+      ruta: { origen: { idLugar: req.params.id } },
+      fecha: { $gte: hoy },
+    },
+    (err, result) => {
+      if (result.length) {
+        console.log("No se puede modificar, tiene viaje futuro");
+      } else {
+        Lugar.updateOne(
+          {
+            _id: req.params.id,
+          },
+          {
+            ciudad: req.body.ciudad,
+            provincia: req.body.ciudad,
+            borrado: false,
+          },
+          (err) => {
+            if (err) {
+              console.log(err);
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
+//CRUD Insumo
+//
+// READ todos los insumos
 app.get("/insumos", (req, res) => {
   Insumo.find({}, (err, result) => {
     res.json(result);
   });
 });
 
-app.get("/rutas", (req, res) => {
-  Ruta.find({}, (err, result) => {
-    res.json(result);
-  });
-});
-
-//alta de rutas
-app.get("/cargar-rutas", (req, res) => {
-  Lugar.find({ borrado: false }, (err, lugares) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.locals.lugares = lugares;
-      Combi.find({ borrado: false }, (err, combis) => {
-        if(err){
-          console.log(err);
-        } else {
-          res.locals.combis = combis;
-          res.render("cargar-rutas", {});
-        }
-      });
-    }
-  });
-});
-app.post("/cargar-rutas", (req,res) => {
-  Lugar.findOne({_id:req.body.origen}, (err, origenR) => {
-    Lugar.findOne({_id:req.body.destino}, (err, destinoR) => {
-      Combi.findOne({_id:req.body.combi}, (err, combiR) => {
-        
-        var ruta = new Ruta({
-          origen: {
-            nombre: origenR.ciudad,
-            provincia: origenR.provincia,
-            idLugar: origenR._id,
-          },
-          destino: {
-            nombre: destinoR.ciudad,
-            provincia: destinoR.provincia,
-            idLugar: destinoR._id,
-          },
-          combi: {
-            patente: combiR.patente,
-            marca: combiR.marca,
-            modelo: combiR.modelo,
-            idCombi: combiR._id,
-          },
-          distancia: req.body.distancia,
-          hora: req.body.hora,
-          borrado: false,
-      });
-      console.log(ruta);
-      ruta.save((err)=>{
-        if(err){
-          console.log(err);
-          console.log("no se guardo la ruta");
-        } else {
-          console.log("se guardo la ruta");
-        }
-      });
-      });
-    });
-  });
-  
-  res.redirect("/listar-rutas");
-});
-
-// GET request para listar rutas
-app.get("/listar-rutas", (req,res)=>{
-  Ruta.find({borrado:false}, (err,rutas)=> {
-    if(err){
-      console.log(err);
-    } else {
-       res.render("listar-rutas", {data:rutas}); 
-    }
-  });
- })
-
-
-
-// GET request para listar insumos
-//listar los que no tengan marca de borrado
-//
+// READ todos los insumos no borrados
 app.get("/listar-insumos", (req, res) => {
   Insumo.find({ borrado: false }, (err, insumos) => {
     if (err) {
@@ -147,8 +161,12 @@ app.get("/listar-insumos", (req, res) => {
   });
 });
 
-//POST request para dar de alta un insumo
+//CREATE insumo
 //primero busca si ya hay uno con el mismo nombre
+app.get("/alta-insumo", (req, res) => {
+  res.render("alta-insumo", {});
+});
+
 app.post("/alta-insumo", (req, res) => {
   Insumo.find({ nombre: req.body.nombre }, (err, found) => {
     if (err) {
@@ -176,13 +194,19 @@ app.post("/alta-insumo", (req, res) => {
   });
 });
 
-// Eliminar Insumo
+app.get("/rutas", (req, res) => {
+  Ruta.find({}, (err, result) => {
+    res.json(result);
+  });
+});
+
+// DELETE Insumo
 // faltaria verificar que el insumo no está en compras a futuro, cuando hagamos el esquema de la compra/pasaje
 app.delete("/insumo/:id", (req, res) => {
   Insumo.findOneAndUpdate({ _id: req.params.id }, { borrado: true });
 });
 
-// modificacion de insumo
+// UPDATE Insumo
 // falta testear
 app.put("/insumo/:id", (req, res) => {
   Insumo.find({ nombre: req.body.name }, (err, found) => {
@@ -214,189 +238,184 @@ app.put("/insumo/:id", (req, res) => {
   });
 });
 
-// POST request para dar de alta a un nuevo lugar
-// falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
-// falta normalizar los datos de entrada para que se guarden siempre capitalizados y no en minuscula o mayuscula
-app.post("/cargar-lugar", (req, res) => {
-  var l = new Lugar({
-    ciudad: req.body.ciudad,
-    provincia: req.body.provincia,
-    borrado: false,
-  });
-  l.save((err) => {
+// CRUD Usuario
+//
+// READ Usuarios no borrados
+
+// CREATE Usuario
+
+// UPDATE Usuario
+
+// DELETE Usuario
+
+// CRUD Ruta
+//
+// READ Rutas no borradas
+app.get("/listar-rutas", (req, res) => {
+  Ruta.find({ borrado: false }, (err, rutas) => {
     if (err) {
       console.log(err);
     } else {
-      console.log("lugar guardado");
+      res.render("listar-rutas", { data: rutas });
     }
-    res.redirect("/home");
   });
 });
 
-// variable que devuelve la fecha de hoy
-let now = new Date();
-let hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
-
-// eliminar lugar
-app.delete("/lugar/:id", (req, res) => {
-  Viaje.find(
-    {
-      ruta: { origen: { idLugar: req.params.id } },
-      fecha: { $gte: new Date() },
-    },
-    (err, result) => {
-      if (result.length) {
-        console.log("No se puede borrar, tiene viaje futuro");
-      } else {
-        Lugar.updateOne(
-          {
-            _id: req.params.id,
-          },
-          { borrado: true },
-          (err) => {
-            if (err) {
-              console.log(err);
-            }
-          }
-        );
-      }
-    }
-  );
-});
-
-//modificar lugar
-app.put("/lugar/:id", (req, res) => {
-  Viaje.find(
-    {
-      ruta: { origen: { idLugar: req.params.id } },
-      fecha: { $gte: hoy },
-    },
-    (err, result) => {
-      if (result.length) {
-        console.log("No se puede modificar, tiene viaje futuro");
-      } else {
-        Lugar.updateOne(
-          {
-            _id: req.params.id,
-          },
-          {
-            ciudad: req.body.ciudad,
-            provincia: req.body.ciudad,
-            borrado: false,
-          },
-          (err) => {
-            if (err) {
-              console.log(err);
-            }
-          }
-        );
-      }
-    }
-  );
-});
-
-//listar lugares
-app.get("/listar-lugares", (req, res) => {
-  Lugar.find({ borrado: false }, (err, result) => {
+// CREATE rutas
+app.get("/cargar-rutas", (req, res) => {
+  Lugar.find({ borrado: false }, (err, lugares) => {
     if (err) {
       console.log(err);
     } else {
-      res.render("listar-lugares", { data: result });
+      res.locals.lugares = lugares;
+      Combi.find({ borrado: false }, (err, combis) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.locals.combis = combis;
+          res.render("cargar-rutas", {});
+        }
+      });
     }
   });
 });
+app.post("/cargar-rutas", (req, res) => {
+  Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
+    Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
+      Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
+        var ruta = new Ruta({
+          origen: {
+            nombre: origenR.ciudad,
+            provincia: origenR.provincia,
+            idLugar: origenR._id,
+          },
+          destino: {
+            nombre: destinoR.ciudad,
+            provincia: destinoR.provincia,
+            idLugar: destinoR._id,
+          },
+          combi: {
+            patente: combiR.patente,
+            marca: combiR.marca,
+            modelo: combiR.modelo,
+            idCombi: combiR._id,
+          },
+          distancia: req.body.distancia,
+          hora: req.body.hora,
+          borrado: false,
+        });
+        console.log(ruta);
+        ruta.save((err) => {
+          if (err) {
+            console.log(err);
+            console.log("no se guardo la ruta");
+          } else {
+            console.log("se guardo la ruta");
+          }
+        });
+      });
+    });
+  });
 
-//cargar viaje
+  res.redirect("/listar-rutas");
+});
+
+// DELETE Ruta
+
+// UPDATE Ruta
+
+// CRUD Viaje
+//
+//CREATE viaje
 app.get("/cargar-viaje", (req, res) => {
-  let rutas = [];
   Ruta.find({ borrado: false }, (err, result) => {
     if (err) {
       console.log(err);
     } else {
-      rutas = result;
+      if (rutas.lenght) {
+        res.render("cargar-viaje", { data: rutas });
+      } else {
+        console.log("No se encontraron rutas disponibles");
+        res.send("No se encontraron rutas disponibles");
+      }
     }
   });
-  if (rutas.lenght) {
-    res.render("cargar-viaje", {data: rutas});
-  } else {
-    console.log("No se encontraron rutas disponibles");
-    res.send("No se encontraron rutas disponibles");
-  }
 });
 app.post("/cargar-viaje", (req, res) => {
-  let ruta = [];
-  let combi = [];
   Ruta.find(
     {
       _id: req.body.ruta,
     },
-    (err, result) => {
+    (err, rutaResult) => {
       if (err) {
         console.log(err);
       } else {
-        ruta = result;
+        Combi.find(
+          {
+            _id: rutaResult.combi.idCombi,
+          },
+          (err, combiResult) => {
+            if (err) {
+              console.log(err);
+            } else {
+              if (req.body.fecha >= hoy) {
+                if (req.body.asientos <= combiResult.asientos) {
+                  let v = new Viaje({
+                    ruta: {
+                      origen: {
+                        nombre: rutaResult.origen.ciudad,
+                        provincia: rutaResult.origen.provincia,
+                      },
+                      destino: {
+                        nombre: rutaResult.destino.ciudad,
+                        provincia: rutaResult.destino.provincia,
+                      },
+                      idRuta: rutaResult._id,
+                    },
+                    combi: {
+                      patente: combiResult.patente,
+                      marca: combiResult.marca,
+                      modelo: combiResult.modelo,
+                    },
+                    chofer: {
+                      nombre: combiResult.chofer.nombre,
+                      apellido: combiResult.chofer.apellido,
+                      mail: combiResult.chofer.email,
+                    },
+                    fecha: req.body.fecha,
+                    precio: req.body.precio,
+                    asientosDisponibles: req.body.asientos,
+                    estado: "En espera",
+                    borrado: false,
+                  });
+                  v.save((err) => {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      console.log("Viaje cargado");
+                    }
+                  });
+                  res.redirect("/home");
+                } else {
+                  console.log(
+                    "La cantidad de asientos debe ser menor o igual a " +
+                      combi.asientos
+                  );
+                }
+              } else {
+                console.log("La fecha debe ser mayor o igual a la actual");
+              }
+            }
+          }
+        );
       }
     }
   );
-  Combi.find(
-    {
-      _id: ruta.combi.idCombi,
-    },
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        combi = result;
-      }
-    }
-  );
-  if (req.body.fecha >= hoy) {
-    if (req.body.asientos <= combi.asientos) {
-      let v = new Viaje({
-        ruta: {
-          origen: {
-            nombre: ruta.origen.ciudad,
-            provincia: ruta.origen.provincia,
-          },
-          destino: {
-            nombre: ruta.destino.ciudad,
-            provincia: ruta.destino.provincia,
-          },
-          idRuta: ruta._id,
-        },
-        combi: {
-          patente: combi.patente,
-          marca: combi.marca,
-          modelo: combi.modelo,
-        },
-        chofer: {
-          nombre: combi.chofer.nombre,
-          apellido: combi.chofer.apellido,
-          mail: combi.chofer.email,
-        },
-        fecha: req.body.fecha,
-        precio: req.body.precio,
-        asientosDisponibles: req.body.asientos,
-        estado: "En espera",
-        borrado: false,
-      });
-      v.save((err) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Viaje cargado");
-        }
-      });
-      res.redirect("/home");
-    } else {
-      console.log(
-        "La cantidad de asientos debe ser menor o igual a " + combi.asientos
-      );
-    }
-  } else {
-    console.log("La fecha debe ser mayor o igual a la actual");
-  }
 });
+
+// UPDATE VIAJE
+
+// DELETE VIAJE
 
 // NO TOCAR
 app.listen(3000, function () {

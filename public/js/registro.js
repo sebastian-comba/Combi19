@@ -55,6 +55,8 @@ function registrar() {
         if (data.response === "error") {
           document.getElementById("errE").innerHTML =
             '<small  style="color:red"><p class="er">este Email se registro anteriormente</p></small>';
+        }else{
+            location.replace("/home");
         }
       });
 }

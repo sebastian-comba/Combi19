@@ -55,6 +55,24 @@ app.get("/insumos", (req, res) => {
   });
 });
 
+app.get("/rutas", (req, res) => {
+  Ruta.find({}, (err, result) => {
+    res.json(result);
+  });
+});
+
+// GET request para listar rutas
+app.get("/listar-rutas", (req,res)=>{
+  Ruta.find({borrado:false}, (err,rutas)=> {
+    if(err){
+      console.log(err);
+    } else {
+       res.render("listar-rutas", {data:rutas}); 
+    }
+  });
+ })
+
+
 // GET request para listar insumos
 //listar los que no tengan marca de borrado
 //
@@ -238,7 +256,7 @@ app.get("/cargar-viaje", (req, res) => {
     }
   });
   if (rutas.lenght) {
-    res.render("cargar-viaje", {data= rutas});
+    res.render("cargar-viaje", {data: rutas});
   } else {
     console.log("No se encontraron rutas disponibles");
     res.send("No se encontraron rutas disponibles");

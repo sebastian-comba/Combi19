@@ -1,0 +1,97 @@
+<%- include("partials/header"); -%>
+<div class="container">
+
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" id="nombre" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="apellido">Apellido:</label>
+            <input type="text" name="apellido" id="apellido" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="dni">DNI:</label>
+            <input type="number" name="dni" id="dni" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="fechaN"> Fecha de nacimineto</label>
+            <input type="Date" name="fechaN" id="fechaN" class="form-control" required>
+            <div id="errFN"></div>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" class="form-control" required autocomplete="off">
+            <div id="errE"></div>
+        </div>
+        <div class="form-group">
+            <label for="clave">Contraseña</label>
+            <input type="password" class="form-control" name="clave" id="clave"
+                placeholder="Debe ser mayor de 5 digitos" required>
+            <div id="errC1"></div>
+            </div>
+        <div class="form-group">
+            <label for="clave1">Repita la Contraseña</label>
+            <input type="password" class="form-control" name="clave1" id="clave1" required>
+            <div id="errC2"></div>
+        </div>
+        <h4>Tipo de suscripción</h4>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-check">
+                    <input type="radio" id="comun" name="suscripcion" value="comun" checked>
+                    <label for="comun">Común</label><br>
+                    </label>
+                </div>
+                <p>Usted tendra que pagar la totalidad de los pasajes</p>
+            </div>
+            <div class="col-6">
+                <div class="form-check">
+                    <input type="radio" id="gold" name="suscripcion" value="gold">
+                    <label for="gold">Gold</label><br>
+                    </label>
+                </div>
+                <p>Usted debera abonar $250 por mes y tendra un descuento del 10% en todos sus pasajes</p>
+            </div>
+        </div>
+            <input type="hidden" class="form-control" name="cat" id="cat" value="comun">
+        <div id="tarjeta" style="display:none">
+            <div class="form-group">
+                <label for="cod">Codigo de la Tarjeta:</label>
+                <input type="text" name="cod" id="cod" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="vencimiento"> Fecha de Vencimiento: </label>
+                <input type="month" name="vencimiento" id="vencimiento" class="form-control" min="now">
+            </div>
+            <div class="form-group">
+                <label for="nombreT">Nombre como figura en la tarjeta:</label>
+                <input type="text" class="form-control" name="nombreT" id="nombreT" placeholder="">
+            </div>
+            <div class="form-group">
+                <label for="dniT">DNI del titular:</label>
+                <input type="number" name="dniT" id="dniT" class="form-control">
+                
+            </div>
+            <div class="form-group">
+                <label for="seg">Codigo de Seguridad</label>
+                <input type="number" size="3" name="seg" id="seg" class="form-control" l>
+                <div id="errCS" ></div>
+            </div>
+            <div id="errT"> </div>
+
+        </div>
+        <br>
+        <button id="enviar">Resgistrarse</button>
+
+
+
+</div>
+            
+<br>
+<br>
+<br>
+<br>
+
+<script src="/js/registro.js"></script>
+
+<%- include("partials/footer"); -%>

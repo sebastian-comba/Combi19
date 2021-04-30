@@ -17,6 +17,8 @@ const app = express();
 
 app.set("view engine", "ejs");
 
+app.use(express.static(__dirname + "/public"));
+
 mongoose.connect("mongodb://localhost:27017/combi19DB", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -243,6 +245,39 @@ app.put("/insumo/:id", (req, res) => {
 // READ Usuarios no borrados
 
 // CREATE Usuario
+//ingresar a registro
+app.get("/registro", (req, res) => {
+  res.render("registro", {});
+});
+//guardar usuario
+app.post("/registro", (req, res) => {
+  let us= new Usuario({
+    nombre: req.body.nombre,
+  apellido: req.body.apellido,
+  email: req.body.email,
+  clave: req.body.clave,
+  dni: req.body.dni,
+  fechaN: req.body.fechaN,
+  rol: "Cliente",
+  borrado: false,
+  suspendido: false,
+  categoria: req.body.categoria,
+  tarjeta: {
+    codigo: req.body.codigo,
+    vencimiento:req.body.vencimiento,
+    nombreCompleto: req.body.nombreT,
+    dni: req.body.dniT
+  },
+  });
+  us.save(err=>{
+    if(err){
+      console.log(err);
+      res.json({ response: "error" });
+    }else{
+      res.json({ response: "bien" });
+    }
+  })
+});
 
 // UPDATE Usuario
 
@@ -477,3 +512,6 @@ app.post("/cargar-viaje", (req, res) => {
 app.listen(3000, function () {
   console.log("Server started on port " + port);
 });
+
+
+

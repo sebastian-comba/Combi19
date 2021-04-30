@@ -18,7 +18,7 @@ const rutaSchema = new mongoose.Schema({
     idCombi: { type: String, required: true },
   },
   distancia: { type: Number, required: true },
-  hora: { type: Date, required: true },
+  hora: { type: String, required: true },
   borrado: { type: Boolean, required: true },
 });
 

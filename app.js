@@ -55,6 +55,85 @@ app.get("/insumos", (req, res) => {
   });
 });
 
+app.get("/rutas", (req, res) => {
+  Ruta.find({}, (err, result) => {
+    res.json(result);
+  });
+});
+
+//alta de rutas
+app.get("/cargar-rutas", (req, res) => {
+  Lugar.find({ borrado: false }, (err, lugares) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.locals.lugares = lugares;
+      Combi.find({ borrado: false }, (err, combis) => {
+        if(err){
+          console.log(err);
+        } else {
+          res.locals.combis = combis;
+          res.render("cargar-rutas", {});
+        }
+      });
+    }
+  });
+});
+app.post("/cargar-rutas", (req,res) => {
+  Lugar.findOne({_id:req.body.origen}, (err, origenR) => {
+    Lugar.findOne({_id:req.body.destino}, (err, destinoR) => {
+      Combi.findOne({_id:req.body.combi}, (err, combiR) => {
+        
+        var ruta = new Ruta({
+          origen: {
+            nombre: origenR.ciudad,
+            provincia: origenR.provincia,
+            idLugar: origenR._id,
+          },
+          destino: {
+            nombre: destinoR.ciudad,
+            provincia: destinoR.provincia,
+            idLugar: destinoR._id,
+          },
+          combi: {
+            patente: combiR.patente,
+            marca: combiR.marca,
+            modelo: combiR.modelo,
+            idCombi: combiR._id,
+          },
+          distancia: req.body.distancia,
+          hora: req.body.hora,
+          borrado: false,
+      });
+      console.log(ruta);
+      ruta.save((err)=>{
+        if(err){
+          console.log(err);
+          console.log("no se guardo la ruta");
+        } else {
+          console.log("se guardo la ruta");
+        }
+      });
+      });
+    });
+  });
+  
+  res.redirect("/listar-rutas");
+});
+
+// GET request para listar rutas
+app.get("/listar-rutas", (req,res)=>{
+  Ruta.find({borrado:false}, (err,rutas)=> {
+    if(err){
+      console.log(err);
+    } else {
+       res.render("listar-rutas", {data:rutas}); 
+    }
+  });
+ })
+
+
+
 // GET request para listar insumos
 //listar los que no tengan marca de borrado
 //
@@ -238,7 +317,11 @@ app.get("/cargar-viaje", (req, res) => {
     }
   });
   if (rutas.lenght) {
+<<<<<<< HEAD
     res.render("cargar-viaje", { data: rutas });
+=======
+    res.render("cargar-viaje", {data: rutas});
+>>>>>>> 4d1b866cec2685b68dad6d92c19791e0a02075e3
   } else {
     console.log("No se encontraron rutas disponibles");
     res.send("No se encontraron rutas disponibles");

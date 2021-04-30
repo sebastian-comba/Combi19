@@ -304,7 +304,6 @@ app.post("/cargar-rutas", (req, res) => {
           hora: req.body.hora,
           borrado: false,
         });
-        console.log(ruta);
         ruta.save((err) => {
           if (err) {
             console.log(err);
@@ -321,8 +320,65 @@ app.post("/cargar-rutas", (req, res) => {
 });
 
 // DELETE Ruta
+app.delete("/ruta/:id", (req, res) => {
+  Viaje.find({ ruta:{idRuta:req.params.id},
+    fecha:{$gte:hoy},
+    borrado:false,},(err, viajes) => {
+    if(err){
+      console.log(err);
+    } else {
+      if(viajes.length){
+        console.log("No se puede eliminar la ruta porque tiene viajes a futuro");
+      } else {
+        Ruta.findOneAndUpdate({ _id: req.params.id }, { borrado: true });        
+      }
+    }
+  });
+});
 
 // UPDATE Ruta
+app.put("/ruta/:id", (req, res) => {
+  Viaje.find({ ruta:{idRuta:req.params.id},
+    fecha:{$gte:hoy},
+    borrado:false,},(err, viajes) => {
+    if(err){
+      console.log(err);
+    } else {
+      if(viajes.length){
+        console.log("No se puede modificar la ruta porque tiene viajes a futuro");
+      } else {
+        Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
+          Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
+            Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
+              Ruta.findOneAndUpdate({ _id: req.params.id },
+              {
+               origen: {
+                 nombre: origenR.ciudad,
+                 provincia: origenR.provincia,
+                 idLugar: origenR._id,
+               },
+               destino: {
+                 nombre: destinoR.ciudad,
+                 provincia: destinoR.provincia,
+                 idLugar: destinoR._id,
+               },
+               combi: {
+                 patente: combiR.patente,
+                 marca: combiR.marca,
+                 modelo: combiR.modelo,
+                 idCombi: combiR._id,
+               },
+               distancia: req.body.distancia,
+               hora: req.body.hora,
+               borrado: false,
+              });
+            });
+          });
+        });
+      }           
+    }
+  });
+});
 
 // CRUD Viaje
 //

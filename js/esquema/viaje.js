@@ -10,7 +10,7 @@ const viajeSchema = new mongoose.Schema({
       nombre: { type: String, required: true },
       provincia: { type: String, required: true },
     },
-    idRuta: { type: String, required: true }
+    idRuta: { type: String, required: true, index: true },
   },
   combi: {
     patente: { type: String, required: true },
@@ -22,12 +22,14 @@ const viajeSchema = new mongoose.Schema({
     apellido: { type: String, required: true },
     mail: { type: String, required: true },
   },
-  fecha: { type: Date, required: true },
+  fecha: { type: Date, required: true, index: true },
   precio: { type: Number, required: true },
   asientosDisponibles: { type: Number, required: true },
   estado: { type: String, required: true },
   borrado: { type: Boolean, required: true },
 });
+
+lugarSchema.index({ idRuta: 1, fecha: 1 }, { unique: true });
 
 const Viaje = mongoose.model("Viaje", viajeSchema);
 

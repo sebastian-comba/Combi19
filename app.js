@@ -11,6 +11,7 @@ const Combi = require("./js/esquema/combi");
 const Lugar = require("./js/esquema/lugar");
 const Viaje = require("./js/esquema/viaje");
 const Ruta = require("./js/esquema/ruta");
+const { find } = require("./js/esquema/usuarios");
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.get("/insumos", (req, res) => {
 
 // GET request para listar insumos
 //listar los que no tengan marca de borrado
+//
 app.get("/listar-insumos", (req,res)=>{
  Insumo.find({borrado:false}, (err,insumos)=> {
    if(err){
@@ -224,6 +226,91 @@ app.get("/listar-lugares", (req, res) => {
     }
   });
 });
+
+//cargar viaje
+app.get("/cargar-viaje", (req, res) => {
+  let rutas = [];
+  Ruta.find({ borrado: false }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      rutas = result;
+    }
+  });
+  if (rutas.lenght) {
+    res.render("cargar-viaje", {data= rutas});
+  } else {
+    console.log("No se encontraron rutas disponibles");
+    res.send("No se encontraron rutas disponibles");
+  }
+});
+app.post("/cargar-viaje", (req, res) => {
+  let ruta = [];
+  let combi = [];
+  Ruta.find({
+    _id: req.body.ruta
+  }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      ruta = result;
+    }
+  });
+  Combi.find({
+    _id: ruta.combi.idCombi
+  }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      combi = result;
+    }
+  });
+  if (req.body.fecha >= hoy) {
+    if (req.body.asientos <= combi.asientos) {
+      let v = new Viaje({
+        ruta: {
+          origen: {
+            nombre: ruta.origen.ciudad,
+            provincia: ruta.origen.provincia,
+          },
+          destino: {
+            nombre:  ruta.destino.ciudad,
+            provincia: ruta.destino.provincia,
+          },
+          idRuta: ruta._id,
+        },
+        combi: {
+          patente: combi.patente,
+          marca: combi.marca,
+          modelo: combi.modelo,
+        },
+        chofer: {
+          nombre: combi.chofer.nombre,
+          apellido: combi.chofer.apellido,
+          mail: combi.chofer.email,
+        },
+        fecha: req.body.fecha,
+        precio: req.body.precio,
+        asientosDisponibles: req.body.asientos,
+        estado: "En espera",
+        borrado: false,
+      });
+      v.save((err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Viaje cargado");
+        }
+      });
+      res.redirect("/home");
+    } else {
+      console.log("La cantidad de asientos debe ser menor o igual a " + combi.asientos);
+    }
+  }else{
+    console.log("La fecha debe ser mayor o igual a la actual");
+  }
+  }
+);
 
 // NO TOCAR
 app.listen(3000, function () {

@@ -34,9 +34,7 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.render("home", {});
 });
-app.get("/registro", (req, res) => {
-  res.render("registro", {});
-});
+
 
 app.get("/lugares", (req, res) => {
   Lugar.find({}, (err, result) => {
@@ -147,6 +145,38 @@ app.delete("/lugar/:id", (req, res) => {
       }
     }
   );
+});
+//ingresar a registro
+app.get("/registro", (req, res) => {
+  res.render("registro", {});
+});
+//guardar usuario
+app.post("/registro", (req, res) => {
+  let us= new Usuario({
+    nombre: req.body.nombre,
+  apellido: req.body.apellido,
+  email: req.body.email,
+  clave: req.body.clave,
+  dni: req.body.dni,
+  fechaN: req.body.fechaN,
+  rol: "Cliente",
+  borrado: false,
+  suspendido: false,
+  categoria: req.body.categoria,
+  tarjeta: {
+    codigo: req.body.codigo,
+    vencimiento:req.body.vencimiento,
+    nombreCompleto: req.body.nombreT,
+    dni: req.body.dniT
+  },
+  });
+  us.save(err=>{
+    if(!err){
+      res.redirect("/home");
+    }else{
+      res.json({ response: "error" });
+    }
+  })
 });
 
 // NO TOCAR

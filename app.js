@@ -270,7 +270,7 @@ app.put("/insumo/:id", (req, res) => {
 // CREATE Usuario
 //ingresar a registro, si ya inicio sesion lo manda a home
 app.get("/", (req, res) => {
-  if(!req.session){
+  if(req.session.nombre){
     res.redirect("/home");
   }else{
   res.render("inicio", {});
@@ -311,6 +311,15 @@ app.post("/registro", (req, res) => {
     }
   })
 });
+
+    //altaChofer
+    app.get("/alta-chofer",(req,res)=>{
+      if(req.session.rol!=="Admin"){
+        res.redirect("/");
+      }else{
+      res.render("alta-chofer",{});
+    }
+    })
 //inicio de sesion
 app.post("/iniciar", (req, res) => {
   Usuario.findOne({ email: req.body.email }, (err, us) => {

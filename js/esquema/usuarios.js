@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   rol: { type: String, required: true},
   borrado: { type: Boolean, required: true},
   suspendido: { type: Boolean, required: true},
-  categoria: { type: String, required: true},
+  categoria: { type: String},
   tarjeta: {
     codigo: String,
     vencimiento: Date,

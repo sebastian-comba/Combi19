@@ -126,7 +126,7 @@ function validarCodigoS(){
 }
 function camposCompletos(){
     let camposIn;
-    if(!nombre.value||!apellido.value||!dni.value||!email.value||!fechaN.value||!clave.value||!clave.value){
+    if(!nombre.value||!apellido.value||!dni.value||!email.value||!fechaN.value||!clave.value||!clave1.value){
         camposIn=true;
     }
     if (

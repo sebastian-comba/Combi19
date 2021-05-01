@@ -30,7 +30,8 @@ function registrar() {
       email: email.value,
       clave: clave.value,
       dni: dni.value,
-      fechaN: fechaN.value
+      fechaN: fechaN.value,
+      telefono: telefono.value,
     }),
   })
     .then((res) => res.json())

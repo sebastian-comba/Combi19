@@ -4,22 +4,22 @@ const saltRounds = 10;
 
 const userSchema = new mongoose.Schema({
   nombre: { type: String, required: true },
-  apellido: { type: String, required: true},
+  apellido: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   clave: { type: String, required: true },
-  dni: {type: String, required: true},
-  fechaN: {type: Date, required: true},
-  rol: { type: String, required: true},
-  borrado: { type: Boolean, required: true},
-  suspendido: { type: Boolean, required: true},
-  categoria: { type: String},
+  dni: { type: String, required: true },
+  fechaN: { type: Date, required: true },
+  rol: { type: String, required: true },
+  borrado: { type: Boolean, required: true },
+  suspendido: { type: Boolean, required: true },
+  categoria: { type: String },
+  telefono: { type: String },
   tarjeta: {
     codigo: String,
     vencimiento: Date,
     nombreCompleto: String,
-    dni: Number
+    dni: Number,
   },
-  telefono: {type: String},
 });
 
 userSchema.pre("save", function (next) {

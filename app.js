@@ -324,7 +324,7 @@ app.post("/registro", (req, res) => {
     app.post("/alta-chofer", (req, res) => {
       let us = new Usuario({
         nombre: req.body.nombre,
-        apellido:req.body.apellido,
+        apellido: req.body.apellido,
         email: req.body.email,
         clave: req.body.clave,
         dni: req.body.dni,
@@ -332,13 +332,12 @@ app.post("/registro", (req, res) => {
         rol: "Chofer",
         borrado: false,
         suspendido: false,
-        telefono:req.body.telefono,
+        telefono: req.body.telefono,
       });
       us.save((err) => {
         if (err) {
           res.json({ response: "error" });
         } else {
-          console.log(us.telefono);
           res.json({ response: "bien" });
         }
       });

@@ -312,6 +312,7 @@ app.post("/registro", (req, res) => {
   })
 });
 
+
     //altaChofer
     app.get("/alta-chofer",(req,res)=>{
       if(req.session.rol!=="Admin"){
@@ -320,6 +321,28 @@ app.post("/registro", (req, res) => {
       res.render("alta-chofer",{});
     }
     })
+    app.post("/alta-chofer", (req, res) => {
+      let us = new Usuario({
+        nombre: req.body.nombre,
+        apellido:req.body.apellido,
+        email: req.body.email,
+        clave: req.body.clave,
+        dni: req.body.dni,
+        fechaN: req.body.fechaN,
+        rol: "Chofer",
+        borrado: false,
+        suspendido: false,
+        telefono:req.body.telefono,
+      });
+      us.save((err) => {
+        if (err) {
+          res.json({ response: "error" });
+        } else {
+          console.log(us.telefono);
+          res.json({ response: "bien" });
+        }
+      });
+    });
 //inicio de sesion
 app.post("/iniciar", (req, res) => {
   Usuario.findOne({ email: req.body.email }, (err, us) => {

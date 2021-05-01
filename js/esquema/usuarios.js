@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
     nombreCompleto: String,
     dni: Number
   },
-  telefono: String
+  telefono: {type: String},
 });
 
 userSchema.pre("save", function (next) {

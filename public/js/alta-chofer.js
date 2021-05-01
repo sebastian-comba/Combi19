@@ -44,7 +44,7 @@ function registrar() {
     });
 }
 function validarClave1() {
-  if (clave.value.length < 5) {
+  if (clave.value.length < 5 && clave.value!=="") {
     document.getElementById("errC1").innerHTML =
       "<small  style='color:red'><p class='er'>La contraseña tiene que tener minimo 6 caracteres</p></small>";
   }
@@ -118,3 +118,4 @@ document.getElementById("enviar").onclick = function () {
     registrar();
   }
 };
+

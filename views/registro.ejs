@@ -1,6 +1,6 @@
-<%- include("partials/header"); -%>
-<div class="container">
 
+<div class="container">
+    <form>
         <div class="form-group">
             <label for="nombre">Nombre:</label>
             <input type="text" name="nombre" id="nombre" class="form-control" required>
@@ -81,9 +81,9 @@
 
         </div>
         <br>
-        <button id="enviar">Resgistrarse</button>
-
-
+        </form>
+        <div id="err" ></div>
+<button id="enviar">Registrarse</button>
 
 </div>
             
@@ -94,4 +94,3 @@
 
 <script src="/js/registro.js"></script>
 
-<%- include("partials/footer"); -%>

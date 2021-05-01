@@ -323,11 +323,15 @@ app.post("/iniciar", (req, res) => {
         if (err) {
           res.json({ response: "Error al autenticar el usuario " });
         } else if (result) {
+          if(us.borrado|| us.suspendido){
+            res.json({ response: "suspendido" });
+          }else{
           req.session.nombre = us.nombre;
           req.session.apellido = us.apellido;
           req.session.rol = us.rol;
           req.session.email = us.email;
           res.json({ response: "bien" });
+          }
         } else {
           res.json({ response: "clave incorrecta" });
         }

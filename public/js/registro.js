@@ -4,7 +4,10 @@ let mes = hoy.getMonth() + 1;
 if ((mes / 10) < 1) {
     mes = '0' + mes;
 }
-
+let dia = hoy.getDate();
+if (dia / 10 < 1) {
+  dia = "0" + dia;
+}
 
 vencimiento.min = hoy.getFullYear() + "-" + mes;
 document.getElementById('gold').onclick = function () {
@@ -16,7 +19,7 @@ document.getElementById('comun').onclick = function () {
     document.getElementById("cat").value = "comun";
 }
 
-fechaN.max = hoy.getFullYear()+'-'+mes+'-'+hoy.getDate();
+fechaN.max = hoy.getFullYear()+'-'+mes+'-'+dia;
 //metodos
 function limpiar() {
     document.getElementById("errFN").innerHTML = "";
@@ -24,6 +27,7 @@ function limpiar() {
     document.getElementById("errC1").innerHTML = "";
     document.getElementById("errC2").innerHTML = "";
     document.getElementById("errT").innerHTML = "";
+    document.getElementById("err").innerHTML = "";
 }
 
 
@@ -67,7 +71,7 @@ function validarClave1() {
     }
 }
 function validarClave2() {
-    if (clave.value.length < 5 && clave.value !== clave1.value) {
+    if (clave.value.length > 5 && clave.value !== clave1.value) {
         document.getElementById("errC2").innerHTML =
           '<small  style="color:red"><p class="er">Ambas Contraseñas deben coincidir</p></small>';
     }
@@ -113,21 +117,42 @@ function validarFechaN() {
 };
 function validarCodigoS(){
     let c =seg.value;
-    if(c.length!==3 && c!==""){
+    if(c.length!==3 && cat.value==="gold"){
         document.getElementById("errT").innerHTML =
           '<small  style="color:red"><p class="er">Tarjeta no valida</p></small>';
      
     }
 
 }
+function camposCompletos(){
+    let camposIn;
+    if(!nombre.value||!apellido.value||!dni.value||!email.value||!fechaN.value||!clave.value||!clave.value){
+        camposIn=true;
+    }
+    if (
+      cat.value === "gold" &&
+      (!cod.value ||
+        !dniT.value ||
+        !vencimiento.value ||
+        !nombreT.value ||
+        !seg.value)
+    ) {
+        camposIn = true;
+    }
+    if(camposIn){
+          document.getElementById("err").innerHTML =
+            '<small  style="color:red"><p class="er">Todos los campos deben estar completos</p></small>';
+    }
+}
 
 document.getElementById("enviar").onclick = function () {
 
     limpiar();
+    camposCompletos();
     validarClave1();
-     validarClave2();
-     validarFechaN();
-     validarCodigoS();
+    validarClave2();
+    validarFechaN();
+    validarCodigoS();
     let errores = document.getElementsByClassName("er").length;
     if (errores === 0) {
         registrar();

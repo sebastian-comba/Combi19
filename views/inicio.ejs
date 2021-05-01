@@ -1,0 +1,29 @@
+<%- include("partials/header"); -%>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h1>Iniciar Sesion</h1>
+            <div class="container">
+                <div class="form-group">
+                    <label for="emailI">Email:</label>
+                    <input type="email" name="emailI" id="emailI" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="claveI">Contraseña:</label>
+                    <input type="password" name="claveI" id="claveI" class="form-control">
+                </div>
+                <br>
+                <div id="errorI"></div>
+                <button id="inicio">Iniciar Sisión</button>
+                <br>
+                <br>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h1>Registrarse</h1>
+            <%- include("registro"); -%>
+        </div>
+    </div>
+</div>
+<script src="/js/inicio.js"></script>
+<%- include("partials/footer"); -%>

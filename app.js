@@ -4,6 +4,8 @@ const express = require("express");
 const port = process.env.PORT || 3000;
 const mongoose = require("mongoose");
 const ejs = require("ejs");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
 
 const Usuario = require("./js/esquema/usuarios");
 const Insumo = require("./js/esquema/insumo");
@@ -18,6 +20,14 @@ const app = express();
 app.set("view engine", "ejs");
 
 app.use(express.static(__dirname + "/public"));
+app.use(
+  session({
+    secret: "Ingenieria de Software II - 2021",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: "mongodb://localhost:27017/session" }),
+  })
+);
 
 mongoose.connect("mongodb://localhost:27017/combi19DB", {
   useNewUrlParser: true,
@@ -39,7 +49,20 @@ const hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
 // GET request al home/inicio de la pagina
 app.get("/home", (req, res) => {
-  res.render("home", {});
+  if(req.session.nombre){
+  switch (req.session.rol) {
+    case "Cliente":
+      res.render("home", {});
+      break;
+    case "Chofer":
+      res.render("home-chofer", {});
+      break;
+    case "Admin":
+      res.render("home-admin", {});
+      break;
+  }}else{
+      res.redirect("/");
+  }
 });
 
 // CRUD Lugar
@@ -245,39 +268,82 @@ app.put("/insumo/:id", (req, res) => {
 // READ Usuarios no borrados
 
 // CREATE Usuario
-//ingresar a registro
-app.get("/registro", (req, res) => {
-  res.render("registro", {});
+//ingresar a registro, si ya inicio sesion lo manda a home
+app.get("/", (req, res) => {
+  if(!req.session){
+    res.redirect("/home");
+  }else{
+  res.render("inicio", {});
+  }
 });
 //guardar usuario
 app.post("/registro", (req, res) => {
-  let us= new Usuario({
-    nombre: req.body.nombre,
-  apellido: req.body.apellido,
-  email: req.body.email,
-  clave: req.body.clave,
-  dni: req.body.dni,
-  fechaN: req.body.fechaN,
-  rol: "Cliente",
-  borrado: false,
-  suspendido: false,
-  categoria: req.body.categoria,
-  tarjeta: {
-    codigo: req.body.codigo,
-    vencimiento:req.body.vencimiento,
-    nombreCompleto: req.body.nombreT,
-    dni: req.body.dniT
-  },
+  let nombre = req.body.nombre;
+  let apellido = req.body.apellido;
+  let email = req.body.email;
+  let us = new Usuario({
+    nombre: nombre,
+    apellido: apellido,
+    email: email,
+    clave: req.body.clave,
+    dni: req.body.dni,
+    fechaN: req.body.fechaN,
+    rol: "Cliente",
+    borrado: false,
+    suspendido: false,
+    categoria: req.body.categoria,
+    tarjeta: {
+      codigo: req.body.codigo,
+      vencimiento: req.body.vencimiento,
+      nombreCompleto: req.body.nombreT,
+      dni: req.body.dniT
+    },
   });
-  us.save(err=>{
-    if(err){
-      console.log(err);
+  us.save(err => {
+    if (err) {
       res.json({ response: "error" });
-    }else{
+    } else {
+      req.session.nombre = us.nombre;
+      req.session.apellido = us.apellido;
+      req.session.rol = us.rol;
+      req.session.email = us.email;
       res.json({ response: "bien" });
     }
   })
 });
+//inicio de sesion
+app.post("/iniciar", (req, res) => {
+  Usuario.findOne({ email: req.body.email }, (err, us) => {
+    if (err) {
+      res.json({ response: "Error al autenticar el usuario" });
+    } else if (!us) {
+      res.json({ response: "Usuario no existe" });
+    } else {
+      us.claveCorrecta(req.body.clave, (err, result) => {
+        if (err) {
+          res.json({ response: "Error al autenticar el usuario " });
+        } else if (result) {
+          req.session.nombre = us.nombre;
+          req.session.apellido = us.apellido;
+          req.session.rol = us.rol;
+          req.session.email = us.email;
+          res.json({ response: "bien" });
+        } else {
+          res.json({ response: "clave incorrecta" });
+        }
+      });
+    }
+  });
+});
+  //cerrarSesion
+  app.get("/cerrarSesion",(req,res)=>{
+    if(req.session){  
+      req.session.destroy(function () {
+      req.session = null;
+    });
+    }
+      res.redirect("/");
+  })
 
 // UPDATE Usuario
 
@@ -434,7 +500,7 @@ app.post("/cargar-viaje", (req, res) => {
                 } else {
                   console.log(
                     "La cantidad de asientos debe ser menor o igual a " +
-                      combi.asientos
+                    combi.asientos
                   );
                 }
               } else {
@@ -456,6 +522,5 @@ app.post("/cargar-viaje", (req, res) => {
 app.listen(3000, function () {
   console.log("Server started on port " + port);
 });
-
 
 

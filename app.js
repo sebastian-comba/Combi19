@@ -445,6 +445,19 @@ app.get("/listar-combi",(req,res)=>{
     });
   }
 })
+app.get("/detalle-combi/:patente",(req,res)=>{
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+  Combi.findOne({patente:req.params.patente},(err,result)=>{
+    if(err){
+      console.log(err);
+    }else{
+      res.render("detalle-combi",{data:result});
+    }
+  })
+  }
+})
 // CREATE Combi
 
   //alta combi

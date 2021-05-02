@@ -1,8 +1,9 @@
 function camposVacios(){
-    let form = document.getElementsByClassName("form-control");
+    let form = document.getElementsByClassName("alta");
     for (let i = 0; i < form.length; i++) {
         let e = form[i];
         if(e.value===""){
+            console.log(e);
             document.getElementById("err").innerHTML =
                 '<small  style="color:red"><p class="er">Todos los campos deben estar Completos </p></small>';
         }   
@@ -45,10 +46,11 @@ function guardar() {
                     break;
                 case "errorC":
                     document.getElementById("errC").innerHTML =
-                        '<small  style="color:red"><p class="er">El chofer seleccionado no existe. Por favor seleccione otro o agrege al chofer <a href="/alta-chofer">aqui</a><</p></small>';
+                        '<small  style="color:red"><p class="er">El chofer seleccionado no existe. Por favor seleccione otro o agrege al chofer <a href="/alta-chofer">aqui</a></p></small>';
                     break;
                 case "bien":
                     location.reload("/");
+                    break;
             }
         });
 }

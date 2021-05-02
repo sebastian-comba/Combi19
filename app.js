@@ -445,6 +445,39 @@ app.get("/alta-combi",(req,res)=>{
     });
   }
 });
+    //guardar combi
+app.post("/alta-combi",(req,res)=>{
+  Usuario.findOne({email:req.body.chofer, rol:"Chofer",borrado:false},(err,result)=>{
+    if (err) {
+      res.json({ response: "errorC" });
+    }else{
+      if(!result){
+        res.json({ response: "errorC" });
+      }else{
+      let combi=new Combi({
+        patente:req.body.patente,
+        marca:req.body.marca,
+        modelo:req.body.modelo,
+        chofer:{
+          nombre:result.nombre,
+          apellido:result.apellido,
+          email:result.email,
+        },
+        asientos: req.body.asientos,
+        tipo:req.body.tipo,
+        borrado:false,
+      })
+      combi.save((err) => {
+        if (err) {
+          res.json({ response: "errorP" });
+        } else {
+          res.json({ response: "bien" });
+        }
+      });
+    }
+    }
+  })
+})
 // DELETE Combi
 //UPDATE Combi
 

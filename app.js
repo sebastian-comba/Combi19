@@ -266,6 +266,59 @@ app.put("/insumo/:id", (req, res) => {
 // CRUD Usuario
 //
 // READ Usuarios no borrados
+//inicio de sesion
+app.post("/iniciar", (req, res) => {
+  Usuario.findOne({ email: req.body.email }, (err, us) => {
+    if (err) {
+      res.json({ response: "Error al autenticar el usuario" });
+    } else if (!us) {
+      res.json({ response: "Usuario no existe" });
+    } else {
+      us.claveCorrecta(req.body.clave, (err, result) => {
+        if (err) {
+          res.json({ response: "Error al autenticar el usuario " });
+        } else if (result) {
+          if(us.borrado|| us.suspendido){
+            res.json({ response: "suspendido" });
+          }else{
+          req.session.nombre = us.nombre;
+          req.session.apellido = us.apellido;
+          req.session.rol = us.rol;
+          req.session.email = us.email;
+          res.json({ response: "bien" });
+          }
+        } else {
+          res.json({ response: "clave incorrecta" });
+        }
+      });
+    }
+  });
+});
+  //cerrarSesion
+  app.get("/cerrarSesion",(req,res)=>{
+    if(req.session){  
+      req.session.destroy(function () {
+      req.session = null;
+    });
+    }
+      res.redirect("/");
+  });
+
+  // Listar choferes
+  app.get("/listar-chofer",(req,res)=>{
+     if(req.session.rol!=="Admin"){
+      res.redirect("/");
+     }else{
+       Usuario.find({ borrado: false ,rol:"Chofer"}, (err, result) => {
+         if (err) {
+           console.log(err);
+         } else {
+           res.render("listar-choferes", { data: result });
+         }
+       });
+      res.render("inicio");
+    }
+  });
 
 // CREATE Usuario
 //ingresar a registro, si ya inicio sesion lo manda a home
@@ -342,43 +395,7 @@ app.post("/registro", (req, res) => {
         }
       });
     });
-//inicio de sesion
-app.post("/iniciar", (req, res) => {
-  Usuario.findOne({ email: req.body.email }, (err, us) => {
-    if (err) {
-      res.json({ response: "Error al autenticar el usuario" });
-    } else if (!us) {
-      res.json({ response: "Usuario no existe" });
-    } else {
-      us.claveCorrecta(req.body.clave, (err, result) => {
-        if (err) {
-          res.json({ response: "Error al autenticar el usuario " });
-        } else if (result) {
-          if(us.borrado|| us.suspendido){
-            res.json({ response: "suspendido" });
-          }else{
-          req.session.nombre = us.nombre;
-          req.session.apellido = us.apellido;
-          req.session.rol = us.rol;
-          req.session.email = us.email;
-          res.json({ response: "bien" });
-          }
-        } else {
-          res.json({ response: "clave incorrecta" });
-        }
-      });
-    }
-  });
-});
-  //cerrarSesion
-  app.get("/cerrarSesion",(req,res)=>{
-    if(req.session){  
-      req.session.destroy(function () {
-      req.session = null;
-    });
-    }
-      res.redirect("/");
-  })
+
 
 // UPDATE Usuario
 

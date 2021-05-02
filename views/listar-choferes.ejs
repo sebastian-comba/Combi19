@@ -1,0 +1,35 @@
+<%- include("partials/header"); -%>
+<div>
+<h1>Lista de Choferes</h1>
+
+<% if (!data.length) { %>
+    <h2>No hay choferes cargados</h2>
+<% } else { %>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Telefono</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% data.forEach(function(chofer) { %>
+            <tr>
+                <td><%= chofer.nombre%>   </td>
+                <td><%= chofer.apellido %>   </td>
+                <td><%= chofer.email %></td>
+                <td><%= chofer.telefono %></td>
+                <td>
+                    <form action="detalles-chofer/<%= chofer.id %>" method="POST">
+                        <button type="submit">Detalles</button>
+                    </form>
+                </td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+<% } %>
+</div>
+<%- include("partials/footer"); -%>

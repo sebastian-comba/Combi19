@@ -49,19 +49,20 @@ const hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
 // GET request al home/inicio de la pagina
 app.get("/home", (req, res) => {
-  if(req.session.nombre){
-  switch (req.session.rol) {
-    case "Cliente":
-      res.render("home", {});
-      break;
-    case "Chofer":
-      res.render("home-chofer", {});
-      break;
-    case "Admin":
-      res.render("home-admin", {});
-      break;
-  }}else{
-      res.redirect("/");
+  if (req.session.nombre) {
+    switch (req.session.rol) {
+      case "Cliente":
+        res.render("home", {});
+        break;
+      case "Chofer":
+        res.render("home-chofer", {});
+        break;
+      case "Admin":
+        res.render("home-admin", {});
+        break;
+    }
+  } else {
+    res.redirect("/");
   }
 });
 
@@ -278,14 +279,14 @@ app.post("/iniciar", (req, res) => {
         if (err) {
           res.json({ response: "Error al autenticar el usuario " });
         } else if (result) {
-          if(us.borrado|| us.suspendido){
+          if (us.borrado || us.suspendido) {
             res.json({ response: "suspendido" });
-          }else{
-          req.session.nombre = us.nombre;
-          req.session.apellido = us.apellido;
-          req.session.rol = us.rol;
-          req.session.email = us.email;
-          res.json({ response: "bien" });
+          } else {
+            req.session.nombre = us.nombre;
+            req.session.apellido = us.apellido;
+            req.session.rol = us.rol;
+            req.session.email = us.email;
+            res.json({ response: "bien" });
           }
         } else {
           res.json({ response: "clave incorrecta" });
@@ -294,39 +295,50 @@ app.post("/iniciar", (req, res) => {
     }
   });
 });
-  //cerrarSesion
-  app.get("/cerrarSesion",(req,res)=>{
-    if(req.session){  
-      req.session.destroy(function () {
+//cerrarSesion
+app.get("/cerrarSesion", (req, res) => {
+  if (req.session) {
+    req.session.destroy(function () {
       req.session = null;
     });
-    }
-      res.redirect("/");
-  });
+  }
+  res.redirect("/");
+});
 
-  // Listar choferes
-  app.get("/listar-chofer",(req,res)=>{
-     if(req.session.rol!=="Admin"){
-      res.redirect("/");
-     }else{
-       Usuario.find({ borrado: false ,rol:"Chofer"}, (err, result) => {
-         if (err) {
-           console.log(err);
-         } else {
-           res.render("listar-choferes", { data: result });
-         }
-       });
-      res.render("inicio");
-    }
-  });
+// Listar choferes
+app.get("/listar-chofer", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Usuario.find({ borrado: false, rol:"Chofer" }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let dat=[];
+        result.forEach(function(chofer){
+          dat.push({
+            "nombre":chofer.nombre,
+            "apellido":chofer.apellido,
+            "email":chofer.email,
+            "telefono":chofer.telefono,
+            "id":chofer._id,
+          })
+        });
+        res.render("listar-choferes", {
+          data: dat
+        });
+      }
+    });
+  }
+});
 
 // CREATE Usuario
 //ingresar a registro, si ya inicio sesion lo manda a home
 app.get("/", (req, res) => {
-  if(req.session.nombre){
+  if (req.session.nombre) {
     res.redirect("/home");
-  }else{
-  res.render("inicio", {});
+  } else {
+    res.render("inicio", {});
   }
 });
 //guardar usuario
@@ -366,35 +378,35 @@ app.post("/registro", (req, res) => {
 });
 
 
-    //altaChofer
-    app.get("/alta-chofer",(req,res)=>{
-      if(req.session.rol!=="Admin"){
-        res.redirect("/");
-      }else{
-      res.render("alta-chofer",{});
+//altaChofer
+app.get("/alta-chofer", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    res.render("alta-chofer", {});
+  }
+})
+app.post("/alta-chofer", (req, res) => {
+  let us = new Usuario({
+    nombre: req.body.nombre,
+    apellido: req.body.apellido,
+    email: req.body.email,
+    clave: req.body.clave,
+    dni: req.body.dni,
+    fechaN: req.body.fechaN,
+    rol: "Chofer",
+    borrado: false,
+    suspendido: false,
+    telefono: req.body.telefono,
+  });
+  us.save((err) => {
+    if (err) {
+      res.json({ response: "error" });
+    } else {
+      res.json({ response: "bien" });
     }
-    })
-    app.post("/alta-chofer", (req, res) => {
-      let us = new Usuario({
-        nombre: req.body.nombre,
-        apellido: req.body.apellido,
-        email: req.body.email,
-        clave: req.body.clave,
-        dni: req.body.dni,
-        fechaN: req.body.fechaN,
-        rol: "Chofer",
-        borrado: false,
-        suspendido: false,
-        telefono: req.body.telefono,
-      });
-      us.save((err) => {
-        if (err) {
-          res.json({ response: "error" });
-        } else {
-          res.json({ response: "bien" });
-        }
-      });
-    });
+  });
+});
 
 
 // UPDATE Usuario
@@ -474,16 +486,18 @@ app.post("/cargar-rutas", (req, res) => {
 
 // DELETE Ruta
 app.delete("/ruta/:id", (req, res) => {
-  Viaje.find({ ruta:{idRuta:req.params.id},
-    fecha:{$gte:hoy},
-    borrado:false,},(err, viajes) => {
-    if(err){
+  Viaje.find({
+    ruta: { idRuta: req.params.id },
+    fecha: { $gte: hoy },
+    borrado: false,
+  }, (err, viajes) => {
+    if (err) {
       console.log(err);
     } else {
-      if(viajes.length){
+      if (viajes.length) {
         console.log("No se puede eliminar la ruta porque tiene viajes a futuro");
       } else {
-        Ruta.findOneAndUpdate({ _id: req.params.id }, { borrado: true });        
+        Ruta.findOneAndUpdate({ _id: req.params.id }, { borrado: true });
       }
     }
   });
@@ -491,44 +505,46 @@ app.delete("/ruta/:id", (req, res) => {
 
 // UPDATE Ruta
 app.put("/ruta/:id", (req, res) => {
-  Viaje.find({ ruta:{idRuta:req.params.id},
-    fecha:{$gte:hoy},
-    borrado:false,},(err, viajes) => {
-    if(err){
+  Viaje.find({
+    ruta: { idRuta: req.params.id },
+    fecha: { $gte: hoy },
+    borrado: false,
+  }, (err, viajes) => {
+    if (err) {
       console.log(err);
     } else {
-      if(viajes.length){
+      if (viajes.length) {
         console.log("No se puede modificar la ruta porque tiene viajes a futuro");
       } else {
         Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
           Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
             Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
               Ruta.findOneAndUpdate({ _id: req.params.id },
-              {
-               origen: {
-                 nombre: origenR.ciudad,
-                 provincia: origenR.provincia,
-                 idLugar: origenR._id,
-               },
-               destino: {
-                 nombre: destinoR.ciudad,
-                 provincia: destinoR.provincia,
-                 idLugar: destinoR._id,
-               },
-               combi: {
-                 patente: combiR.patente,
-                 marca: combiR.marca,
-                 modelo: combiR.modelo,
-                 idCombi: combiR._id,
-               },
-               distancia: req.body.distancia,
-               hora: req.body.hora,
-               borrado: false,
-              });
+                {
+                  origen: {
+                    nombre: origenR.ciudad,
+                    provincia: origenR.provincia,
+                    idLugar: origenR._id,
+                  },
+                  destino: {
+                    nombre: destinoR.ciudad,
+                    provincia: destinoR.provincia,
+                    idLugar: destinoR._id,
+                  },
+                  combi: {
+                    patente: combiR.patente,
+                    marca: combiR.marca,
+                    modelo: combiR.modelo,
+                    idCombi: combiR._id,
+                  },
+                  distancia: req.body.distancia,
+                  hora: req.body.hora,
+                  borrado: false,
+                });
             });
           });
         });
-      }           
+      }
     }
   });
 });

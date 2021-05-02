@@ -1,3 +1,62 @@
 <%- include("partials/header"); -%>
 
+<div>
+    <h1> Detalles de la combi </h1> 
+    <div id="error"></div>
+    <form action="/modificar-combi/<%= data.patente %>" method="get"> <button type="submit">Modificar</button></form>
+    <button id="eliminar">Eliminar</button>
+    <br>
+    <p><strong>Patente:</strong> <div id="patente"><%= data.patente %></div></p>
+    <br>
+    <p><strong>Marca:</strong> <%= data.marca %></p>
+    <br>
+    <p><strong>Modelo:</strong> <%= data.modelo %></p>
+    <br>
+    <p><strong>Tipo:</strong> <%= data.tipo %></p>
+    <br>
+    <p><strong>Cantidad de asientos:</strong> <%= data.asientos %></p>
+    <br>
+    <hr>
+    <h4>Detalles del chofer</h4>
+    <br>
+    <p><strong>Nombre:</strong> <%= data.chofer.nombre %></p>
+    <br>
+    <p><strong>Apellido:</strong> <%= data.chofer.apellido %></p>
+    <br>
+    <p><strong>Email:</strong> <%= data.chofer.email %></p>
+    <br>
+<br><br>
+    
+</div>
+<script>
+    function eliminar(){
+        let t= document.getElementById("patente").textContent;
+        console.log("/eliminar-combi/"+ t);
+    fetch("/eliminar-combi/"+ t, {
+        method: "DELETE"}).then((res) => res.json())
+        .then((data) => {
+            switch (data.response) {
+                case "hay viajes":
+                    document.getElementById("error").innerHTML =
+                        '<small  style="color:red"><p class="er">No se puede eliminar por que hay viajes futuros </p></small>';
+
+                    break;
+                case "error":
+                    document.getElementById("error").innerHTML =
+                        '<small  style="color:red"><p class="er">Hubo un error al eliminar la combi </p></small>';
+                    break;
+                case "bien":
+                    location.assign("/listar-combi");
+                    break;
+                default:
+                    location.assign("/listar-combi");
+                break;
+            }
+           
+        });
+}
+    document.getElementById("eliminar").onclick=function(){
+        eliminar();
+    }
+</script>
 <%- include("partials/footer"); -%>

@@ -445,7 +445,7 @@ app.get("/listar-combi",(req,res)=>{
     });
   }
 })
-app.get("/detalle-combi/:patente",(req,res)=>{
+app.get("/detalles-combi/:patente",(req,res)=>{
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
@@ -518,6 +518,31 @@ app.post("/alta-combi",(req,res)=>{
   })
 })
 // DELETE Combi
+app.delete("/eliminar-combi/:patente",(req,res)=>{
+  Viaje.find({
+    combi: { patente: req.params.patente },
+    fecha: { $gte: hoy },
+    borrado: false,
+  }, (err, viajes) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (viajes.length) {
+        console.log(1)
+        res.json({ response: "hay viajes" });
+      } else {
+        Combi.updateOne({ patente: req.params.patente }, {borrado: true },(err)=>{
+          if (err) {
+            console.log(2)
+            res.json({response:"error"});
+          } else {
+              res.json({response:"bien"})
+            }
+        });
+      }
+    }
+  });
+})
 //UPDATE Combi
 
 // CRUD Ruta

@@ -7,7 +7,7 @@ const combiSchema = new mongoose.Schema({
   chofer: {
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
-    mail: { type: String, required: true },
+    email: { type: String, required: true },
   },
   asientos: { type: Number, required: true },
   tipo: { type: String, required: true },

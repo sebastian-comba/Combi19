@@ -66,6 +66,8 @@ app.get("/home", (req, res) => {
   }
 });
 
+
+
 // CRUD Lugar
 //
 // READ todos los lugares
@@ -412,6 +414,39 @@ app.post("/alta-chofer", (req, res) => {
 // UPDATE Usuario
 
 // DELETE Usuario
+
+
+// CRUD Combi
+//
+// READ  Combi
+// CREATE Combi
+
+  //alta combi
+app.get("/alta-combi",(req,res)=>{
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Usuario.find({ borrado: false, rol: "Chofer" }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let dat = [];
+        result.forEach(function (chofer) {
+          dat.push({
+            "nombre": chofer.nombre,
+            "apellido": chofer.apellido,
+            "email": chofer.email
+          })
+        });
+        res.render("alta-combi", {
+          data: dat
+        });
+      }
+    });
+  }
+});
+// DELETE Combi
+//UPDATE Combi
 
 // CRUD Ruta
 //

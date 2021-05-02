@@ -1,0 +1,37 @@
+<%- include("partials/header"); -%>
+<div>
+<h1>Lista de Combis</h1>
+
+<% if (!data.length) { %>
+    <h2>No hay choferes cargados</h2>
+<% } else { %>
+    <table>
+        <thead>
+            <tr>
+                <th>Patente</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Tipo</th>
+                <th>Chofer</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% data.forEach(function(combi) { %>
+            <tr>
+                <td><%= combi.patente%>   </td>
+                <td><%= combi.marca %>   </td>
+                <td><%= combi.modelo %></td>
+                <td><%= combi.tipo %></td>
+                <td><%= combi.nombre %> , <%= combi.apellido %></td>
+                <td>
+                    <form action="detalles-combi/<%= combi.patente %>" method="GET">
+                        <button type="submit">Detalles</button>
+                    </form>
+                </td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+<% } %>
+</div>
+<%- include("partials/footer"); -%>

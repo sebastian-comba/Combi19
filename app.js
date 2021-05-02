@@ -419,6 +419,32 @@ app.post("/alta-chofer", (req, res) => {
 // CRUD Combi
 //
 // READ  Combi
+app.get("/listar-combi",(req,res)=>{
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Combi.find({ borrado: false}, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let dat = [];
+        result.forEach(function (combi) {
+          dat.push({
+            "patente": combi.patente,
+            "marca": combi.marca,
+            "modelo": combi.modelo,
+            "tipo": combi.tipo,
+            "nombre":combi.chofer.nombre,
+            "apellido": combi.chofer.apellido,
+          })
+        });
+        res.render("listar-combi", {
+          data: dat
+        });
+      }
+    });
+  }
+})
 // CREATE Combi
 
   //alta combi

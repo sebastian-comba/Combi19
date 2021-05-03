@@ -338,11 +338,24 @@ app.get("/detalle-chofer/:email",(req,res)=>{
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Usuario.findOne({email:req.params.email,rol:"chofer"},(err,result)=>{
-       if (err){
-         res.rendirect("/listar-cofer")
+    Usuario.findOne({email:req.params.email , rol:"Chofer", borrado:false},(err,result)=>{
+       if (!result){
+         res.redirect("/listar-chofer")
        }else{
-         res.rendert("detalle-chofer",{data:result});
+         Combi.find({borrado:false},(err,combi)=>{
+              if(err){
+                console.log(err)
+              }else{
+                let c = []; 
+                combi.forEach(function (combi) {
+                  if(combi.chofer.email===req.params.email){
+                    c.push ({
+                      patente: combi.patente,
+                    });}
+                })
+                res.render("detalle-chofer", { data:{ chofer:result, combi:c }});
+            }
+         })
        }
     })
   }
@@ -595,7 +608,7 @@ app.get("/modificar-combi/:patente", (req, res) => {
   }
 })
 
- app.post("/modificar-combi",(req,res)=>{
+ app.put("/modificar-combi",(req,res)=>{
    Usuario.findOne({email:req.body.chofer,borrado:false},(err,result)=>{
      if(!result){
        res.json({ response: "errorC"})

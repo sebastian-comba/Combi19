@@ -25,7 +25,7 @@ function guardar() {
         tipo = "Super Comoda"
     }
     fetch("/modificar-combi", {
-        method: "POST",
+        method: "put",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             id: document.getElementById("id").value,

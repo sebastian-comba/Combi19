@@ -544,6 +544,9 @@ app.delete("/eliminar-combi/:patente",(req,res)=>{
   });
 })
 //UPDATE Combi
+app.get("/modificar-combi",(req,res)=>{
+  
+})
 
 // CRUD Ruta
 //

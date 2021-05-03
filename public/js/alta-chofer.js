@@ -1,19 +1,5 @@
-//iniciacion
-let hoy = new Date();
-let mes = hoy.getMonth() + 1;
-if (mes / 10 < 1) {
-  mes = "0" + mes;
-}
-let dia = hoy.getDate();
-if (dia / 10 < 1) {
-  dia = "0" + dia;
-}
 
-
-fechaN.max = hoy.getFullYear() + "-" + mes + "-" + dia;
-//metodos
 function limpiar() {
-  document.getElementById("errFN").innerHTML = "";
   document.getElementById("errE").innerHTML = "";
   document.getElementById("errC1").innerHTML = "";
   document.getElementById("errC2").innerHTML = "";
@@ -40,7 +26,7 @@ function registrar() {
         document.getElementById("errE").innerHTML =
           '<small  style="color:red"><p class="er">este Email se registro anteriormente</p></small>';
       } else {
-        location.replace("/home");
+        location.replace("/listar-chofer");
       }
     });
 }
@@ -56,41 +42,6 @@ function validarClave2() {
       '<small  style="color:red"><p class="er">Ambas Contraseñas deben coincidir</p></small>';
   }
 }
-function validarFechaN() {
-  let guion = 0;
-  let año = "";
-  let mes = "";
-  let dia = "";
-  for (let i = 0; i < fechaN.value.length; i++) {
-    const e = fechaN.value[i];
-    if (e === "-") {
-      guion++;
-    } else {
-      switch (guion) {
-        case 0:
-          año = año + "" + e;
-          break;
-        case 1:
-          mes = mes + "" + e;
-          break;
-        case 2:
-          dia = dia + "" + e;
-          break;
-      }
-    }
-  }
-  let na = new Date(año, mes - 1, dia);
-  let edad;
-  if (hoy.getMonth() >= na.getMonth() && hoy.getDate() >= na.getDate()) {
-    edad = hoy.getFullYear() - na.getFullYear();
-  } else {
-    edad = hoy.getFullYear() - na.getFullYear() - 1;
-  }
-  if (edad < 18) {
-    document.getElementById("errFN").innerHTML =
-      '<small  style="color:red"><p class="er">Debes ser mayor de 18 años</p></small>';
-  }
-}
 
 function camposCompletos() {
   if (
@@ -98,7 +49,6 @@ function camposCompletos() {
     !apellido.value ||
     !dni.value ||
     !email.value ||
-    !fechaN.value ||
     !clave.value ||
     !clave1.value || !telefono.value
   ) {
@@ -113,7 +63,6 @@ document.getElementById("enviar").onclick = function () {
   camposCompletos();
   validarClave1();
   validarClave2();
-  validarFechaN();
   let errores = document.getElementsByClassName("er").length;
   if (errores === 0) {
     registrar();

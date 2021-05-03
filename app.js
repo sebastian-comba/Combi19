@@ -333,6 +333,20 @@ app.get("/listar-chofer", (req, res) => {
     });
   }
 });
+//detalle Cofer
+app.get("/detalle-chofer/:email",(req,res)=>{
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Usuario.findOne({email:req.params.email,rol:"chofer"},(err,result)=>{
+       if (err){
+         res.rendirect("/listar-cofer")
+       }else{
+         res.rendert("detalle-chofer",{data:result});
+       }
+    })
+  }
+})
 
 // CREATE Usuario
 //ingresar a registro, si ya inicio sesion lo manda a home
@@ -449,9 +463,9 @@ app.get("/detalles-combi/:patente", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Combi.findOne({ patente: req.params.patente }, (err, result) => {
+    Combi.findOne({ patente: req.params.patente, borrado:false }, (err, result) => {
       if (err) {
-        console.log(err);
+        res.redirect("/listar-combi");
       } else {
         res.render("detalle-combi", { data: result });
       }

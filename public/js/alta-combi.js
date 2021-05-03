@@ -49,7 +49,7 @@ function guardar() {
                         '<small  style="color:red"><p class="er">El chofer seleccionado no existe. Por favor seleccione otro o agrege al chofer <a href="/alta-chofer">aqui</a></p></small>';
                     break;
                 case "bien":
-                    location.reload("/");
+                    location.reload("/listar-combi");
                     break;
             }
         });

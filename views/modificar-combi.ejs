@@ -1,0 +1,57 @@
+<%- include("partials/header"); -%>
+<div>
+    <input type="hidden" id="id" value="<%= data.combi._id %>">
+    <h1>Modificar Combi</h1>
+    <datalist id="choferes">
+        <% data.choferes.forEach(function(chofer) { %>
+           <option value="<%= chofer.email %>"><%= chofer.nombre%> <small>
+                <%= chofer.apellido %> </small></option>
+                 <% }); %>
+    </datalist>
+    <div class="form-group">
+        <label for="">Patente:</label>
+      <input type="text" name="patente" id="patente" class="form-control  alta" value="<%=data.combi.patente%>">
+    </div>
+      <div id="errP" class="err"></div>
+    <div class="form-group">
+      <label for="marca">Marca:</label>
+      <input type="text" name="marca" id="marca" class="form-control  alta" value="<%=data.combi.marca%>">
+    </div>
+    <div class="form-group">
+      <label for="modelo">Modelo:</label>
+      <input type="text" name="modelo" id="modelo" class="form-control  alta" value="<%=data.combi.modelo%>" >
+    </div>
+    <div class="form-group">
+      <label for="chofer">Chofer:</label>
+    <input type="search" name="chofer" id="chofer" list="choferes" class="form-control alta"value="<%=data.combi.chofer.email%>">
+    </div>
+      <div id="errC" class="err"></div>
+    <div class="form-group">
+      <label for="asientos">Cantidad de Asientos</label>
+      <input type="number" name="asientos" id="asientos" min="1" class="form-control  alta" value="<%=data.combi.asientos%>" >
+    </div>
+    <label for="tipo">Tipo de Combi: </label>
+    <br>
+        <label class="form-check-label">
+        <input type="radio" class="form-check-input" name="tipo" id="comoda" value="comoda "  >
+        Comoda
+      </label>
+      
+      <label class="form-check-label">
+        <input type="radio" class="form-check-input" name="tipo" id="super" value="super">
+        Super Comoda
+      </label>
+      <input type="hidden" id="hidden"value="<%= data.combi.tipo%>">
+      <div id="err" class="err"></div>
+      <br>
+      <button id="guardar">Guardar Cambios</button>
+</div>
+<script>
+    if(document.getElementById("hidden").value==="Comoda"){
+        document.getElementById("comoda").checked=true;
+    }else{
+        document.getElementById("super").checked=true;
+    }
+</script>
+<script src="/js/modificar-combi.js"></script>
+<%- include("partials/footer"); -%>

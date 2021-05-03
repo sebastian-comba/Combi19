@@ -1,6 +1,8 @@
 <%- include("partials/header"); -%>
 <h1>Lista de Rutas</h1>
-
+<a href="/cargar-rutas">
+    <button id="cargar-rutas">Cargar Ruta</button>
+</a>
 <% if (!data.length) { %>
     <h2>No hay rutas cargadas</h2>
 <% } else { %>

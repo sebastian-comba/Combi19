@@ -47,6 +47,35 @@ app.use(express.json());
 const now = new Date();
 const hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
+// transformar req.fecha a Date
+function transformarFecha(fecha) {
+  let guion = 0;
+  let año = "";
+  let mes = "";
+  let dia = "";
+  for (let i = 0; i < fecha.length; i++) {
+    const e = fecha[i];
+    if (e === '-') {
+      guion++;
+    } else {
+      switch (guion) {
+        case 0:
+          año = año + "" + e;
+          break;
+        case 1:
+          mes = mes + "" + e;
+          break;
+        case 2:
+          dia = dia + "" + e;
+          break;
+      }
+    }
+
+  }
+  let fechaDate = new Date(año, (mes - 1), dia,1,0,0);
+  return fechaDate;
+}
+
 // GET request al home/inicio de la pagina
 app.get("/home", (req, res) => {
   if (req.session.nombre) {
@@ -830,16 +859,15 @@ app.get("/cargar-viaje", (req, res) => {
     });
 });
 app.post("/cargar-viaje", (req, res) => {
-  Ruta.find(
+  Ruta.findOne(
     {
       _id: req.body.ruta,
-    }).lean().exec(
+    },
     (err, rutaResult) => {
       if (err) {
         console.log(err);
       } else {
-        console.log(rutaResult.distancia);
-        Combi.find(
+        Combi.findOne(
           {
             _id: rutaResult.combi.idCombi,
           },
@@ -847,16 +875,16 @@ app.post("/cargar-viaje", (req, res) => {
             if (err) {
               console.log(err);
             } else {
-              if (req.body.fecha >= hoy) {
+              if (transformarFecha(req.body.fecha) >= hoy) {
                 if (req.body.asientos <= combiResult.asientos) {
                   let v = new Viaje({
                     ruta: {
                       origen: {
-                        nombre: rutaResult.origen.ciudad,
+                        nombre: rutaResult.origen.nombre,
                         provincia: rutaResult.origen.provincia,
                       },
                       destino: {
-                        nombre: rutaResult.destino.ciudad,
+                        nombre: rutaResult.destino.nombre,
                         provincia: rutaResult.destino.provincia,
                       },
                       idRuta: req.body.ruta,
@@ -879,7 +907,7 @@ app.post("/cargar-viaje", (req, res) => {
                   });
                   v.save((err) => {
                     if (err) {
-                      console.log(err);
+                      console.log("err");
                     } else {
                       console.log("Viaje cargado");
                     }
@@ -888,7 +916,7 @@ app.post("/cargar-viaje", (req, res) => {
                 } else {
                   console.log(
                     "La cantidad de asientos debe ser menor o igual a " +
-                      combi.asientos
+                    combiResult.asientos
                   );
                 }
               } else {

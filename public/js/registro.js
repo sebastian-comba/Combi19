@@ -100,7 +100,7 @@ function validarFechaN() {
         }
 
     }
-    let na = new Date(año, (mes - 1), dia)
+    let na = new Date(año, (mes - 1), dia);
     let edad;
     if (
         hoy.getMonth() >= na.getMonth() &&

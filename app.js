@@ -792,11 +792,12 @@ app.post("/cargar-viaje", (req, res) => {
   Ruta.find(
     {
       _id: req.body.ruta,
-    },
+    }).lean().exec(
     (err, rutaResult) => {
       if (err) {
         console.log(err);
       } else {
+        console.log(rutaResult.distancia);
         Combi.find(
           {
             _id: rutaResult.combi.idCombi,
@@ -817,7 +818,7 @@ app.post("/cargar-viaje", (req, res) => {
                         nombre: rutaResult.destino.ciudad,
                         provincia: rutaResult.destino.provincia,
                       },
-                      idRuta: rutaResult._id,
+                      idRuta: req.body.ruta,
                     },
                     combi: {
                       patente: combiResult.patente,

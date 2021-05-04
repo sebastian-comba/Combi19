@@ -1,0 +1,34 @@
+<%- include("partials/header"); -%>
+<h1>Modificar Rutas</h1>
+<a href="/cargar-rutas">
+    <button id="cargar-rutas">Cargar Ruta</button>
+</a>
+<% if (!data.length) { %>
+    <h2>No hay rutas cargadas</h2>
+<% } else { %>
+    <table>
+        <thead>
+            <tr>
+                <th>Origen</th>
+                <th>Destino</th>
+                <th>Combi</th>
+                <th>Distancia</th>
+                <th>Hora</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% data.forEach(function(ruta) { %>
+            <tr>
+                <td><%= ruta.origen.nombre %>, <%= ruta.origen.provincia %></td>
+                <td><%= ruta.destino.nombre %>, <%= ruta.destino.provincia %></td>
+                <td><%= ruta.combi.patente %>, <%= ruta.combi.marca %>, <%= ruta.combi.modelo %></td>
+                <td><%= ruta.distancia %></td>
+                <td><%= ruta.hora %></td>
+                <td><button >Modificar</button></td>
+                <td><button >Eliminar</button></td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+<% } %>
+<%- include("partials/footer"); -%>

@@ -812,7 +812,7 @@ app.get("/cargar-viaje", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      if (result.lenght) {
+      if (result.length) {
         res.render("cargar-viaje", { data: result });
       } else {
         console.log("No se encontraron rutas disponibles");
@@ -830,15 +830,16 @@ app.get("/cargar-viaje", (req, res) => {
     });
 });
 app.post("/cargar-viaje", (req, res) => {
-  Ruta.find({
-    _id: req.body.ruta,
-  })
-    .lean()
-    .exec((err, rutaResult) => {
+  Ruta.find(
+    {
+      _id: req.body.ruta,
+    }).lean().exec(
+    (err, rutaResult) => {
       if (err) {
         console.log(err);
       } else {
-        Combi.findOne(
+        console.log(rutaResult.distancia);
+        Combi.find(
           {
             _id: rutaResult.combi.idCombi,
           },

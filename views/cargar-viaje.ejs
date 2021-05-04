@@ -6,7 +6,7 @@
     <label for="ruta">Elige una ruta:</label>
     <select name="ruta" id="ruta">
       <% data.forEach( (ruta) => { %>
-      <option value="<%= data._id %>">
+      <option value="<%= ruta._id %>">
         <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %>
       </option>
       <% }); %>

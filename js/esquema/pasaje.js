@@ -16,6 +16,6 @@ const pasajeSchema = new mongoose.Schema({
 
 pasajeSchema.index({ emailPasajero: 1, viaje: 1 }, { unique: true });
 
-const Pasaje = mongoose.model("Lugar", pasajeSchema);
+const Pasaje = mongoose.model("Pasaje", pasajeSchema);
 
 module.exports = Pasaje;

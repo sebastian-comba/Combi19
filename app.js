@@ -56,7 +56,7 @@ function transformarFecha(fecha) {
   let dia = "";
   for (let i = 0; i < fecha.length; i++) {
     const e = fecha[i];
-    if (e === '-') {
+    if (e === "-") {
       guion++;
     } else {
       switch (guion) {
@@ -71,9 +71,8 @@ function transformarFecha(fecha) {
           break;
       }
     }
-
   }
-  let fechaDate = new Date(año, (mes - 1), dia,1,0,0);
+  let fechaDate = new Date(año, mes - 1, dia, 1, 0, 0);
   return fechaDate;
 }
 
@@ -850,14 +849,6 @@ app.get("/cargar-viaje", (req, res) => {
       }
     }
   });
-
-  Lugar.find({})
-    .lean()
-    .exec((err, records) => {
-      records.forEach(function (record) {
-        console.log(record._id);
-      });
-    });
 });
 app.post("/cargar-viaje", (req, res) => {
   Ruta.findOne(
@@ -917,7 +908,7 @@ app.post("/cargar-viaje", (req, res) => {
                 } else {
                   console.log(
                     "La cantidad de asientos debe ser menor o igual a " +
-                    combiResult.asientos
+                      combiResult.asientos
                   );
                 }
               } else {

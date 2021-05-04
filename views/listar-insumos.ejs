@@ -1,6 +1,8 @@
 <%- include("partials/header"); -%>
 <h1>Lista de Insumos</h1>
-
+<a href="/alta-insumo">
+    <button id="alta-insumo">Cargar Insumo</button>
+</a>
 <% if (!data.length) { %>
     <h2>No hay insumos cargados</h2>
 <% } else { %>

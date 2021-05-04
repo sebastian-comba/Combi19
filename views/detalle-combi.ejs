@@ -23,7 +23,7 @@
     <br>
     <p><strong>Apellido:</strong> <%= data.chofer.apellido %></p>
     <br>
-    <p><strong>Email:</strong> <%= data.chofer.email %></p>
+    <p><strong>Email:</strong> <a href="/detalle-chofer/<%= data.chofer.email %>"><%= data.chofer.email %></a></p>
     <br>
 <br><br>
     
@@ -31,7 +31,6 @@
 <script>
     function eliminar(){
         let t= document.getElementById("patente").textContent;
-        console.log("/eliminar-combi/"+ t);
     fetch("/eliminar-combi/"+ t, {
         method: "DELETE"}).then((res) => res.json())
         .then((data) => {

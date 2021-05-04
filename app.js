@@ -13,6 +13,7 @@ const Combi = require("./js/esquema/combi");
 const Lugar = require("./js/esquema/lugar");
 const Viaje = require("./js/esquema/viaje");
 const Ruta = require("./js/esquema/ruta");
+const Pasaje = require("./js/esquema/pasaje");
 const { find } = require("./js/esquema/usuarios");
 
 const app = express();
@@ -898,12 +899,27 @@ app.post("/cargar-viaje", (req, res) => {
           }
         );
       }
-    });
+    }
+  );
 });
 
 // UPDATE VIAJE
 
 // DELETE VIAJE
+app.delete((req, res) => {
+  Pasaje.findOne({ viaje: req.body.viaje }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (result.length) {
+        console.log("No se puede borrar el mensaje, tiene pasajes comprados");
+        res.send("No se puede borrar el mensaje, tiene pasajes comprados");
+      } else {
+        Viaje.findOneAndUpdate({ _id: req.body.viaje }, { borrado: true });
+      }
+    }
+  });
+});
 
 // NO TOCAR
 app.listen(3000, function () {

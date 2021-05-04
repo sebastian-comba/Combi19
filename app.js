@@ -830,10 +830,10 @@ app.get("/cargar-viaje", (req, res) => {
     });
 });
 app.post("/cargar-viaje", (req, res) => {
-  Ruta.find(
+  Ruta.findOne(
     {
       _id: req.body.ruta,
-    }).lean().exec(
+    },
     (err, rutaResult) => {
       if (err) {
         console.log(err);

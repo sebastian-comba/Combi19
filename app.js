@@ -779,8 +779,8 @@ app.get("/cargar-viaje", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      if (rutas.lenght) {
-        res.render("cargar-viaje", { data: rutas });
+      if (result.length) {
+        res.render("cargar-viaje", { data: result });
       } else {
         console.log("No se encontraron rutas disponibles");
         res.send("No se encontraron rutas disponibles");

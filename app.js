@@ -922,6 +922,17 @@ app.post("/cargar-viaje", (req, res) => {
   );
 });
 
+// READ VIAJES
+app.get("/viajes", (req, res) => {
+  Viaje.find({borrado: false}, (err, res) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("listar-viajes", {viajes: res})
+    }
+  });
+});
+
 // UPDATE VIAJE
 
 // DELETE VIAJE
@@ -931,14 +942,17 @@ app.delete((req, res) => {
       console.log(err);
     } else {
       if (result.length) {
-        console.log("No se puede borrar el mensaje, tiene pasajes comprados");
-        res.send("No se puede borrar el mensaje, tiene pasajes comprados");
+        console.log("No se puede borrar el viaje, tiene pasajes comprados");
+        res.send("No se puede borrar el viaje, tiene pasajes comprados");
       } else {
         Viaje.findOneAndUpdate({ _id: req.body.viaje }, { borrado: true });
       }
     }
   });
 });
+
+// COMPRA DE PASAJES
+//
 
 // NO TOCAR
 app.listen(3000, function () {

@@ -1,0 +1,47 @@
+<%- include("partials/header"); -%>
+<h1>Lista de Viajes</h1>
+<a href="/cargar-viaje">
+  <button id="cargar-viaje">Cargar Viaje</button>
+</a>
+<% if (!viajes.length) { %>
+<h2>No hay viajes cargados</h2>
+<% } else { %>
+<table>
+  <thead>
+    <tr>
+      <th>Origen</th>
+      <th>Destino</th>
+      <th>Combi</th>
+      <th>Chofer</th>
+      <th>Fecha salida</th>
+      <th>Fecha llegada</th>
+      <th>Precio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% viajes.forEach( (viaje) => { %>
+    <tr>
+      <td>
+        <%= viaje.ruta.origen.nombre %>, <%= viaje.ruta.origen.provincia %>
+      </td>
+      <td>
+        <%= viaje.ruta.destino.nombre %>, <%= viaje.ruta.destino.provincia %>
+      </td>
+      <td>
+        <%= viaje.combi.patente %>, <%= viaje.combi.marca %>, <%=
+        viaje.combi.modelo %>
+      </td>
+      <td>
+        <%= viaje.chofer.nombre %>, <%= viaje.chofer.apellido %>, <%=
+        viaje.chofer.mail %>
+      </td>
+      <td><%= viaje.fecha %></td>
+      <td><%= viaje.llegada %></td>
+      <td><%= viaje.precio %></td>
+      <td><button>Modificar</button></td>
+      <td><button>Eliminar</button></td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table>
+<% } %> <%- include("partials/footer"); -%>

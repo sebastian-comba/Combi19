@@ -422,7 +422,6 @@ app.post("/alta-chofer", (req, res) => {
     email: req.body.email,
     clave: req.body.clave,
     dni: req.body.dni,
-    fechaN: req.body.fechaN,
     rol: "Chofer",
     borrado: false,
     suspendido: false,

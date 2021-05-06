@@ -467,6 +467,7 @@ app.post("/alta-chofer", (req, res) => {
       res.json({ response: "bien" });
     }
   });
+  res.redirect("/");
 });
 
 // UPDATE Usuario
@@ -543,6 +544,7 @@ app.get("/alta-combi", (req, res) => {
       }
     });
   }
+  
 });
 //guardar combi
 app.post("/alta-combi", (req, res) => {
@@ -891,8 +893,7 @@ app.post("/cargar-viaje", (req, res) => {
                       apellido: combiResult.chofer.apellido,
                       mail: combiResult.chofer.email,
                     },
-                    fecha: req.body.fecha,
-                    hora: rutaResult.hora,
+                    fecha: req.body.fecha + "T" + rutaResult.hora,
                     llegada: req.body.llegada,
                     precio: req.body.precio,
                     asientosDisponibles: req.body.asientos,
@@ -926,38 +927,125 @@ app.post("/cargar-viaje", (req, res) => {
 
 // READ VIAJES
 app.get("/viajes", (req, res) => {
-  Viaje.find({borrado: false}, (err, res) => {
+  Viaje.find({ borrado: false }, (err, result) => {
     if (err) {
       console.log(err);
     } else {
-      res.render("listar-viajes", {viajes: res})
+      res.render("listar-viajes", { viajes: result });
     }
   });
 });
 
 // UPDATE VIAJE
-app.get("/modificar-viaje", (req, res) => {
-  
-});
+app.get("/modificar-viaje", (req, res) => {});
 
 app.put("/viaje/:id", (req, res) => {
-  Pasaje.find({idViaje: req.body.idViaje}, (err, res) => {
+  Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {
     if (err) {
       console.log(err);
     } else {
-      if (res.length) {
+      if (resPasaje.length) {
         console.log("No se puede modificar el viaje, tiene pasajes comprados.");
         res.send("No se puede modificar el viaje, tiene pasajes comprados.");
       } else {
-        
+        Combi.findOne({ _id: req.body.combi }, (err, resCombi) => {
+          if (err) {
+            console.log(err);
+          } else {
+            if (req.body.asientos > resCombi.asientos) {
+              console.log(
+                "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
+              );
+              res.send(
+                "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
+              );
+            } else {
+              Viaje.findOne({ _id: req.body.idViaje }, (err, resViaje) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  if (req.body.fecha < res.fecha) {
+                    console.log(
+                      "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
+                    );
+                    res.send(
+                      "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
+                    );
+                  } else {
+                    Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
+                      if (err) {
+                        console.log(err);
+                      } else {
+                        Viaje.find(
+                          { ruta: { idRuta: resRuta._id } },
+                          (err, resultV) => {
+                            if (condition) {
+                              console.log(err);
+                            } else {
+                              let bool = false;
+                              resultV.forEach((viaje) => {
+                                if (
+                                  req.body.fecha + "T" + resRuta.hora >
+                                    resultV.llegada ||
+                                  req.body.llegada < resultV.fecha
+                                ) {
+                                  bool = true;
+                                }
+                              });
+                              if (bool) {
+                                Viaje.findOneAndUpdate(
+                                  { _id: req.body.idViaje },
+                                  {
+                                    ruta: {
+                                      origen: {
+                                        nombre: resRuta.origen.nombre,
+                                        provincia: resRuta.origen.provincia,
+                                      },
+                                      destino: {
+                                        nombre: resRuta.destino.nombre,
+                                        provincia: resRuta.destino.provincia,
+                                      },
+                                      idRuta: resRuta._id,
+                                    },
+                                    combi: {
+                                      patente: resRuta.combi.patente,
+                                      marca: resRuta.combi.marca,
+                                      modelo: resRuta.combi.modelo,
+                                    },
+                                    chofer: {
+                                      nombre: resCombi.chofer.nombre,
+                                      apellido: resCombi.chofer.apellido,
+                                      mail: resCombi.chofer.email,
+                                    },
+                                    fecha: req.body.fecha + "T" + resRuta.hora,
+                                    llegada: req.body.llegada,
+                                    precio: req.body.precio,
+                                    asientosDisponibles: req.body.asientos,
+                                    estado: "En espera",
+                                    borrado: false,
+                                  }
+                                );
+                              }
+                            }
+                          }
+                        );
+                      }
+                    });
+                  }
+                }
+              });
+            }
+          }
+        });
       }
     }
   });
+  res.redirect("/viajes");
 });
 
 // DELETE VIAJE
-app.delete((req, res) => {
-  Pasaje.findOne({ viaje: req.body.viaje }, (err, result) => {
+app.delete("/viaje/:id", (req, res) => {
+  Pasaje.findOne({ idViaje: req.params.id }, (err, result) => {
     if (err) {
       console.log(err);
     } else {
@@ -969,6 +1057,7 @@ app.delete((req, res) => {
       }
     }
   });
+  res.redirect("/");
 });
 
 // COMPRA DE PASAJES

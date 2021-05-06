@@ -38,8 +38,16 @@
       <td><%= viaje.fecha %></td>
       <td><%= viaje.llegada %></td>
       <td><%= viaje.precio %></td>
-      <td><button>Modificar</button></td>
-      <td><button>Eliminar</button></td>
+      <td>
+        <form action="/modificar-viaje/<%= viaje._id %>" method="GET">
+          <button>Modificar</button>
+        </form>
+      </td>
+      <td>
+        <form action="/viaje/<%= viaje._id %>" method="DELETE">
+          <button>Eliminar</button>
+        </form>
+      </td>
     </tr>
     <% }); %>
   </tbody>

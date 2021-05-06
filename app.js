@@ -13,6 +13,7 @@ const Combi = require("./js/esquema/combi");
 const Lugar = require("./js/esquema/lugar");
 const Viaje = require("./js/esquema/viaje");
 const Ruta = require("./js/esquema/ruta");
+const Pasaje = require("./js/esquema/pasaje");
 const { find } = require("./js/esquema/usuarios");
 
 const app = express();
@@ -47,6 +48,34 @@ app.use(express.json());
 const now = new Date();
 const hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
+// transformar req.fecha a Date
+function transformarFecha(fecha) {
+  let guion = 0;
+  let año = "";
+  let mes = "";
+  let dia = "";
+  for (let i = 0; i < fecha.length; i++) {
+    const e = fecha[i];
+    if (e === "-") {
+      guion++;
+    } else {
+      switch (guion) {
+        case 0:
+          año = año + "" + e;
+          break;
+        case 1:
+          mes = mes + "" + e;
+          break;
+        case 2:
+          dia = dia + "" + e;
+          break;
+      }
+    }
+  }
+  let fechaDate = new Date(año, mes - 1, dia, 1, 0, 0);
+  return fechaDate;
+}
+
 // GET request al home/inicio de la pagina
 app.get("/home", (req, res) => {
   if (req.session.nombre) {
@@ -65,8 +94,6 @@ app.get("/home", (req, res) => {
     res.redirect("/");
   }
 });
-
-
 
 // CRUD Lugar
 //
@@ -319,47 +346,53 @@ app.get("/listar-chofer", (req, res) => {
         let dat = [];
         result.forEach(function (chofer) {
           dat.push({
-            "nombre": chofer.nombre,
-            "apellido": chofer.apellido,
-            "email": chofer.email,
-            "telefono": chofer.telefono,
-            "id": chofer._id,
-          })
+            nombre: chofer.nombre,
+            apellido: chofer.apellido,
+            email: chofer.email,
+            telefono: chofer.telefono,
+            id: chofer._id,
+          });
         });
         res.render("listar-choferes", {
-          data: dat
+          data: dat,
         });
       }
     });
   }
 });
 //detalle Cofer
-app.get("/detalle-chofer/:email",(req,res)=>{
+app.get("/detalle-chofer/:email", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Usuario.findOne({email:req.params.email , rol:"Chofer", borrado:false},(err,result)=>{
-       if (!result){
-         res.redirect("/listar-chofer")
-       }else{
-         Combi.find({borrado:false},(err,combi)=>{
-              if(err){
-                console.log(err)
-              }else{
-                let c = []; 
-                combi.forEach(function (combi) {
-                  if(combi.chofer.email===req.params.email){
-                    c.push ({
-                      patente: combi.patente,
-                    });}
-                })
-                res.render("detalle-chofer", { data:{ chofer:result, combi:c }});
+    Usuario.findOne(
+      { email: req.params.email, rol: "Chofer", borrado: false },
+      (err, result) => {
+        if (!result) {
+          res.redirect("/listar-chofer");
+        } else {
+          Combi.find({ borrado: false }, (err, combi) => {
+            if (err) {
+              console.log(err);
+            } else {
+              let c = [];
+              combi.forEach(function (combi) {
+                if (combi.chofer.email === req.params.email) {
+                  c.push({
+                    patente: combi.patente,
+                  });
+                }
+              });
+              res.render("detalle-chofer", {
+                data: { chofer: result, combi: c },
+              });
             }
-         })
-       }
-    })
+          });
+        }
+      }
+    );
   }
-})
+});
 
 // CREATE Usuario
 //ingresar a registro, si ya inicio sesion lo manda a home
@@ -390,10 +423,10 @@ app.post("/registro", (req, res) => {
       codigo: req.body.codigo,
       vencimiento: req.body.vencimiento,
       nombreCompleto: req.body.nombreT,
-      dni: req.body.dniT
+      dni: req.body.dniT,
     },
   });
-  us.save(err => {
+  us.save((err) => {
     if (err) {
       res.json({ response: "error" });
     } else {
@@ -403,9 +436,8 @@ app.post("/registro", (req, res) => {
       req.session.email = us.email;
       res.json({ response: "bien" });
     }
-  })
+  });
 });
-
 
 //altaChofer
 app.get("/alta-chofer", (req, res) => {
@@ -414,7 +446,7 @@ app.get("/alta-chofer", (req, res) => {
   } else {
     res.render("alta-chofer", {});
   }
-})
+});
 app.post("/alta-chofer", (req, res) => {
   let us = new Usuario({
     nombre: req.body.nombre,
@@ -437,11 +469,9 @@ app.post("/alta-chofer", (req, res) => {
   });
 });
 
-
 // UPDATE Usuario
 
 // DELETE Usuario
-
 
 // CRUD Combi
 //
@@ -457,34 +487,37 @@ app.get("/listar-combi", (req, res) => {
         let dat = [];
         result.forEach(function (combi) {
           dat.push({
-            "patente": combi.patente,
-            "marca": combi.marca,
-            "modelo": combi.modelo,
-            "tipo": combi.tipo,
-            "nombre": combi.chofer.nombre,
-            "apellido": combi.chofer.apellido,
-          })
+            patente: combi.patente,
+            marca: combi.marca,
+            modelo: combi.modelo,
+            tipo: combi.tipo,
+            nombre: combi.chofer.nombre,
+            apellido: combi.chofer.apellido,
+          });
         });
         res.render("listar-combi", {
-          data: dat
+          data: dat,
         });
       }
     });
   }
-})
+});
 app.get("/detalles-combi/:patente", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Combi.findOne({ patente: req.params.patente, borrado:false }, (err, result) => {
-      if (err) {
-        res.redirect("/listar-combi");
-      } else {
-        res.render("detalle-combi", { data: result });
+    Combi.findOne(
+      { patente: req.params.patente, borrado: false },
+      (err, result) => {
+        if (err) {
+          res.redirect("/listar-combi");
+        } else {
+          res.render("detalle-combi", { data: result });
+        }
       }
-    })
+    );
   }
-})
+});
 // CREATE Combi
 
 //alta combi
@@ -499,13 +532,13 @@ app.get("/alta-combi", (req, res) => {
         let dat = [];
         result.forEach(function (chofer) {
           dat.push({
-            "nombre": chofer.nombre,
-            "apellido": chofer.apellido,
-            "email": chofer.email
-          })
+            nombre: chofer.nombre,
+            apellido: chofer.apellido,
+            email: chofer.email,
+          });
         });
         res.render("alta-combi", {
-          data: dat
+          data: dat,
         });
       }
     });
@@ -513,14 +546,122 @@ app.get("/alta-combi", (req, res) => {
 });
 //guardar combi
 app.post("/alta-combi", (req, res) => {
-  Usuario.findOne({ email: req.body.chofer, rol: "Chofer", borrado: false }, (err, result) => {
-    if (err) {
-      res.json({ response: "errorC" });
-    } else {
-      if (!result) {
+  Usuario.findOne(
+    { email: req.body.chofer, rol: "Chofer", borrado: false },
+    (err, result) => {
+      if (err) {
         res.json({ response: "errorC" });
       } else {
-        let combi = new Combi({
+        if (!result) {
+          res.json({ response: "errorC" });
+        } else {
+          let combi = new Combi({
+            patente: req.body.patente,
+            marca: req.body.marca,
+            modelo: req.body.modelo,
+            chofer: {
+              nombre: result.nombre,
+              apellido: result.apellido,
+              email: result.email,
+            },
+            asientos: req.body.asientos,
+            tipo: req.body.tipo,
+            borrado: false,
+          });
+          combi.save((err) => {
+            if (err) {
+              res.json({ response: "errorP" });
+            } else {
+              res.json({ response: "bien" });
+            }
+          });
+        }
+      }
+    }
+  );
+});
+// DELETE Combi
+app.delete("/eliminar-combi/:patente", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Viaje.find(
+      {
+        combi: { patente: req.params.patente },
+        fecha: { $gte: hoy },
+        borrado: false,
+      },
+      (err, viajes) => {
+        if (err) {
+          console.log(err);
+        } else {
+          if (viajes.length) {
+            console.log(1);
+            res.json({ response: "hay viajes" });
+          } else {
+            Combi.updateOne(
+              { patente: req.params.patente },
+              { borrado: true },
+              (err) => {
+                if (err) {
+                  console.log(2);
+                  res.json({ response: "error" });
+                } else {
+                  res.json({ response: "bien" });
+                }
+              }
+            );
+          }
+        }
+      }
+    );
+  }
+});
+//UPDATE Combi
+app.get("/modificar-combi/:patente", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Combi.findOne(
+      { patente: req.params.patente, borrado: false },
+      (err, combi) => {
+        if (err) {
+          res.redirect("/listar-combi");
+        } else {
+          Usuario.find({ borrado: false, rol: "Chofer" }, (err, result) => {
+            if (err) {
+              console.log(err);
+            } else {
+              let dat = [];
+              result.forEach(function (chofer) {
+                dat.push({
+                  nombre: chofer.nombre,
+                  apellido: chofer.apellido,
+                  email: chofer.email,
+                });
+              });
+              res.render("modificar-combi", {
+                data: {
+                  combi: combi,
+                  choferes: dat,
+                },
+              });
+            }
+          });
+        }
+      }
+    );
+  }
+});
+
+app.put("/modificar-combi", (req, res) => {
+  Usuario.findOne({ email: req.body.chofer, borrado: false }, (err, result) => {
+    if (!result) {
+      res.json({ response: "errorC" });
+    } else {
+      Combi.updateOne(
+        { _id: req.body.id },
+        {
           patente: req.body.patente,
           marca: req.body.marca,
           modelo: req.body.modelo,
@@ -531,109 +672,18 @@ app.post("/alta-combi", (req, res) => {
           },
           asientos: req.body.asientos,
           tipo: req.body.tipo,
-          borrado: false,
-        })
-        combi.save((err) => {
-          if (err) {
+        },
+        (error, resu) => {
+          if (error) {
             res.json({ response: "errorP" });
           } else {
             res.json({ response: "bien" });
           }
-        });
-      }
-    }
-  })
-})
-// DELETE Combi
-app.delete("/eliminar-combi/:patente", (req, res) => {
-  if (req.session.rol !== "Admin") {
-    res.redirect("/")
-  } else {
-    Viaje.find({
-      combi: { patente: req.params.patente },
-      fecha: { $gte: hoy },
-      borrado: false,
-    }, (err, viajes) => {
-      if (err) {
-        console.log(err);
-      } else {
-        if (viajes.length) {
-          console.log(1)
-          res.json({ response: "hay viajes" });
-        } else {
-          Combi.updateOne({ patente: req.params.patente }, { borrado: true }, (err) => {
-            if (err) {
-              console.log(2)
-              res.json({ response: "error" });
-            } else {
-              res.json({ response: "bien" })
-            }
-          });
         }
-      }
-    });
-  }
-})
-//UPDATE Combi
-app.get("/modificar-combi/:patente", (req, res) => {
-  if (req.session.rol !== "Admin") {
-    res.redirect("/")
-  }else{
-    Combi.findOne({patente: req.params.patente, borrado:false},(err,combi)=>{
-      if(err){
-        res.redirect("/listar-combi")
-      }else{
-        Usuario.find({ borrado: false, rol: "Chofer" }, (err, result) => {
-          if (err) {
-            console.log(err);
-          } else {
-            let dat = [];
-            result.forEach(function (chofer) {
-              dat.push({
-                "nombre": chofer.nombre,
-                "apellido": chofer.apellido,
-                "email": chofer.email
-              })
-            });
-            res.render("modificar-combi", {
-              data:{
-                combi:combi,
-                choferes:dat,
-              } 
-            });
-          }
-        });
-      }
-    })
-  }
-})
-
- app.put("/modificar-combi",(req,res)=>{
-   Usuario.findOne({email:req.body.chofer,borrado:false},(err,result)=>{
-     if(!result){
-       res.json({ response: "errorC"})
-     }else{
-       Combi.updateOne({_id:req.body.id},{
-         patente: req.body.patente,
-         marca: req.body.marca,
-         modelo: req.body.modelo,
-         chofer: {
-           nombre: result.nombre,
-           apellido: result.apellido,
-           email: result.email,
-         },
-         asientos: req.body.asientos,
-         tipo: req.body.tipo,
-       },(error,resu)=>{
-           if (error) {
-             res.json({ response: "errorP" });
-           } else {
-             res.json({ response: "bien" });
-           }
-       })
-     }
-   })
- })
+      );
+    }
+  });
+});
 
 // CRUD Ruta
 //
@@ -708,67 +758,79 @@ app.post("/cargar-rutas", (req, res) => {
 
 // DELETE Ruta
 app.delete("/ruta/:id", (req, res) => {
-  Viaje.find({
-    ruta: { idRuta: req.params.id },
-    fecha: { $gte: hoy },
-    borrado: false,
-  }, (err, viajes) => {
-    if (err) {
-      console.log(err);
-    } else {
-      if (viajes.length) {
-        console.log("No se puede eliminar la ruta porque tiene viajes a futuro");
+  Viaje.find(
+    {
+      ruta: { idRuta: req.params.id },
+      fecha: { $gte: hoy },
+      borrado: false,
+    },
+    (err, viajes) => {
+      if (err) {
+        console.log(err);
       } else {
-        Ruta.findOneAndUpdate({ _id: req.params.id }, { borrado: true });
+        if (viajes.length) {
+          console.log(
+            "No se puede eliminar la ruta porque tiene viajes a futuro"
+          );
+        } else {
+          Ruta.findOneAndUpdate({ _id: req.params.id }, { borrado: true });
+        }
       }
     }
-  });
+  );
 });
 
 // UPDATE Ruta
 app.put("/ruta/:id", (req, res) => {
-  Viaje.find({
-    ruta: { idRuta: req.params.id },
-    fecha: { $gte: hoy },
-    borrado: false,
-  }, (err, viajes) => {
-    if (err) {
-      console.log(err);
-    } else {
-      if (viajes.length) {
-        console.log("No se puede modificar la ruta porque tiene viajes a futuro");
+  Viaje.find(
+    {
+      ruta: { idRuta: req.params.id },
+      fecha: { $gte: hoy },
+      borrado: false,
+    },
+    (err, viajes) => {
+      if (err) {
+        console.log(err);
       } else {
-        Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
-          Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
-            Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
-              Ruta.findOneAndUpdate({ _id: req.params.id },
-                {
-                  origen: {
-                    nombre: origenR.ciudad,
-                    provincia: origenR.provincia,
-                    idLugar: origenR._id,
-                  },
-                  destino: {
-                    nombre: destinoR.ciudad,
-                    provincia: destinoR.provincia,
-                    idLugar: destinoR._id,
-                  },
-                  combi: {
-                    patente: combiR.patente,
-                    marca: combiR.marca,
-                    modelo: combiR.modelo,
-                    idCombi: combiR._id,
-                  },
-                  distancia: req.body.distancia,
-                  hora: req.body.hora,
-                  borrado: false,
-                });
+        if (viajes.length) {
+          console.log(
+            "No se puede modificar la ruta porque tiene viajes a futuro"
+          );
+        } else {
+          Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
+            Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
+              Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
+                Ruta.findOneAndUpdate(
+                  { _id: req.params.id },
+                  {
+                    origen: {
+                      nombre: origenR.ciudad,
+                      provincia: origenR.provincia,
+                      idLugar: origenR._id,
+                    },
+                    destino: {
+                      nombre: destinoR.ciudad,
+                      provincia: destinoR.provincia,
+                      idLugar: destinoR._id,
+                    },
+                    combi: {
+                      patente: combiR.patente,
+                      marca: combiR.marca,
+                      modelo: combiR.modelo,
+                      idCombi: combiR._id,
+                    },
+                    distancia: req.body.distancia,
+                    hora: req.body.hora,
+                    borrado: false,
+                  }
+                );
+              });
             });
           });
-        });
+        }
       }
     }
-  });
+  );
 });
 
 // CRUD Viaje
@@ -805,16 +867,16 @@ app.post("/cargar-viaje", (req, res) => {
             if (err) {
               console.log(err);
             } else {
-              if (req.body.fecha >= hoy) {
+              if (transformarFecha(req.body.fecha) >= hoy) {
                 if (req.body.asientos <= combiResult.asientos) {
                   let v = new Viaje({
                     ruta: {
                       origen: {
-                        nombre: rutaResult.origen.ciudad,
+                        nombre: rutaResult.origen.nombre,
                         provincia: rutaResult.origen.provincia,
                       },
                       destino: {
-                        nombre: rutaResult.destino.ciudad,
+                        nombre: rutaResult.destino.nombre,
                         provincia: rutaResult.destino.provincia,
                       },
                       idRuta: req.body.ruta,
@@ -837,7 +899,7 @@ app.post("/cargar-viaje", (req, res) => {
                   });
                   v.save((err) => {
                     if (err) {
-                      console.log(err);
+                      console.log("err");
                     } else {
                       console.log("Viaje cargado");
                     }
@@ -846,7 +908,7 @@ app.post("/cargar-viaje", (req, res) => {
                 } else {
                   console.log(
                     "La cantidad de asientos debe ser menor o igual a " +
-                    combi.asientos
+                      combiResult.asientos
                   );
                 }
               } else {
@@ -860,13 +922,39 @@ app.post("/cargar-viaje", (req, res) => {
   );
 });
 
+// READ VIAJES
+app.get("/viajes", (req, res) => {
+  Viaje.find({borrado: false}, (err, res) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("listar-viajes", {viajes: res})
+    }
+  });
+});
+
 // UPDATE VIAJE
 
 // DELETE VIAJE
+app.delete((req, res) => {
+  Pasaje.findOne({ viaje: req.body.viaje }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (result.length) {
+        console.log("No se puede borrar el viaje, tiene pasajes comprados");
+        res.send("No se puede borrar el viaje, tiene pasajes comprados");
+      } else {
+        Viaje.findOneAndUpdate({ _id: req.body.viaje }, { borrado: true });
+      }
+    }
+  });
+});
+
+// COMPRA DE PASAJES
+//
 
 // NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);
 });
-
-

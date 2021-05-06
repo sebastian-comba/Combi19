@@ -789,7 +789,7 @@ app.get("/cargar-viaje", (req, res) => {
   });
 });
 app.post("/cargar-viaje", (req, res) => {
-  Ruta.find(
+  Ruta.findOne(
     {
       _id: req.body.ruta,
     },
@@ -797,8 +797,7 @@ app.post("/cargar-viaje", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        console.log(rutaResult.distancia);
-        Combi.find(
+        Combi.findOne(
           {
             _id: rutaResult.combi.idCombi,
           },

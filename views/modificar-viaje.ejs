@@ -1,0 +1,39 @@
+<%- include("partials/header"); -%>
+
+<div>
+  <form action="/modificar-viaje/:id" method="PUT">
+    <label for="ruta">Elige una ruta:</label>
+    <select name="ruta" id="ruta">
+      <% rutas.forEach( (ruta) => { %>
+      <option value="<%= ruta._id %>">
+        <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %>
+      </option>
+      <% }); %>
+    </select>
+
+    <label for="fecha">Fecha:</label>
+    <input type="date" id="fecha" name="fecha" />
+
+    <label for="llegada">Fecha de llegada:</label>
+
+    <input
+      type="datetime-local"
+      id="llegada"
+      name="llegada"
+      value=""
+      min=""
+      max=""
+    />
+
+    <label for="ruta">Precio:</label>
+    <input type="text" id="precio" name="precio" />
+
+    <label for="asientos">Cantidad de asientos:</label>
+    <input type="text" id="asientos" name="asientos" />
+    <br />
+    <button type="submit" name="button">Actualizar</button>
+    <button type="cancel" name="button">Cancelar</button>
+  </form>
+</div>
+
+<%- include("partials/footer"); -%>

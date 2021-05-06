@@ -40,12 +40,12 @@
       <td><%= viaje.precio %></td>
       <td>
         <form action="/modificar-viaje/<%= viaje._id %>" method="GET">
-          <button>Modificar</button>
+          <button type="submit">Modificar</button>
         </form>
       </td>
       <td>
         <form action="/viaje/<%= viaje._id %>" method="DELETE">
-          <button>Eliminar</button>
+          <button type="submit">Eliminar</button>
         </form>
       </td>
     </tr>

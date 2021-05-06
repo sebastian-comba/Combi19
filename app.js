@@ -73,7 +73,7 @@ const transformarFecha = (fecha) => {
   }
   let fechaDate = new Date(año, mes - 1, dia, 1, 0, 0);
   return fechaDate;
-}
+};
 
 // GET request al home/inicio de la pagina
 app.get("/home", (req, res) => {
@@ -544,7 +544,6 @@ app.get("/alta-combi", (req, res) => {
       }
     });
   }
-  
 });
 //guardar combi
 app.post("/alta-combi", (req, res) => {
@@ -937,7 +936,27 @@ app.get("/viajes", (req, res) => {
 });
 
 // UPDATE VIAJE
-app.get("/modificar-viaje", (req, res) => {});
+app.get("/modificar-viaje/:id", (req, res) => {
+  Ruta.find({borrado: false}, (err, rutaResult) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (rutaREsult.length) {
+        Viaje.findOne({ _id: req.params.id }, (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            res.render("modificar-viaje", { viaje: result, rutas: rutaResult });
+          }
+        });
+      } else {
+        console.log("No hay rutas disponibles");
+        res.send("No hay rutas disponibles");
+      }
+    }
+  });
+  
+});
 
 app.put("/viaje/:id", (req, res) => {
   Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {

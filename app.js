@@ -792,7 +792,7 @@ app.post("/cargar-viaje", (req, res) => {
   Ruta.find(
     {
       _id: req.body.ruta,
-    }).lean().exec(
+    },
     (err, rutaResult) => {
       if (err) {
         console.log(err);

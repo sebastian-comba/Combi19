@@ -892,6 +892,8 @@ app.post("/cargar-viaje", (req, res) => {
                       mail: combiResult.chofer.email,
                     },
                     fecha: req.body.fecha,
+                    hora: rutaResult.hora,
+                    llegada: req.body.llegada,
                     precio: req.body.precio,
                     asientosDisponibles: req.body.asientos,
                     estado: "En espera",
@@ -934,6 +936,24 @@ app.get("/viajes", (req, res) => {
 });
 
 // UPDATE VIAJE
+app.get("/modificar-viaje", (req, res) => {
+  
+});
+
+app.put("/viaje/:id", (req, res) => {
+  Pasaje.find({idViaje: req.body.idViaje}, (err, res) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (res.length) {
+        console.log("No se puede modificar el viaje, tiene pasajes comprados.");
+        res.send("No se puede modificar el viaje, tiene pasajes comprados.");
+      } else {
+        
+      }
+    }
+  });
+});
 
 // DELETE VIAJE
 app.delete((req, res) => {

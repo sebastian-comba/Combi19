@@ -14,7 +14,6 @@ const Lugar = require("./js/esquema/lugar");
 const Viaje = require("./js/esquema/viaje");
 const Ruta = require("./js/esquema/ruta");
 const Pasaje = require("./js/esquema/pasaje");
-const { find } = require("./js/esquema/usuarios");
 
 const app = express();
 
@@ -49,7 +48,7 @@ const now = new Date();
 const hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
 // transformar req.fecha a Date
-function transformarFecha(fecha) {
+const transformarFecha = (fecha) => {
   let guion = 0;
   let año = "";
   let mes = "";
@@ -295,7 +294,6 @@ app.put("/insumo/:id", (req, res) => {
 
 // CRUD Usuario
 //
-// READ Usuarios no borrados
 //inicio de sesion
 app.post("/iniciar", (req, res) => {
   Usuario.findOne({ email: req.body.email }, (err, us) => {
@@ -324,6 +322,7 @@ app.post("/iniciar", (req, res) => {
     }
   });
 });
+
 //cerrarSesion
 app.get("/cerrarSesion", (req, res) => {
   if (req.session) {
@@ -334,6 +333,7 @@ app.get("/cerrarSesion", (req, res) => {
   res.redirect("/");
 });
 
+// READ Usuarios no borrados
 // Listar choferes
 app.get("/listar-chofer", (req, res) => {
   if (req.session.rol !== "Admin") {

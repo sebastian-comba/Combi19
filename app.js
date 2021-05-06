@@ -256,9 +256,17 @@ app.get("/rutas", (req, res) => {
 });
 
 // DELETE Insumo
-// faltaria verificar que el insumo no está en compras a futuro, cuando hagamos el esquema de la compra/pasaje
 app.delete("/insumo/:id", (req, res) => {
-  Insumo.findOneAndUpdate({ _id: req.params.id }, { borrado: true });
+  //busca en los pasajes a futuro si hay uno con el mismo nombre
+  Insumo.find({_id: req.params.id}, (err, resultInsumo) => {
+    Pasaje.find({fecha: { $gte: hoy }, insumos:{$elemMatch:resultInsumo.nombre}}, (err, resultPasaje) => {
+      if(!resultPasaje.length){
+        Insumo.findOneAndUpdate({ _id: req.params.id }, { borrado: true });
+      } else {
+        console.log("No se puede eliminar el insumo porque ha sido comprado en viajes a futuro");
+      }
+    });
+  });
 });
 
 // UPDATE Insumo

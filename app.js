@@ -14,7 +14,6 @@ const Lugar = require("./js/esquema/lugar");
 const Viaje = require("./js/esquema/viaje");
 const Ruta = require("./js/esquema/ruta");
 const Pasaje = require("./js/esquema/pasaje");
-const Tarjeta = require("./js/esquema/tarjeta");
 
 const app = express();
 
@@ -1143,16 +1142,21 @@ app.get("/modificar-viaje/:id", (req, res) => {
   
 });
 
-app.post("/viaje/:id", (req, res) => {
+app.post("/viaje", (req, res) => {
   Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {
     if (err) {
       console.log(err);
     } else {
-      if (resPasaje.length) {
+      if (resPasaje) {
         console.log("No se puede modificar el viaje, tiene pasajes comprados.");
         res.send("No se puede modificar el viaje, tiene pasajes comprados.");
       } else {
-        Combi.findOne({ _id: req.body.combi }, (err, resCombi) => {
+        console.log(req.body.patente );
+        Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
+          if (err) {
+            console.log(err);
+          } else {
+        Combi.findOne({ patente: resRuta.combi.patente}, (err, resCombi) => {
           if (err) {
             console.log(err);
           } else {
@@ -1168,7 +1172,7 @@ app.post("/viaje/:id", (req, res) => {
                 if (err) {
                   console.log(err);
                 } else {
-                  if (req.body.fecha < res.fecha) {
+                  if (req.body.fecha < resViaje.fecha) {
                     console.log(
                       "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
                     );
@@ -1176,14 +1180,10 @@ app.post("/viaje/:id", (req, res) => {
                       "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
                     );
                   } else {
-                    Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
-                      if (err) {
-                        console.log(err);
-                      } else {
                         Viaje.find(
                           { ruta: { idRuta: resRuta._id } },
                           (err, resultV) => {
-                            if (condition) {
+                            if (err) {
                               console.log(err);
                             } else {
                               let bool = false;
@@ -1234,18 +1234,20 @@ app.post("/viaje/:id", (req, res) => {
                           }
                         );
                       }
-                    });
-                  }
-                }
-              });
-            }
+                    };
+                  });
+              };
+            };
+            })
           }
         });
+        };
       }
-    }
-  });
+     })
+
   res.redirect("/viajes");
-});
+  });
+
 
 // DELETE VIAJE
 app.delete("/viaje/:id", (req, res) => {

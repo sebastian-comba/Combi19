@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   clave: { type: String, required: true },
   dni: { type: String, required: true },
-  fechaN: { type: Date, required: true },
+  fechaN: { type: Date},
   rol: { type: String, required: true },
   borrado: { type: Boolean, required: true },
   suspendido: { type: Boolean, required: true },

@@ -16,7 +16,6 @@ function registrar() {
       email: email.value,
       clave: clave.value,
       dni: dni.value,
-      fechaN: fechaN.value,
       telefono: telefono.value,
     }),
   })

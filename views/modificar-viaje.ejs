@@ -1,6 +1,7 @@
 <%- include("partials/header"); -%>
 
 <div>
+  <!-- falta checkear los valores que ya estar cargados en la ruta a modificar -->
   <form action="/modificar-viaje/:id" method="PUT">
     <label for="ruta">Elige una ruta:</label>
     <select name="ruta" id="ruta">
@@ -12,7 +13,7 @@
     </select>
 
     <label for="fecha">Fecha:</label>
-    <input type="date" id="fecha" name="fecha" />
+    <input type="date" id="fecha" name="fecha" value="<%= viaje.fecha %>" />
 
     <label for="llegada">Fecha de llegada:</label>
 
@@ -20,19 +21,28 @@
       type="datetime-local"
       id="llegada"
       name="llegada"
-      value=""
+      value="<%= viaje.llegada %>"
       min=""
       max=""
     />
 
-    <label for="ruta">Precio:</label>
-    <input type="text" id="precio" name="precio" />
+    <label for="precio">Precio:</label>
+    <input type="text" id="precio" name="precio" value="<%= viaje.precio %>" />
 
     <label for="asientos">Cantidad de asientos:</label>
-    <input type="text" id="asientos" name="asientos" />
+    <input
+      type="text"
+      id="asientos"
+      name="asientos"
+      value="<%= viaje.asientos %>"
+    />
     <br />
-    <button type="submit" name="button">Actualizar</button>
-    <button type="cancel" name="button">Cancelar</button>
+
+    <form action="/viaje/<&= viaje._id $>" method="POST">
+      <button type="submit" name="button">Guardar cambios</button>
+    </form>
+
+    <a href="http://localhost:3000/home">Cancelar</a>
   </form>
 </div>
 

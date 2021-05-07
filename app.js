@@ -937,11 +937,12 @@ app.get("/viajes", (req, res) => {
 
 // UPDATE VIAJE
 app.get("/modificar-viaje/:id", (req, res) => {
+  console.log("entre");
   Ruta.find({borrado: false}, (err, rutaResult) => {
     if (err) {
       console.log(err);
     } else {
-      if (rutaREsult.length) {
+      if (rutaResult.length) {
         Viaje.findOne({ _id: req.params.id }, (err, result) => {
           if (err) {
             console.log(err);
@@ -958,7 +959,7 @@ app.get("/modificar-viaje/:id", (req, res) => {
   
 });
 
-app.put("/viaje/:id", (req, res) => {
+app.post("/viaje/:id", (req, res) => {
   Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {
     if (err) {
       console.log(err);
@@ -1012,7 +1013,7 @@ app.put("/viaje/:id", (req, res) => {
                                 }
                               });
                               if (bool) {
-                                Viaje.findOneAndUpdate(
+                                Viaje.updateOne(
                                   { _id: req.body.idViaje },
                                   {
                                     ruta: {

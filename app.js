@@ -76,6 +76,10 @@ function transformarFecha(fecha) {
   return fechaDate;
 }
 
+// Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`
+// by default, you need to set it to false.
+mongoose.set('useFindAndModify', false);
+
 // GET request al home/inicio de la pagina
 app.get("/home", (req, res) => {
   if (req.session.nombre) {
@@ -249,12 +253,6 @@ app.post("/alta-insumo", (req, res) => {
   });
 });
 
-app.get("/rutas", (req, res) => {
-  Ruta.find({}, (err, result) => {
-    res.json(result);
-  });
-});
-
 // DELETE Insumo
 app.delete("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre
@@ -271,15 +269,27 @@ app.delete("/insumo/:id", (req, res) => {
 
 // UPDATE Insumo
 // falta testear
-app.put("/insumo/:id", (req, res) => {
-  Insumo.find({ nombre: req.body.name }, (err, found) => {
+app.get("/modificar-insumo/:id", (req,res) => {
+  //findOne poner en una variable y enviar eso en el data de render
+  Insumo.findOne({ _id: req.params.id, borrado:false},(err,resultInsumo) => {
     if (err) {
       console.log(err);
     } else {
-      if (!found.length) {
+      res.render("modificar-insumo",{data:resultInsumo});
+    }
+  });
+  
+});
+app.post("/modificar-insumo", (req, res) => {
+  //busca insumos con el mismo nombre, pero diferente id
+  Insumo.findOne({ nombre: req.body.nombre, _id:{$ne:req.body.id}, borrado:false}, (err, found) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (!found) {
         //modifica el insumo porque no hay otro con el nuevo nombre
         Insumo.findOneAndUpdate(
-          { _id: req.params.id },
+          { _id: req.body.id },
           {
             nombre: req.body.nombre,
             tipo: req.body.tipo,
@@ -289,6 +299,9 @@ app.put("/insumo/:id", (req, res) => {
           (err) => {
             if (err) {
               console.log(err);
+            } else {
+              console.log("se modifico el insumo");
+              res.redirect("/listar-insumos");
             }
           }
         );

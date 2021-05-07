@@ -487,7 +487,6 @@ app.post("/alta-chofer", (req, res) => {
       res.json({ response: "bien" });
     }
   });
-  res.redirect("/listar-chofer");
 });
 
 // UPDATE Usuario

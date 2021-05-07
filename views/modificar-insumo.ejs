@@ -5,7 +5,10 @@
     <label for="nombre" required>Nombre:</label><br>
     <input type="text" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre" name="nombre"/><br>
     <label for="tipo" required>Tipo:</label><br>
-    <input type="text" placeholder="<%= data.tipo %>" value="<%= data.tipo %>" id="tipo" name="tipo" /><br>
+    <select name="tipo" id="tipo" name="tipo" >
+        <option value="dulce">Dulce</option>
+        <option value="salado">Salado</option>  
+    </select><br>
     <label for="precio" required>Precio:</label><br>
     <input type="text" placeholder="<%= data.precio %>" value="<%= data.precio %>" id="precio" name="precio"/><br>
     <input type="hidden" value="<%= data._id %>" id="id" name="id"/>

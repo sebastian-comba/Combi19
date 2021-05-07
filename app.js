@@ -459,13 +459,14 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
             console.log(1);
             res.json({ response: "hay viajes" });
           } else {
-            Combi.updateOne(
+            Usuario.updateOne(
               { email: req.params.email },
               { borrado: true },
               (err) => {
                 if (err) {
                   res.json({ response: "error" });
                 } else {
+                  console.log(req.params.email);
                   res.json({ response: "bien" });
                 }
               }

@@ -494,6 +494,42 @@ app.post("/alta-chofer", (req, res) => {
 
 // DELETE Usuario
 
+app.delete("/eliminar-chofer/:email", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Viaje.find(
+      {
+        chofer: { email: req.params.email },
+        fecha: { $gte: hoy },
+        borrado: false,
+      },
+      (err, viajes) => {
+        if (err) {
+          console.log(err);
+        } else {
+          if (viajes.length) {
+            console.log(1);
+            res.json({ response: "hay viajes" });
+          } else {
+            Usuario.updateOne(
+              { email: req.params.email },
+              { borrado: true },
+              (err) => {
+                if (err) {
+                  res.json({ response: "error" });
+                } else {
+                  res.json({ response: "bien" });
+                }
+              }
+            );
+          }
+        }
+      }
+    );
+  }
+
+})
 // CRUD Combi
 //
 // READ  Combi

@@ -487,7 +487,7 @@ app.post("/alta-chofer", (req, res) => {
       res.json({ response: "bien" });
     }
   });
-  res.redirect("/");
+  res.redirect("/listar-chofer");
 });
 
 // UPDATE Usuario
@@ -507,6 +507,34 @@ app.get("/modificar-chofer/:email",(req,res)=>{
       }
     })
   }
+})
+app.put("/modificar-chofer",(req,res)=>{
+  Usuario.deleteOne({email:req.body.email},(err)=>{
+    if(err){
+      console.log(err);
+      res.json({response: "error en eliminar"})
+    }else{
+      let us = new Usuario({
+        nombre: req.body.nombre,
+        apellido: req.body.apellido,
+        email: req.body.email,
+        clave: req.body.clave,
+        dni: req.body.dni,
+        rol: "Chofer",
+        borrado: false,
+        suspendido: false,
+        telefono: req.body.telefono,
+      });
+      us.save((err) => {
+        if (err) {
+          res.json({ response: "error" });
+        } else {
+          res.json({ response: "bien" });
+        }
+      });
+    }
+  })
+
 })
 
 // DELETE Usuario

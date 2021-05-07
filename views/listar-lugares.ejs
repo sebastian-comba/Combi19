@@ -1,7 +1,8 @@
 <%- include("partials/header"); -%>
-<h2>Lugar</h2>
-
 <h1>Lista de Lugares</h1>
+<a href="/cargar-lugar">
+  <button id="cargar-lugar">Cargar Lugar</button>
+</a>
 
 <table>
   <thead>
@@ -15,6 +16,16 @@
     <tr>
       <td><%= lugar.ciudad %></td>
       <td><%= lugar.provincia %></td>
+      <td>
+        <form action="modificar-lugar/<%= lugar._id %>" method="GET">
+            <button type="submit">Modificar</button>
+        </form>
+      </td>
+      <td>
+          <form action="/lugar/<%= lugar._id %>" method="GET">
+              <button type="submit">Eliminar</button>
+          </form>
+      </td>
     </tr>
     <% }); %>
   </tbody>

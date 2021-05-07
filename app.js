@@ -137,7 +137,7 @@ app.post("/cargar-lugar", (req, res) => {
     } else {
       console.log("lugar guardado");
     }
-    res.redirect("/home");
+    res.redirect("/listar-lugares");
   });
 });
 
@@ -169,34 +169,55 @@ app.delete("/lugar/:id", (req, res) => {
 });
 
 //UPDATE lugar
-app.put("/lugar/:id", (req, res) => {
-  Viaje.find(
-    {
-      ruta: { origen: { idLugar: req.params.id } },
-      fecha: { $gte: hoy },
-    },
-    (err, result) => {
-      if (result.length) {
-        console.log("No se puede modificar, tiene viaje futuro");
-      } else {
-        Lugar.updateOne(
-          {
-            _id: req.params.id,
-          },
-          {
-            ciudad: req.body.ciudad,
-            provincia: req.body.ciudad,
-            borrado: false,
-          },
-          (err) => {
-            if (err) {
-              console.log(err);
-            }
-          }
-        );
-      }
+app.get("/modificar-lugar/:id" , (req, res) => {
+  Lugar.findOne({ _id: req.params.id, borrado:false},(err,resultLugar) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("modificar-lugar",{data:resultLugar});
     }
-  );
+  });
+});
+app.post("/modificar-lugar", (req, res) => {
+  //hay que verificar si el lugar está como destino de una ruta
+  Lugar.findOne({_id:req.body.id},(err,resLugar) => {
+    if(err){
+      console.log(err);
+    } else {
+      Viaje.findOne(
+        {
+          $or: [{"ruta.origen.nombre": resLugar.ciudad,
+          "ruta.origen.provincia": resLugar.provincia},
+          {"ruta.destino.nombre": resLugar.ciudad,
+          "ruta.destino.provincia": resLugar.provincia}
+        ],
+          fecha: { $gte: hoy }
+        },
+        (err, result) => {
+          if (result) {
+            console.log("No se puede modificar, tiene viaje futuro");
+          } else {
+            Lugar.updateOne(
+              {
+                _id: req.body.id,
+              },
+              {
+                ciudad: req.body.ciudad,
+                provincia: req.body.provincia,
+                borrado: false,
+              },
+              (err) => {
+                if (err) {
+                  console.log(err);
+                }
+              }
+            );
+            res.redirect("/listar-lugares");
+          }
+        }
+      );
+    }
+  });
 });
 
 //CRUD Insumo

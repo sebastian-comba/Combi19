@@ -278,7 +278,6 @@ app.get("/modificar-insumo/:id", (req,res) => {
       res.render("modificar-insumo",{data:resultInsumo});
     }
   });
-  
 });
 app.post("/modificar-insumo", (req, res) => {
   //busca insumos con el mismo nombre, pero diferente id
@@ -804,10 +803,34 @@ app.delete("/ruta/:id", (req, res) => {
 });
 
 // UPDATE Ruta
-app.put("/ruta/:id", (req, res) => {
-  Viaje.find(
+app.get("/modificar-ruta/:id", (req,res) => {
+  Ruta.findOne({ _id: req.params.id, borrado:false},(err,resultRuta) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.locals.ruta = resultRuta;
+      Lugar.find({ borrado: false }, (err, lugares) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.locals.lugares = lugares;
+          Combi.find({ borrado: false }, (err, combis) => {
+            if (err) {
+              console.log(err);
+            } else {
+              res.locals.combis = combis;
+              res.render("modificar-ruta",{});
+            }
+          });
+        }
+      });
+    }
+  });
+});
+app.post("/modificar-ruta", (req, res) => {
+  Viaje.findOne(
     {
-      ruta: { idRuta: req.params.id },
+      ruta: { idRuta: req.body.id },
       fecha: { $gte: hoy },
       borrado: false,
     },
@@ -815,7 +838,7 @@ app.put("/ruta/:id", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        if (viajes.length) {
+        if (viajes) {
           console.log(
             "No se puede modificar la ruta porque tiene viajes a futuro"
           );
@@ -823,8 +846,8 @@ app.put("/ruta/:id", (req, res) => {
           Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
             Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
               Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
-                Ruta.findOneAndUpdate(
-                  { _id: req.params.id },
+                Ruta.updateOne(
+                  { _id: req.body.id },
                   {
                     origen: {
                       nombre: origenR.ciudad,
@@ -845,6 +868,13 @@ app.put("/ruta/:id", (req, res) => {
                     distancia: req.body.distancia,
                     hora: req.body.hora,
                     borrado: false,
+                  },(err,updRuta)=>{
+                    if (err){
+                      console.log(err);
+                    } else {
+                      console.log("se modifico la ruta");
+                      res.redirect("/listar-rutas");
+                    }
                   }
                 );
               });

@@ -24,8 +24,16 @@
                 <td><%= ruta.combi.patente %>, <%= ruta.combi.marca %>, <%= ruta.combi.modelo %></td>
                 <td><%= ruta.distancia %></td>
                 <td><%= ruta.hora %></td>
-                <td><button >Modificar</button></td>
-                <td><button >Eliminar</button></td>
+                <td>
+                    <form action="modificar-ruta/<%= ruta._id %>" method="GET">
+                        <button type="submit">Modificar</button>
+                    </form>
+                </td>
+                <td>
+                    <form action="/ruta/<%= ruta._id %>" method="GET">
+                        <button type="submit">Eliminar</button>
+                    </form>
+                </td>
             </tr>
         <% }); %>
         </tbody>

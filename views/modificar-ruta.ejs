@@ -1,5 +1,39 @@
 <%- include("partials/header"); -%>
-<h1>Modificar Rutas</h1>
+<h1>Modificar Ruta </h1>
 
-<% } %>
+<form action = "/modificar-ruta" method="POST">
+    <label for="origen">Origen:</label><br>
+    <select placeholder="<%= ruta.origen.nombre %>" value="<%= ruta.origen.nombre %>" name="origen" id="origen">
+        <% lugares.forEach( (lugar) => { %>
+        <option value="<%= lugar._id %>">
+          <%= lugar.ciudad %>-<%= lugar.provincia %>
+        </option>
+        <% }); %>
+    </select><br>
+    <label for="destino">Destino:</label><br>
+    <select placeholder="<%= ruta.destino.nombre %>" value="<%= ruta.destino.nombre %>" name="destino" id="destino">
+        <% lugares.forEach( (lugar) => { %>
+        <option value="<%= lugar._id %>">
+          <%= lugar.ciudad %>-<%= lugar.provincia %>
+        </option>
+        <% }); %>
+    </select><br>
+    <label for="combi">Combi:</label><br>
+    <select placeholder="<%= ruta.combi.nombre %>" value="<%= ruta.combi.nombre %>" name="combi" id="combi">
+        <% combis.forEach( (combi) => { %>
+        <option value="<%= combi._id %>">
+          <%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
+        </option>
+        <% }); %>
+    </select><br>  
+    <label for="distancia">Distancia:</label><br>
+    <input type="text" placeholder="<%= ruta.distancia %>" value="<%= ruta.distancia %>" id="distancia" name="distancia" required/><br>
+    <label for="hora">Hora:</label><br>
+    <input type="time" placeholder="<%= ruta.hora %>" value="<%= ruta.hora %>" id="hora" name="hora" required /><br>
+
+    <input type="hidden" value="<%= ruta._id %>" id="id" name="id"/>
+    <button type="submit">Modificar</button>
+</form> 
+
+
 <%- include("partials/footer"); -%>

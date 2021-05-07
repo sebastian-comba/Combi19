@@ -32,7 +32,7 @@
 <script>
     function eliminar(){
         let t= document.getElementById("email").textContent;
-    fetch("/eliminar-combi/"+ t, {
+    fetch("/eliminar-chofer/"+ t, {
         method: "DELETE"}).then((res) => res.json())
         .then((data) => {
             switch (data.response) {

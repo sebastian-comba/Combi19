@@ -491,6 +491,23 @@ app.post("/alta-chofer", (req, res) => {
 });
 
 // UPDATE Usuario
+app.get("/modificar-chofer/:email",(req,res)=>{
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Usuario.findOne({email:req.params.email,rol:"Chofer",borrado:false},(err,chofer)=>{
+      if(err){
+        res.redirect("/listar-chofer");
+      }else{
+        if(!chofer){
+          res.redirect("/listar-chofer");
+        }else{
+          res.render("modificar-chofer",{data:chofer});
+        }
+      }
+    })
+  }
+})
 
 // DELETE Usuario
 

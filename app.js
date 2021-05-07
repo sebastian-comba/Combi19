@@ -466,7 +466,6 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
                 if (err) {
                   res.json({ response: "error" });
                 } else {
-                  console.log(req.params.email);
                   res.json({ response: "bien" });
                 }
               }

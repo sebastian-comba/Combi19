@@ -6,7 +6,7 @@ if ((mes / 10) < 1) {
 }
 let dia = hoy.getDate();
 if (dia / 10 < 1) {
-  dia = "0" + dia;
+    dia = "0" + dia;
 }
 
 vencimiento.min = hoy.getFullYear() + "-" + mes;
@@ -19,7 +19,7 @@ document.getElementById('comun').onclick = function () {
     document.getElementById("cat").value = "comun";
 }
 
-fechaN.max = hoy.getFullYear()+'-'+mes+'-'+dia;
+fechaN.max = hoy.getFullYear() + '-' + mes + '-' + dia;
 //metodos
 function limpiar() {
     document.getElementById("errFN").innerHTML = "";
@@ -33,39 +33,41 @@ function limpiar() {
 
 
 function registrar() {
-        codigo = document.getElementById("cod").value;
-        nombreT = document.getElementById("nombreT").value;
-        dniT = document.getElementById("dniT").value;
-        vencimiento = document.getElementById("vencimiento").value;
+    codigo = document.getElementById("cod").value;
+    nombreT = document.getElementById("nombreT").value;
+    dniT = document.getElementById("dniT").value;
+    vencimiento = document.getElementById("vencimiento").value;
+    seg = document.getElementById("seg").value;
     fetch("/registro", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nombre: nombre.value,
-        apellido: apellido.value,
-        email: email.value,
-        clave: clave.value,
-        dni: dni.value,
-        fechaN: fechaN.value,
-        categoria: cat.value,
-        codigo: codigo,
-        vencimiento: vencimiento,
-        nombreT: nombreT,
-        dniT: dniT,
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nombre: nombre.value,
+            apellido: apellido.value,
+            email: email.value,
+            clave: clave.value,
+            dni: dni.value,
+            fechaN: fechaN.value,
+            categoria: cat.value,
+            codigo: codigo,
+            vencimiento: vencimiento,
+            nombreT: nombreT,
+            dniT: dniT,
+            codSeguridad: seg,
       }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.response === "error") {
-          document.getElementById("errE").innerHTML =
-            '<small  style="color:red"><p class="er">este Email se registro anteriormente</p></small>';
-        }else{
-            location.replace("/home");
-        }
-      });
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.response === "error") {
+                document.getElementById("errE").innerHTML =
+                    '<small  style="color:red"><p class="er">este Email se registro anteriormente</p></small>';
+            } else {
+                location.replace("/home");
+            }
+        });
 }
 function validarClave1() {
-    if (clave.value.length < 5 &&clave.value!=="") {
+    if (clave.value.length < 5 && clave.value !== "") {
         document.getElementById("errC1").innerHTML =
             "<small  style='color:red'><p class='er'>La contraseña tiene que tener minimo 6 caracteres</p></small>";
     }
@@ -73,7 +75,7 @@ function validarClave1() {
 function validarClave2() {
     if (clave.value.length > 5 && clave.value !== clave1.value) {
         document.getElementById("errC2").innerHTML =
-          '<small  style="color:red"><p class="er">Ambas Contraseñas deben coincidir</p></small>';
+            '<small  style="color:red"><p class="er">Ambas Contraseñas deben coincidir</p></small>';
     }
 }
 function validarFechaN() {
@@ -111,36 +113,36 @@ function validarFechaN() {
         edad = hoy.getFullYear() - na.getFullYear() - 1;
     }
     if (edad < 18) {
-         document.getElementById("errFN").innerHTML =
-           '<small  style="color:red"><p class="er">Debes ser mayor de 18 años</p></small>';
+        document.getElementById("errFN").innerHTML =
+            '<small  style="color:red"><p class="er">Debes ser mayor de 18 años</p></small>';
     }
 };
-function validarCodigoS(){
-    let c =seg.value;
-    if(c.length!==3 && cat.value==="gold"){
+function validarCodigoS() {
+    let c = seg.value;
+    if (c.length !== 3 && cat.value === "gold") {
         document.getElementById("errT").innerHTML =
-          '<small  style="color:red"><p class="er">Tarjeta no valida</p></small>';
-     
+            '<small  style="color:red"><p class="er">Tarjeta no valida</p></small>';
+
     }
 
 }
-function camposCompletos(){
+function camposCompletos() {
     let camposIn;
-    if(!nombre.value||!apellido.value||!dni.value||!email.value||!fechaN.value||!clave.value||!clave1.value){
-        camposIn=true;
+    if (!nombre.value || !apellido.value || !dni.value || !email.value || !fechaN.value || !clave.value || !clave1.value) {
+        camposIn = true;
     }
     if (
-      cat.value === "gold" &&
-      (!cod.value ||
-        !dniT.value ||
-        !vencimiento.value ||
-        !nombreT.value ||
-        !seg.value)
+        cat.value === "gold" &&
+        (!cod.value ||
+            !dniT.value ||
+            !vencimiento.value ||
+            !nombreT.value ||
+            !seg.value)
     ) {
         camposIn = true;
     }
-    if(camposIn){
-          document.getElementById("err").innerHTML =
+    if (camposIn) {
+        document.getElementById("err").innerHTML =
             '<small  style="color:red"><p class="er">Todos los campos deben estar completos</p></small>';
     }
 }

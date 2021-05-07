@@ -109,13 +109,17 @@ app.get("/lugares", (req, res) => {
 
 // READ lugares no borrados
 app.get("/listar-lugares", (req, res) => {
-  Lugar.find({ borrado: false }, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("listar-lugares", { data: result });
-    }
-  });
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Lugar.find({ borrado: false }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("listar-lugares", { data: result });
+      }
+    });
+  }
 });
 
 // CREATE lugar
@@ -231,13 +235,17 @@ app.get("/insumos", (req, res) => {
 
 // READ todos los insumos no borrados
 app.get("/listar-insumos", (req, res) => {
-  Insumo.find({ borrado: false }, (err, insumos) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("listar-insumos", { data: insumos });
-    }
-  });
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Insumo.find({ borrado: false }, (err, insumos) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("listar-insumos", { data: insumos });
+      }
+    });
+  }
 });
 
 //CREATE insumo
@@ -279,11 +287,10 @@ app.get("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre 
   Insumo.findOne({_id: req.params.id}, (err, resultInsumo) => {
     Pasaje.findOne({fecha: { $gte: hoy, insumos:{$elemMatch:resultInsumo.nombre} }}, (err, resultPasaje) => {
-      console.log(resultPasaje);
-      if(!resultPasaje){
-        Insumo.updateOne({ _id: req.params.id }, { borrado: true });
-      } else {
+      if(resultPasaje !== null){
         console.log("No se puede eliminar el insumo porque ha sido comprado en viajes a futuro");
+      } else {
+        Insumo.updateOne({ _id: req.params.id }, { borrado: true });
       }
     });
   });
@@ -812,13 +819,17 @@ app.put("/modificar-combi", (req, res) => {
 //
 // READ Rutas no borradas
 app.get("/listar-rutas", (req, res) => {
-  Ruta.find({ borrado: false }, (err, rutas) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("listar-rutas", { data: rutas });
-    }
-  });
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Ruta.find({ borrado: false }, (err, rutas) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("listar-rutas", { data: rutas });
+      }
+    });
+  }
 });
 
 // CREATE rutas
@@ -880,11 +891,10 @@ app.post("/cargar-rutas", (req, res) => {
 });
 
 // DELETE Ruta
-// FALTARIA CARGAR VIAJE PARA TESTEAR QUE NO ELIMINAR VIAJES A FUTURO FUNCIONE
 app.get("/ruta/:id", (req, res) => {
   Viaje.findOne(
     {
-      ruta: { idRuta: req.params.id },
+      "ruta.idRuta": req.params.id ,
       fecha: { $gte: hoy },
       borrado: false,
     },
@@ -892,7 +902,8 @@ app.get("/ruta/:id", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        if (viajes) {
+        console.log(viajes);
+        if (viajes !== null) {
           console.log(
             "No se puede eliminar la ruta porque tiene viajes a futuro"
           );
@@ -939,7 +950,7 @@ app.get("/modificar-ruta/:id", (req,res) => {
 app.post("/modificar-ruta", (req, res) => {
   Viaje.findOne(
     {
-      ruta: { idRuta: req.body.id },
+      "ruta.idRuta": req.body.id,
       fecha: { $gte: hoy },
       borrado: false,
     },
@@ -947,7 +958,7 @@ app.post("/modificar-ruta", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        if (viajes) {
+        if (viajes !== null) {
           console.log(
             "No se puede modificar la ruta porque tiene viajes a futuro"
           );
@@ -1087,13 +1098,17 @@ app.post("/cargar-viaje", (req, res) => {
 
 // READ VIAJES
 app.get("/viajes", (req, res) => {
-  Viaje.find({ borrado: false }, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("listar-viajes", { viajes: result });
-    }
-  });
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Viaje.find({ borrado: false }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("listar-viajes", { viajes: result });
+      }
+    });
+  }
 });
 
 // UPDATE VIAJE

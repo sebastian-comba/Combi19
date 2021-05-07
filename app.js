@@ -779,8 +779,9 @@ app.post("/cargar-rutas", (req, res) => {
 });
 
 // DELETE Ruta
-app.delete("/ruta/:id", (req, res) => {
-  Viaje.find(
+// FALTARIA CARGAR VIAJE PARA TESTEAR QUE NO ELIMINAR VIAJES A FUTURO FUNCIONE
+app.get("/ruta/:id", (req, res) => {
+  Viaje.findOne(
     {
       ruta: { idRuta: req.params.id },
       fecha: { $gte: hoy },
@@ -790,12 +791,19 @@ app.delete("/ruta/:id", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        if (viajes.length) {
+        if (viajes) {
           console.log(
             "No se puede eliminar la ruta porque tiene viajes a futuro"
           );
         } else {
-          Ruta.findOneAndUpdate({ _id: req.params.id }, { borrado: true });
+          Ruta.updateOne({ _id: req.params.id }, { borrado: true },(err,resultRuta) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log("se elimino la ruta");
+              res.redirect("/listar-rutas");
+            }
+          });
         }
       }
     }

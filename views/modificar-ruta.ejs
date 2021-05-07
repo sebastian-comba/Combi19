@@ -4,7 +4,9 @@
 <form action = "/modificar-ruta" method="POST">
     <label for="origen">Origen:</label><br>
     <select placeholder="<%= ruta.origen.nombre %>" value="<%= ruta.origen.nombre %>" name="origen" id="origen">
-        <% lugares.forEach( (lugar) => { %>
+        <% lugares.forEach( (lugar) => {
+            %>
+        <!--habria que ver como marcar selected=true para que aparezca por default el valor original-->
         <option value="<%= lugar._id %>">
           <%= lugar.ciudad %>-<%= lugar.provincia %>
         </option>
@@ -12,8 +14,8 @@
     </select><br>
     <label for="destino">Destino:</label><br>
     <select placeholder="<%= ruta.destino.nombre %>" value="<%= ruta.destino.nombre %>" name="destino" id="destino">
-        <% lugares.forEach( (lugar) => { %>
-        <option value="<%= lugar._id %>">
+        <% lugares.forEach( (lugar) => {%>
+        <option value="<%= lugar._id %>" >
           <%= lugar.ciudad %>-<%= lugar.provincia %>
         </option>
         <% }); %>
@@ -21,7 +23,7 @@
     <label for="combi">Combi:</label><br>
     <select placeholder="<%= ruta.combi.nombre %>" value="<%= ruta.combi.nombre %>" name="combi" id="combi">
         <% combis.forEach( (combi) => { %>
-        <option value="<%= combi._id %>">
+        <option value="<%= combi._id %>" >
           <%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
         </option>
         <% }); %>

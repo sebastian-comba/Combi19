@@ -253,12 +253,14 @@ app.post("/alta-insumo", (req, res) => {
 });
 
 // DELETE Insumo
-app.delete("/insumo/:id", (req, res) => {
-  //busca en los pasajes a futuro si hay uno con el mismo nombre
-  Insumo.find({_id: req.params.id}, (err, resultInsumo) => {
-    Pasaje.find({fecha: { $gte: hoy }, insumos:{$elemMatch:resultInsumo.nombre}}, (err, resultPasaje) => {
-      if(!resultPasaje.length){
-        Insumo.findOneAndUpdate({ _id: req.params.id }, { borrado: true });
+// FALTA CREAR PASAJES CON INSUMOS COMPRADOS PARA TESTEAR
+app.get("/insumo/:id", (req, res) => {
+  //busca en los pasajes a futuro si hay uno con el mismo nombre 
+  Insumo.findOne({_id: req.params.id}, (err, resultInsumo) => {
+    Pasaje.findOne({fecha: { $gte: hoy, insumos:{$elemMatch:resultInsumo.nombre} }}, (err, resultPasaje) => {
+      console.log(resultPasaje);
+      if(!resultPasaje){
+        Insumo.updateOne({ _id: req.params.id }, { borrado: true });
       } else {
         console.log("No se puede eliminar el insumo porque ha sido comprado en viajes a futuro");
       }
@@ -267,7 +269,6 @@ app.delete("/insumo/:id", (req, res) => {
 });
 
 // UPDATE Insumo
-// falta testear
 app.get("/modificar-insumo/:id", (req,res) => {
   //findOne poner en una variable y enviar eso en el data de render
   Insumo.findOne({ _id: req.params.id, borrado:false},(err,resultInsumo) => {

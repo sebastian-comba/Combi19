@@ -6,16 +6,18 @@
 <% if (!data.length) { %>
     <h2>No hay rutas cargadas</h2>
 <% } else { %>
-    <table>
+    <table class="table">
         <thead>
             <tr>
-                <th>Origen</th>
-                <th>Destino</th>
-                <th>Combi</th>
-                <th>Distancia</th>
-                <th>Hora</th>
+                <th scope="col" >Origen</th>
+                <th scope="col" >Destino</th>
+                <th scope="col" >Combi</th>
+                <th scope="col" >Distancia</th>
+                <th scope="col" >Hora</th>
             </tr>
         </thead>
+    </table>
+    <table class="table table-striped">
         <tbody>
         <% data.forEach(function(ruta) { %>
             <tr>

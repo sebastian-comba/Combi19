@@ -5,16 +5,18 @@
 <% if (!data.length) { %>
     <h2>No hay combis cargadas</h2>
 <% } else { %>
-    <table>
+    <table class="table">
         <thead>
             <tr>
-                <th>Patente</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Tipo</th>
-                <th>Chofer</th>
+                <th scope="col">Patente</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Modelo</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Chofer</th>
             </tr>
         </thead>
+    </table>
+    <table class="table table-striped">
         <tbody>
         <% data.forEach(function(combi) { %>
             <tr>

@@ -1,13 +1,15 @@
 <%- include("partials/header"); -%>
 <h1>Alta Insumo</h1>
+<datalist id="tiposInsumos">
+    <option value="dulce">Dulce</option>
+    <option value="salado">Salado</option>
+</datalist>
 <form action = "/alta-insumo" method="POST">
     <label for="nombre" required>Nombre:</label><br>
     <input type="text" id="nombre" name="nombre"/><br>
     <label for="tipo" required>Tipo:</label><br>
-    <select name="tipo" id="tipo" name="tipo">
-        <option value="dulce">Dulce</option>
-        <option value="salado">Salado</option>
-    </select><br>
+    <label for="tipo">Tipo:</label>
+    <input type="search" name="tipo" id="tipo" list="tiposInsumos" class="form-control alta"><br>
     <label for="precio" required>Precio:</label><br>
     <input type="text" id="precio" name="precio"/><br>
     <button type="submit">Agregar</button>

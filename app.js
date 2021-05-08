@@ -1446,6 +1446,7 @@ app.post("/viaje/:id", (req, res) => {
 
 // COMPRA DE PASAJES
 //
+// PASAJE DE PRUEBA
 // let p = new Pasaje({
 //   emailPasajero: "sebastian@mail.com",
 //   insumos: [

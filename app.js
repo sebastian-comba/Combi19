@@ -50,31 +50,9 @@ const now = new Date();
 const hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
 // transformar req.fecha a Date
-const transformarFecha = (fecha) => {
-  let guion = 0;
-  let año = "";
-  let mes = "";
-  let dia = "";
-  for (let i = 0; i < fecha.length; i++) {
-    const e = fecha[i];
-    if (e === "-") {
-      guion++;
-    } else {
-      switch (guion) {
-        case 0:
-          año = año + "" + e;
-          break;
-        case 1:
-          mes = mes + "" + e;
-          break;
-        case 2:
-          dia = dia + "" + e;
-          break;
-      }
-    }
-  }
-  let fechaDate = new Date(año, (mes - 1), dia, 1, 0, 0);
-  return fechaDate;
+function transformarFecha(fecha) {
+
+  return (new Date(Date.parse(fecha)));
 };
 
 // Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`

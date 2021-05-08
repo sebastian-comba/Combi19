@@ -487,7 +487,7 @@ app.post("/alta-chofer", (req, res) => {
       res.json({ response: "bien" });
     }
   });
-  res.redirect("/listar-chofer");
+  //res.redirect("/listar-chofer");
 });
 
 // UPDATE Usuario
@@ -1100,7 +1100,7 @@ app.get("/modificar-viaje/:id", (req, res) => {
   
 });
 
-app.post("/viaje/:id", (req, res) => {
+app.post("/viaje", (req, res) => {
   Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {
     if (err) {
       console.log(err);
@@ -1125,7 +1125,7 @@ app.post("/viaje/:id", (req, res) => {
                 if (err) {
                   console.log(err);
                 } else {
-                  if (req.body.fecha < res.fecha) {
+                  if (req.body.fecha < resViaje.fecha) {
                     console.log(
                       "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
                     );
@@ -1205,7 +1205,7 @@ app.post("/viaje/:id", (req, res) => {
 });
 
 // DELETE VIAJE
-app.delete("/viaje/:id", (req, res) => {
+app.get("/viaje/:id", (req, res) => {
   Pasaje.findOne({ idViaje: req.params.id }, (err, result) => {
     if (err) {
       console.log(err);
@@ -1214,7 +1214,7 @@ app.delete("/viaje/:id", (req, res) => {
         console.log("No se puede borrar el viaje, tiene pasajes comprados");
         res.send("No se puede borrar el viaje, tiene pasajes comprados");
       } else {
-        Viaje.findOneAndUpdate({ _id: req.body.viaje }, { borrado: true });
+        Viaje.updateOne({ _id: req.body.viaje }, { borrado: true });
       }
     }
   });

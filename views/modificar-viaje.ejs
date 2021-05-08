@@ -2,7 +2,8 @@
 
 <div>
   <!-- falta checkear los valores que ya estar cargados en la ruta a modificar -->
-  <form action="/modificar-viaje/:id" method="PUT">
+  <form action="/viaje" method="POST">
+    <input type="hidden" name="idViaje" value="viaje._id" />
     <label for="ruta">Elige una ruta:</label>
     <select name="ruta" id="ruta">
       <% rutas.forEach( (ruta) => { %>
@@ -38,9 +39,7 @@
     />
     <br />
 
-    <form action="/viaje/<&= viaje._id $>" method="POST">
-      <button type="submit" name="button">Guardar cambios</button>
-    </form>
+    <button type="submit" name="button">Guardar cambios</button>
 
     <a href="http://localhost:3000/home">Cancelar</a>
   </form>

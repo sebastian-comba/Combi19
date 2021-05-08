@@ -1511,20 +1511,18 @@ app.post("/viaje", (req, res) => {
 });
 
 // DELETE VIAJE
-app.post("/viaje/:id", (req, res) => {
+app.get("/viaje/:id", (req, res) => {
   console.log(req.params.id);
   Pasaje.findOne({ idViaje: req.params.id }, (err, result) => {
     if (err) {
       console.log(err);
     } else {
-      console.log(result);
       if (result !== null) {
         console.log("No se puede borrar el viaje, tiene pasajes comprados");
-        res.send("No se puede borrar el viaje, tiene pasajes comprados");
       } else {
-        Viaje.updateOne({ _id: req.params.id }, { borrado: true }, (err) => {
-          if (err) {
-            console.log(err);
+        Viaje.updateOne({ _id: req.params.id }, { borrado: true }, (error) => {
+          if (error) {
+            console.log(error);
           } else {
             console.log("modificado");
           }
@@ -1532,7 +1530,7 @@ app.post("/viaje/:id", (req, res) => {
       }
     }
   });
-  res.redirect("/");
+  res.redirect("/viajes");
 });
 
 // COMPRA DE PASAJES

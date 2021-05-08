@@ -15,6 +15,8 @@ const Viaje = require("./js/esquema/viaje");
 const Ruta = require("./js/esquema/ruta");
 const Pasaje = require("./js/esquema/pasaje");
 
+const Tarjeta = require("./js/esquema/tarjeta");
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -71,7 +73,7 @@ const transformarFecha = (fecha) => {
       }
     }
   }
-  let fechaDate = new Date(año, mes - 1, dia, 1, 0, 0);
+  let fechaDate = new Date(año, (mes - 1), dia, 1, 0, 0);
   return fechaDate;
 };
 
@@ -308,19 +310,19 @@ app.get("/insumo/:id", (req, res) => {
 });
 
 // UPDATE Insumo
-app.get("/modificar-insumo/:id", (req,res) => {
+app.get("/modificar-insumo/:id", (req, res) => {
   //findOne poner en una variable y enviar eso en el data de render
-  Insumo.findOne({ _id: req.params.id, borrado:false},(err,resultInsumo) => {
+  Insumo.findOne({ _id: req.params.id, borrado: false }, (err, resultInsumo) => {
     if (err) {
       console.log(err);
     } else {
-      res.render("modificar-insumo",{data:resultInsumo});
+      res.render("modificar-insumo", { data: resultInsumo });
     }
   });
 });
 app.post("/modificar-insumo", (req, res) => {
   //busca insumos con el mismo nombre, pero diferente id
-  Insumo.findOne({ nombre: req.body.nombre, _id:{$ne:req.body.id}, borrado:false}, (err, found) => {
+  Insumo.findOne({ nombre: req.body.nombre, _id: { $ne: req.body.id }, borrado: false }, (err, found) => {
     if (err) {
       console.log(err);
     } else {
@@ -420,7 +422,7 @@ app.get("/listar-chofer", (req, res) => {
     });
   }
 });
-//detalle Cofer
+//detalle Chofer
 app.get("/detalle-chofer/:email", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
@@ -465,38 +467,91 @@ app.get("/", (req, res) => {
 });
 //guardar usuario
 app.post("/registro", (req, res) => {
-  let nombre = req.body.nombre;
-  let apellido = req.body.apellido;
-  let email = req.body.email;
-  let us = new Usuario({
-    nombre: nombre,
-    apellido: apellido,
-    email: email,
-    clave: req.body.clave,
-    dni: req.body.dni,
-    fechaN: req.body.fechaN,
-    rol: "Cliente",
-    borrado: false,
-    suspendido: false,
-    categoria: req.body.categoria,
-    tarjeta: {
-      codigo: req.body.codigo,
-      vencimiento: req.body.vencimiento,
-      nombreCompleto: req.body.nombreT,
-      dni: req.body.dniT,
-    },
-  });
-  us.save((err) => {
-    if (err) {
-      res.json({ response: "error" });
-    } else {
-      req.session.nombre = us.nombre;
-      req.session.apellido = us.apellido;
-      req.session.rol = us.rol;
-      req.session.email = us.email;
-      res.json({ response: "bien" });
-    }
-  });
+  let us;
+  if (req.body.categoria === "gold") {
+    Tarjeta.findOne({ codigo: req.body.codigo }, (err, result) => {
+      if (err) {
+        res.json({ response: "error en la conexion con el banco" })
+      } else {
+        if (!result) {
+          res.json({ response: "Tarjeta inexistente" })
+        } else {
+          if (result.dni === req.body.dniT && (Date.parse(result.vencimiento) == (Date.parse(req.body.vencimiento + '-01')))
+            && result.nombreCompleto === req.body.nombreT && result.codSeguridad === req.body.codS) {
+              if(result.monto >=250){
+                us = new Usuario({
+                  nombre: req.body.nombre,
+                  apellido: req.body.apellido,
+                  email: req.body.email,
+                  clave: req.body.clave,
+                  dni: req.body.dni,
+                  fechaN: req.body.fechaN,
+                  rol: "Cliente",
+                  borrado: false,
+                  suspendido: false,
+                  categoria: req.body.categoria,
+                  tarjeta: {
+                    codigo: req.body.codigo,
+                    vencimiento: req.body.vencimiento,
+                    nombreCompleto: req.body.nombreT,
+                    dni: req.body.dniT,
+                  },
+                }); 
+                us.save((err) => {
+                  if (err) {
+                    res.json({ response: "error" });
+                  } else {
+                    Tarjeta.updateOne({codigo:result.codigo},{monto: (result.monto - 250) },(err)=>{
+                      if(err){
+                        res.json({ response: "Problemas en la conexion con el banco. Intentelo en unos minutos " })
+                      }else{
+                        req.session.nombre = us.nombre;
+                        req.session.apellido = us.apellido;
+                        req.session.rol = us.rol;
+                        req.session.email = us.email;
+                        res.json({ response: "bien" });
+                      }
+                    })
+                  }
+                });
+
+              }else{       
+                res.json({ response: "Tarjeta sin fondos suficientes para realizar el pago" });
+              }
+          }else{
+            res.json({ response: "Datos de la tarjeta incorrectos" })
+          }
+        }
+      }
+    })
+  } else {
+    let nombre = req.body.nombre;
+    let apellido = req.body.apellido;
+    let email = req.body.email;
+    us = new Usuario({
+      nombre: nombre,
+      apellido: apellido,
+      email: email,
+      clave: req.body.clave,
+      dni: req.body.dni,
+      fechaN: req.body.fechaN,
+      rol: "Cliente",
+      borrado: false,
+      suspendido: false,
+      categoria: req.body.categoria,
+    });
+    us.save((err) => {
+      if (err) {
+        res.json({ response: "error" });
+      } else {
+        req.session.nombre = us.nombre;
+        req.session.apellido = us.apellido;
+        req.session.rol = us.rol;
+        req.session.email = us.email;
+        res.json({ response: "bien" });
+      }
+    });
+  }
 });
 
 //altaChofer
@@ -529,29 +584,29 @@ app.post("/alta-chofer", (req, res) => {
 });
 
 // UPDATE Usuario
-app.get("/modificar-chofer/:email",(req,res)=>{
+app.get("/modificar-chofer/:email", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Usuario.findOne({email:req.params.email,rol:"Chofer",borrado:false},(err,chofer)=>{
-      if(err){
+    Usuario.findOne({ email: req.params.email, rol: "Chofer", borrado: false }, (err, chofer) => {
+      if (err) {
         res.redirect("/listar-chofer");
-      }else{
-        if(!chofer){
+      } else {
+        if (!chofer) {
           res.redirect("/listar-chofer");
-        }else{
-          res.render("modificar-chofer",{data:chofer});
+        } else {
+          res.render("modificar-chofer", { data: chofer });
         }
       }
     })
   }
 })
-app.put("/modificar-chofer",(req,res)=>{
-  Usuario.deleteOne({email:req.body.email},(err)=>{
-    if(err){
+app.put("/modificar-chofer", (req, res) => {
+  Usuario.deleteOne({ email: req.body.email }, (err) => {
+    if (err) {
       console.log(err);
-      res.json({response: "error en eliminar"})
-    }else{
+      res.json({ response: "error en eliminar" })
+    } else {
       let us = new Usuario({
         nombre: req.body.nombre,
         apellido: req.body.apellido,
@@ -570,7 +625,7 @@ app.put("/modificar-chofer",(req,res)=>{
           res.json({ response: "bien" });
         }
       });
-      
+
     }
   })
 
@@ -918,7 +973,7 @@ app.get("/ruta/:id", (req, res) => {
             "No se puede eliminar la ruta porque tiene viajes a futuro"
           );
         } else {
-          Ruta.updateOne({ _id: req.params.id }, { borrado: true },(err,resultRuta) => {
+          Ruta.updateOne({ _id: req.params.id }, { borrado: true }, (err, resultRuta) => {
             if (err) {
               console.log(err);
             } else {
@@ -933,8 +988,8 @@ app.get("/ruta/:id", (req, res) => {
 });
 
 // UPDATE Ruta
-app.get("/modificar-ruta/:id", (req,res) => {
-  Ruta.findOne({ _id: req.params.id, borrado:false},(err,resultRuta) => {
+app.get("/modificar-ruta/:id", (req, res) => {
+  Ruta.findOne({ _id: req.params.id, borrado: false }, (err, resultRuta) => {
     if (err) {
       console.log(err);
     } else {
@@ -949,7 +1004,7 @@ app.get("/modificar-ruta/:id", (req,res) => {
               console.log(err);
             } else {
               res.locals.combis = combis;
-              res.render("modificar-ruta",{});
+              res.render("modificar-ruta", {});
             }
           });
         }
@@ -998,8 +1053,8 @@ app.post("/modificar-ruta", (req, res) => {
                     distancia: req.body.distancia,
                     hora: req.body.hora,
                     borrado: false,
-                  },(err,updRuta)=>{
-                    if (err){
+                  }, (err, updRuta) => {
+                    if (err) {
                       console.log(err);
                     } else {
                       console.log("se modifico la ruta");
@@ -1092,7 +1147,7 @@ app.post("/cargar-viaje", (req, res) => {
                 } else {
                   console.log(
                     "La cantidad de asientos debe ser menor o igual a " +
-                      combiResult.asientos
+                    combiResult.asientos
                   );
                 }
               } else {
@@ -1145,7 +1200,10 @@ app.get("/modificar-viaje/:id", (req, res) => {
   
 });
 
-app.post("/viaje/:id", (req, res) => {
+// UPDATE VIAJE
+app.get("/modificar-viaje", (req, res) => { });
+
+app.put("/viaje/:id", (req, res) => {
   Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {
     if (err) {
       console.log(err);
@@ -1192,7 +1250,7 @@ app.post("/viaje/:id", (req, res) => {
                               resultV.forEach((viaje) => {
                                 if (
                                   req.body.fecha + "T" + resRuta.hora >
-                                    resultV.llegada ||
+                                  resultV.llegada ||
                                   req.body.llegada < resultV.fecha
                                 ) {
                                   bool = true;

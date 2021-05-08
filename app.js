@@ -15,6 +15,8 @@ const Viaje = require("./js/esquema/viaje");
 const Ruta = require("./js/esquema/ruta");
 const Pasaje = require("./js/esquema/pasaje");
 
+const Tarjeta = require("./js/esquema/tarjeta");
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -48,31 +50,9 @@ const now = new Date();
 const hoy = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 1, 0, 0);
 
 // transformar req.fecha a Date
-const transformarFecha = (fecha) => {
-  let guion = 0;
-  let año = "";
-  let mes = "";
-  let dia = "";
-  for (let i = 0; i < fecha.length; i++) {
-    const e = fecha[i];
-    if (e === "-") {
-      guion++;
-    } else {
-      switch (guion) {
-        case 0:
-          año = año + "" + e;
-          break;
-        case 1:
-          mes = mes + "" + e;
-          break;
-        case 2:
-          dia = dia + "" + e;
-          break;
-      }
-    }
-  }
-  let fechaDate = new Date(año, mes - 1, dia, 1, 0, 0);
-  return fechaDate;
+function transformarFecha(fecha) {
+
+  return (new Date(Date.parse(fecha)));
 };
 
 // Make Mongoose use `findOneAndUpdate()`. Note that this option is `true`
@@ -109,13 +89,17 @@ app.get("/lugares", (req, res) => {
 
 // READ lugares no borrados
 app.get("/listar-lugares", (req, res) => {
-  Lugar.find({ borrado: false }, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("listar-lugares", { data: result });
-    }
-  });
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Lugar.find({ borrado: false }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("listar-lugares", { data: result });
+      }
+    });
+  }
 });
 
 // CREATE lugar
@@ -137,66 +121,106 @@ app.post("/cargar-lugar", (req, res) => {
     } else {
       console.log("lugar guardado");
     }
-    res.redirect("/home");
+    res.redirect("/listar-lugares");
   });
 });
 
 // DELETE lugar
-app.delete("/lugar/:id", (req, res) => {
-  Viaje.find(
-    {
-      ruta: { origen: { idLugar: req.params.id } },
-      fecha: { $gte: new Date() },
-    },
-    (err, result) => {
-      if (result.length) {
-        console.log("No se puede borrar, tiene viaje futuro");
-      } else {
-        Lugar.updateOne(
-          {
-            _id: req.params.id,
+app.get("/lugar/:id", (req, res) => {
+  Lugar.findOne({ _id: req.params.id }, (err, resLugar) => {
+    if (err) {
+      console.log(err);
+    } else {
+      Viaje.findOne(
+        {
+          $or: [{
+            "ruta.origen.nombre": resLugar.ciudad,
+            "ruta.origen.provincia": resLugar.provincia
           },
-          { borrado: true },
-          (err) => {
-            if (err) {
-              console.log(err);
-            }
+          {
+            "ruta.destino.nombre": resLugar.ciudad,
+            "ruta.destino.provincia": resLugar.provincia
           }
-        );
-      }
+          ],
+          fecha: { $gte: new Date() },
+        },
+        (err, result) => {
+          if (result !== null) {
+            console.log("No se puede borrar, tiene viaje futuro");
+          } else {
+            Lugar.updateOne(
+              {
+                _id: req.params.id,
+              },
+              { borrado: true },
+              (err) => {
+                if (err) {
+                  console.log(err);
+                }
+              }
+            );
+            res.redirect("/listar-lugares");
+          }
+        }
+      );
     }
-  );
+  });
 });
 
 //UPDATE lugar
-app.put("/lugar/:id", (req, res) => {
-  Viaje.find(
-    {
-      ruta: { origen: { idLugar: req.params.id } },
-      fecha: { $gte: hoy },
-    },
-    (err, result) => {
-      if (result.length) {
-        console.log("No se puede modificar, tiene viaje futuro");
-      } else {
-        Lugar.updateOne(
-          {
-            _id: req.params.id,
-          },
-          {
-            ciudad: req.body.ciudad,
-            provincia: req.body.ciudad,
-            borrado: false,
-          },
-          (err) => {
-            if (err) {
-              console.log(err);
-            }
-          }
-        );
-      }
+app.get("/modificar-lugar/:id", (req, res) => {
+  Lugar.findOne({ _id: req.params.id, borrado: false }, (err, resultLugar) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("modificar-lugar", { data: resultLugar });
     }
-  );
+  });
+});
+app.post("/modificar-lugar", (req, res) => {
+  //hay que verificar si el lugar está como destino de una ruta
+  Lugar.findOne({ _id: req.body.id }, (err, resLugar) => {
+    if (err) {
+      console.log(err);
+    } else {
+      Viaje.findOne(
+        {
+          $or: [{
+            "ruta.origen.nombre": resLugar.ciudad,
+            "ruta.origen.provincia": resLugar.provincia
+          },
+          {
+            "ruta.destino.nombre": resLugar.ciudad,
+            "ruta.destino.provincia": resLugar.provincia
+          }
+          ],
+          fecha: { $gte: hoy }
+        },
+        (err, result) => {
+          if (result) {
+            console.log("No se puede modificar, tiene viaje futuro");
+          } else {
+            Lugar.updateOne(
+              {
+                _id: req.body.id,
+              },
+              {
+                ciudad: req.body.ciudad,
+                provincia: req.body.provincia,
+                borrado: false,
+              },
+              (err) => {
+                if (err) {
+                  console.log(err);
+                }
+              }
+            );
+            res.redirect("/listar-lugares");
+          }
+        }
+      );
+    }
+  });
 });
 
 //CRUD Insumo
@@ -210,13 +234,17 @@ app.get("/insumos", (req, res) => {
 
 // READ todos los insumos no borrados
 app.get("/listar-insumos", (req, res) => {
-  Insumo.find({ borrado: false }, (err, insumos) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("listar-insumos", { data: insumos });
-    }
-  });
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Insumo.find({ borrado: false }, (err, insumos) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("listar-insumos", { data: insumos });
+      }
+    });
+  }
 });
 
 //CREATE insumo
@@ -256,32 +284,31 @@ app.post("/alta-insumo", (req, res) => {
 // FALTA CREAR PASAJES CON INSUMOS COMPRADOS PARA TESTEAR
 app.get("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre 
-  Insumo.findOne({_id: req.params.id}, (err, resultInsumo) => {
-    Pasaje.findOne({fecha: { $gte: hoy, insumos:{$elemMatch:resultInsumo.nombre} }}, (err, resultPasaje) => {
-      console.log(resultPasaje);
-      if(!resultPasaje){
-        Insumo.updateOne({ _id: req.params.id }, { borrado: true });
-      } else {
+  Insumo.findOne({ _id: req.params.id }, (err, resultInsumo) => {
+    Pasaje.findOne({ fecha: { $gte: hoy, insumos: { $elemMatch: resultInsumo.nombre } } }, (err, resultPasaje) => {
+      if (resultPasaje !== null) {
         console.log("No se puede eliminar el insumo porque ha sido comprado en viajes a futuro");
+      } else {
+        Insumo.updateOne({ _id: req.params.id }, { borrado: true });
       }
     });
   });
 });
 
 // UPDATE Insumo
-app.get("/modificar-insumo/:id", (req,res) => {
+app.get("/modificar-insumo/:id", (req, res) => {
   //findOne poner en una variable y enviar eso en el data de render
-  Insumo.findOne({ _id: req.params.id, borrado:false},(err,resultInsumo) => {
+  Insumo.findOne({ _id: req.params.id, borrado: false }, (err, resultInsumo) => {
     if (err) {
       console.log(err);
     } else {
-      res.render("modificar-insumo",{data:resultInsumo});
+      res.render("modificar-insumo", { data: resultInsumo });
     }
   });
 });
 app.post("/modificar-insumo", (req, res) => {
   //busca insumos con el mismo nombre, pero diferente id
-  Insumo.findOne({ nombre: req.body.nombre, _id:{$ne:req.body.id}, borrado:false}, (err, found) => {
+  Insumo.findOne({ nombre: req.body.nombre, _id: { $ne: req.body.id }, borrado: false }, (err, found) => {
     if (err) {
       console.log(err);
     } else {
@@ -381,7 +408,7 @@ app.get("/listar-chofer", (req, res) => {
     });
   }
 });
-//detalle Cofer
+//detalle Chofer
 app.get("/detalle-chofer/:email", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
@@ -426,38 +453,91 @@ app.get("/", (req, res) => {
 });
 //guardar usuario
 app.post("/registro", (req, res) => {
-  let nombre = req.body.nombre;
-  let apellido = req.body.apellido;
-  let email = req.body.email;
-  let us = new Usuario({
-    nombre: nombre,
-    apellido: apellido,
-    email: email,
-    clave: req.body.clave,
-    dni: req.body.dni,
-    fechaN: req.body.fechaN,
-    rol: "Cliente",
-    borrado: false,
-    suspendido: false,
-    categoria: req.body.categoria,
-    tarjeta: {
-      codigo: req.body.codigo,
-      vencimiento: req.body.vencimiento,
-      nombreCompleto: req.body.nombreT,
-      dni: req.body.dniT,
-    },
-  });
-  us.save((err) => {
-    if (err) {
-      res.json({ response: "error" });
-    } else {
-      req.session.nombre = us.nombre;
-      req.session.apellido = us.apellido;
-      req.session.rol = us.rol;
-      req.session.email = us.email;
-      res.json({ response: "bien" });
-    }
-  });
+  let us;
+  if (req.body.categoria === "gold") {
+    Tarjeta.findOne({ codigo: req.body.codigo }, (err, result) => {
+      if (err) {
+        res.json({ response: "error en la conexion con el banco" })
+      } else {
+        if (!result) {
+          res.json({ response: "Tarjeta inexistente" })
+        } else {
+          if (result.dni === req.body.dniT && (Date.parse(result.vencimiento) == (Date.parse(req.body.vencimiento + '-01')))
+            && result.nombreCompleto === req.body.nombreT && result.codSeguridad === req.body.codS) {
+            if (result.monto >= 250) {
+              us = new Usuario({
+                nombre: req.body.nombre,
+                apellido: req.body.apellido,
+                email: req.body.email,
+                clave: req.body.clave,
+                dni: req.body.dni,
+                fechaN: req.body.fechaN,
+                rol: "Cliente",
+                borrado: false,
+                suspendido: false,
+                categoria: req.body.categoria,
+                tarjeta: {
+                  codigo: req.body.codigo,
+                  vencimiento: req.body.vencimiento,
+                  nombreCompleto: req.body.nombreT,
+                  dni: req.body.dniT,
+                },
+              });
+              us.save((err) => {
+                if (err) {
+                  res.json({ response: "error" });
+                } else {
+                  Tarjeta.updateOne({ codigo: result.codigo }, { monto: (result.monto - 250) }, (err) => {
+                    if (err) {
+                      res.json({ response: "Problemas en la conexion con el banco. Intentelo en unos minutos " })
+                    } else {
+                      req.session.nombre = us.nombre;
+                      req.session.apellido = us.apellido;
+                      req.session.rol = us.rol;
+                      req.session.email = us.email;
+                      res.json({ response: "bien" });
+                    }
+                  })
+                }
+              });
+
+            } else {
+              res.json({ response: "Tarjeta sin fondos suficientes para realizar el pago" });
+            }
+          } else {
+            res.json({ response: "Datos de la tarjeta incorrectos" })
+          }
+        }
+      }
+    })
+  } else {
+    let nombre = req.body.nombre;
+    let apellido = req.body.apellido;
+    let email = req.body.email;
+    us = new Usuario({
+      nombre: nombre,
+      apellido: apellido,
+      email: email,
+      clave: req.body.clave,
+      dni: req.body.dni,
+      fechaN: req.body.fechaN,
+      rol: "Cliente",
+      borrado: false,
+      suspendido: false,
+      categoria: req.body.categoria,
+    });
+    us.save((err) => {
+      if (err) {
+        res.json({ response: "error" });
+      } else {
+        req.session.nombre = us.nombre;
+        req.session.apellido = us.apellido;
+        req.session.rol = us.rol;
+        req.session.email = us.email;
+        res.json({ response: "bien" });
+      }
+    });
+  }
 });
 
 //altaChofer
@@ -487,55 +567,80 @@ app.post("/alta-chofer", (req, res) => {
       res.json({ response: "bien" });
     }
   });
-  //res.redirect("/listar-chofer");
 });
 
 // UPDATE Usuario
-app.get("/modificar-chofer/:email",(req,res)=>{
+app.get("/modificar-chofer/:email", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Usuario.findOne({email:req.params.email,rol:"Chofer",borrado:false},(err,chofer)=>{
-      if(err){
+    Usuario.findOne({ email: req.params.email, rol: "Chofer", borrado: false }, (err, chofer) => {
+      if (err) {
         res.redirect("/listar-chofer");
-      }else{
-        if(!chofer){
+      } else {
+        if (!chofer) {
           res.redirect("/listar-chofer");
-        }else{
-          res.render("modificar-chofer",{data:chofer});
+        } else {
+          res.render("modificar-chofer", { data: chofer });
         }
       }
     })
   }
 })
-app.put("/modificar-chofer",(req,res)=>{
-  Usuario.deleteOne({email:req.body.email},(err)=>{
+app.put("/modificar-chofer", (req, res) => {
+  Usuario.findOne({ _id: req.body.id }, (err, result) => {
     if(err){
-      console.log(err);
-      res.json({response: "error en eliminar"})
+      console.log(err)
     }else{
-      let us = new Usuario({
-        nombre: req.body.nombre,
-        apellido: req.body.apellido,
-        email: req.body.email,
-        clave: req.body.clave,
-        dni: req.body.dni,
-        rol: "Chofer",
-        borrado: false,
-        suspendido: false,
-        telefono: req.body.telefono,
-      });
-      us.save((err) => {
-        if (err) {
-          res.json({ response: "error" });
-        } else {
-          res.json({ response: "bien" });
-        }
-      });
-      
-    }
-  })
+      let email= result.email;
+    Usuario.deleteOne({ _id: req.body.id }, (err) => {
+      if (err) {
+        console.log(err);
+        res.json({ response: "error en eliminar" })
+      } else {
+        let us = new Usuario({
+          nombre: req.body.nombre,
+          apellido: req.body.apellido,
+          email: req.body.email,
+          clave: req.body.clave,
+          dni: req.body.dni,
+          rol: "Chofer",
+          borrado: false,
+          suspendido: false,
+          telefono: req.body.telefono,
+        });
+        us.save((err) => {
+          if (err) {
+            res.json({ response: "error" });
+          } else {
+            Combi.updateMany({ "chofer.email":email },{chofer:{
+              nombre:req.body.nombre,
+              apellido:req.body.apellido,
+              email: req.body.email,
+            }}, (err)=>{
+              if(err){
+                console.log(err);
+              }
+            })
+            Viaje.updateMany({ "chofer.email": email, fecha: { $gte: hoy } }, {
+              chofer: {
+                nombre: req.body.nombre,
+                apellido: req.body.apellido,
+                email: req.body. email,
+              }
+            }, (err) => {
+              if (err) {
+                console.log(err);
+              }
+            })
+            res.json({ response: "bien" });
+          }
+        });
 
+      }
+    });
+  }
+  })
 })
 
 // DELETE Usuario
@@ -544,10 +649,9 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find(
+    Combi.find(
       {
-        chofer: { email: req.params.email },
-        fecha: { $gte: hoy },
+        "chofer.email": req.params.email ,
         borrado: false,
       },
       (err, viajes) => {
@@ -556,7 +660,7 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
         } else {
           if (viajes.length) {
             console.log(1);
-            res.json({ response: "hay viajes" });
+            res.json({ response: "No se puede eliminar esta asignado a combis" });
           } else {
             Usuario.updateOne(
               { email: req.params.email },
@@ -776,10 +880,33 @@ app.put("/modificar-combi", (req, res) => {
           asientos: req.body.asientos,
           tipo: req.body.tipo,
         },
-        (error, resu) => {
+        (error) => {
           if (error) {
             res.json({ response: "errorP" });
           } else {
+            Viaje.updateMany({"combi.patente":req.body.patenteV},{combi:{
+              patente:req.body.patente,
+              marca:req.body.marca,
+              modelo: req.body.modelo
+            }},(err)=>{
+              if(err){
+                console.log(err);
+              }
+
+              console.log(1);
+            });
+            Viaje.updateMany({ "combi.patente": req.body.patenteV, fecha: { $gte: hoy }},{
+              chofer: {
+                nombre: result.nombre,
+                apellido: result.apellido,
+                mail: result.email
+              }
+            }, (err) => {
+              if (err) {
+                console.log(err)
+              }
+              console.log(2);
+            })
             res.json({ response: "bien" });
           }
         }
@@ -792,13 +919,17 @@ app.put("/modificar-combi", (req, res) => {
 //
 // READ Rutas no borradas
 app.get("/listar-rutas", (req, res) => {
-  Ruta.find({ borrado: false }, (err, rutas) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("listar-rutas", { data: rutas });
-    }
-  });
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Ruta.find({ borrado: false }, (err, rutas) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("listar-rutas", { data: rutas });
+      }
+    });
+  }
 });
 
 // CREATE rutas
@@ -860,11 +991,10 @@ app.post("/cargar-rutas", (req, res) => {
 });
 
 // DELETE Ruta
-// FALTARIA CARGAR VIAJE PARA TESTEAR QUE NO ELIMINAR VIAJES A FUTURO FUNCIONE
 app.get("/ruta/:id", (req, res) => {
   Viaje.findOne(
     {
-      ruta: { idRuta: req.params.id },
+      "ruta.idRuta": req.params.id,
       fecha: { $gte: hoy },
       borrado: false,
     },
@@ -872,12 +1002,12 @@ app.get("/ruta/:id", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        if (viajes) {
+        if (viajes !== null) {
           console.log(
             "No se puede eliminar la ruta porque tiene viajes a futuro"
           );
         } else {
-          Ruta.updateOne({ _id: req.params.id }, { borrado: true },(err,resultRuta) => {
+          Ruta.updateOne({ _id: req.params.id }, { borrado: true }, (err, resultRuta) => {
             if (err) {
               console.log(err);
             } else {
@@ -892,8 +1022,8 @@ app.get("/ruta/:id", (req, res) => {
 });
 
 // UPDATE Ruta
-app.get("/modificar-ruta/:id", (req,res) => {
-  Ruta.findOne({ _id: req.params.id, borrado:false},(err,resultRuta) => {
+app.get("/modificar-ruta/:id", (req, res) => {
+  Ruta.findOne({ _id: req.params.id, borrado: false }, (err, resultRuta) => {
     if (err) {
       console.log(err);
     } else {
@@ -908,7 +1038,7 @@ app.get("/modificar-ruta/:id", (req,res) => {
               console.log(err);
             } else {
               res.locals.combis = combis;
-              res.render("modificar-ruta",{});
+              res.render("modificar-ruta", {});
             }
           });
         }
@@ -919,7 +1049,7 @@ app.get("/modificar-ruta/:id", (req,res) => {
 app.post("/modificar-ruta", (req, res) => {
   Viaje.findOne(
     {
-      ruta: { idRuta: req.body.id },
+      "ruta.idRuta": req.body.id,
       fecha: { $gte: hoy },
       borrado: false,
     },
@@ -927,7 +1057,7 @@ app.post("/modificar-ruta", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        if (viajes) {
+        if (viajes !== null) {
           console.log(
             "No se puede modificar la ruta porque tiene viajes a futuro"
           );
@@ -957,8 +1087,8 @@ app.post("/modificar-ruta", (req, res) => {
                     distancia: req.body.distancia,
                     hora: req.body.hora,
                     borrado: false,
-                  },(err,updRuta)=>{
-                    if (err){
+                  }, (err, updRuta) => {
+                    if (err) {
                       console.log(err);
                     } else {
                       console.log("se modifico la ruta");
@@ -1042,7 +1172,7 @@ app.post("/cargar-viaje", (req, res) => {
                   });
                   v.save((err) => {
                     if (err) {
-                      console.log("err");
+                      console.log(err);
                     } else {
                       console.log("Viaje cargado");
                     }
@@ -1051,7 +1181,7 @@ app.post("/cargar-viaje", (req, res) => {
                 } else {
                   console.log(
                     "La cantidad de asientos debe ser menor o igual a " +
-                      combiResult.asientos
+                    combiResult.asientos
                   );
                 }
               } else {
@@ -1067,19 +1197,23 @@ app.post("/cargar-viaje", (req, res) => {
 
 // READ VIAJES
 app.get("/viajes", (req, res) => {
-  Viaje.find({ borrado: false }, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("listar-viajes", { viajes: result });
-    }
-  });
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
+    Viaje.find({ borrado: false }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("listar-viajes", { viajes: result });
+      }
+    });
+  }
 });
 
 // UPDATE VIAJE
 app.get("/modificar-viaje/:id", (req, res) => {
   console.log("entre");
-  Ruta.find({borrado: false}, (err, rutaResult) => {
+  Ruta.find({ borrado: false }, (err, rutaResult) => {
     if (err) {
       console.log(err);
     } else {
@@ -1097,7 +1231,6 @@ app.get("/modificar-viaje/:id", (req, res) => {
       }
     }
   });
-  
 });
 
 app.post("/viaje", (req, res) => {
@@ -1105,50 +1238,51 @@ app.post("/viaje", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      if (resPasaje.length) {
+      if (resPasaje) {
         console.log("No se puede modificar el viaje, tiene pasajes comprados.");
         res.send("No se puede modificar el viaje, tiene pasajes comprados.");
       } else {
-        Combi.findOne({ _id: req.body.combi }, (err, resCombi) => {
+        Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
           if (err) {
             console.log(err);
           } else {
-            if (req.body.asientos > resCombi.asientos) {
-              console.log(
-                "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
-              );
-              res.send(
-                "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
-              );
-            } else {
-              Viaje.findOne({ _id: req.body.idViaje }, (err, resViaje) => {
-                if (err) {
-                  console.log(err);
+            Combi.findOne({ patente: resRuta.combi.patente }, (err, resCombi) => {
+              if (err) {
+                console.log(err);
+              } else {
+                if (req.body.asientos > resCombi.asientos) {
+                  console.log(
+                    "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
+                  );
+                  res.send(
+                    "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
+                  );
                 } else {
-                  if (req.body.fecha < resViaje.fecha) {
-                    console.log(
-                      "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
-                    );
-                    res.send(
-                      "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
-                    );
-                  } else {
-                    Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
-                      if (err) {
-                        console.log(err);
+                  Viaje.findOne({ _id: req.body.idViaje }, (err, resViaje) => {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      if (transformarFecha(req.body.fecha + "T" + resRuta.hora) < resViaje.fecha) {
+                        console.log(
+                          "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
+                        );
+                        res.send(
+                          "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
+                        );
                       } else {
-                        Viaje.find(
-                          { ruta: { idRuta: resRuta._id } },
+                        Viaje.find({ "ruta.idRuta": resRuta._id },
                           (err, resultV) => {
-                            if (condition) {
+                            if (err) {
                               console.log(err);
                             } else {
                               let bool = false;
+                              if (!resultV) {
+                                bool = true;
+                              }
                               resultV.forEach((viaje) => {
-                                if (
-                                  req.body.fecha + "T" + resRuta.hora >
-                                    resultV.llegada ||
-                                  req.body.llegada < resultV.fecha
+                                if ((transformarFecha(req.body.fecha + "T" + resRuta.hora) >
+                                  viaje.llegada ||
+                                  transformarFecha(req.body.llegada) < viaje.fecha) && (resViaje !== viaje)
                                 ) {
                                   bool = true;
                                 }
@@ -1184,25 +1318,35 @@ app.post("/viaje", (req, res) => {
                                     asientosDisponibles: req.body.asientos,
                                     estado: "En espera",
                                     borrado: false,
+                                  },
+                                  (err) => {
+                                    if (err) {
+                                      console.log(err)
+                                    } else {
+                                      res.redirect("/viajes");
+                                    }
                                   }
                                 );
+                              } else {
+                                console.log("combi en uso en ese rango de dias");
+
                               }
                             }
                           }
                         );
                       }
-                    });
-                  }
-                }
-              });
-            }
+                    };
+                  });
+                };
+              };
+            })
           }
         });
-      }
+      };
     }
-  });
-  res.redirect("/viajes");
+  })
 });
+
 
 // DELETE VIAJE
 app.get("/viaje/:id", (req, res) => {

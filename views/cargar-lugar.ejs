@@ -2,9 +2,9 @@
 <h2>Alta lugar</h2>
 <div>
   <form action="/cargar-lugar" method="POST">
-    <p>Ciudad</p>
-    <input type="text" name="ciudad" />
-    <p>Provincia</p>
+    <label for="ciudad" required>Ciudad:</label><br>
+    <input type="text" name="ciudad" /><br>
+    <label for="provincia" required>Provincia:</label><br>
     <input type="text" name="provincia" />
     <br />
     <button type="submit" name="button">Cargar</button>

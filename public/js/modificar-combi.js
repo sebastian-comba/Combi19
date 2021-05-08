@@ -35,6 +35,7 @@ function guardar() {
             chofer: chofer.value,
             asientos: asientos.value,
             tipo: tipo,
+            patenteV:document.getElementById("patenteV").value
         }),
     })
         .then((res) => res.json())

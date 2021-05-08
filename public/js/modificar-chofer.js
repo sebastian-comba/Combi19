@@ -17,6 +17,7 @@ function modificar() {
             clave: clave.value,
             dni: dni.value,
             telefono: telefono.value,
+            id: document.getElementById("idChofer").value
         }),
     })
         .then((res) => res.json())

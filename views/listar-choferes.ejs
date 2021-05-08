@@ -1,17 +1,21 @@
 <%- include("partials/header"); -%>
 <div>
 <h1>Lista de Choferes</h1>
+<form action="/alta-chofer" method="GET">
+<button type="submit">Alta Chofer</button>
+</form>
 
 <% if (!data.length) { %>
     <h2>No hay choferes cargados</h2>
 <% } else { %>
-    <table>
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Email</th>
-                <th>Telefono</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Email</th>
+                <th scope="col">Telefono</th>
+
             </tr>
         </thead>
         <tbody>

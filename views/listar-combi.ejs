@@ -2,24 +2,31 @@
 <div>
 <h1>Lista de Combis</h1>
 
+<form action="/alta-combi" method="GET">
+<button type="submit">Alta Combi</button>
+</form>
+
 <% if (!data.length) { %>
     <h2>No hay combis cargadas</h2>
 <% } else { %>
-    <table>
+    
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Patente</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Tipo</th>
-                <th>Chofer</th>
+                <th scope="col">Patente</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Modelo</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Chofer</th>
+
+
             </tr>
         </thead>
         <tbody>
         <% data.forEach(function(combi) { %>
             <tr>
-                <td><%= combi.patente%>   </td>
-                <td><%= combi.marca %>   </td>
+                <td><%= combi.patente%></td>
+                <td><%= combi.marca %></td>
                 <td><%= combi.modelo %></td>
                 <td><%= combi.tipo %></td>
                 <td><%= combi.nombre %> , <%= combi.apellido %></td>

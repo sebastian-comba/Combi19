@@ -1,0 +1,17 @@
+<%- include("partials/header"); -%>
+<h1>Modificar Lugar </h1>
+
+<form action = "/modificar-lugar" method="POST">
+    <label for="Ciudad" required>Ciudad:</label><br>
+    <input type="text" placeholder="<%= data.ciudad %>" value="<%= data.ciudad %>" id="ciudad" name="ciudad"/><br>
+    <label for="Provincia" required>Provincia:</label><br>
+    <input type="text" placeholder="<%= data.provincia %>" value="<%= data.provincia %>" id="provincia" name="provincia"/><br>
+    <input type="hidden" value="<%= data._id %>" id="id" name="id"/>
+    <button type="submit">Modificar</button>
+</form> 
+<a href="http://localhost:3000/listar-lugares">
+    <button id="cancelar">Cancelar</button>
+</a>
+
+
+<%- include("partials/footer"); -%>

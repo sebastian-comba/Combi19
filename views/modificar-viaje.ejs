@@ -1,48 +1,92 @@
 <%- include("partials/header"); -%>
+<%let llegada=viaje.llegada
+        let fecha=viaje.fecha;
+  (function() {
+    function pad(number) {
+      if (number < 10) {
+        return '0' + number;
+      }
+      return number;
+    }
 
+    Date.prototype.fullFecha = function() {
+      return this.getUTCFullYear() +
+        '-' + pad(this.getMonth() + 1) +
+        '-' + pad(this.getDate()) +
+        'T' + pad(this.getHours()) +
+        ':' + pad(this.getMinutes()) 
+    };
+     Date.prototype.mediaFecha = function() {
+      return this.getFullYear() +
+        '-' + pad(this.getMonth() + 1) +
+        '-' + pad(this.getDate()) 
+    };
+    Date.prototype.hora = function() {
+      return pad(this.getHours()) +
+        ':' + pad(this.getMinutes()) 
+    };
+
+  }());%>
 <div>
   <!-- falta checkear los valores que ya estar cargados en la ruta a modificar -->
   <form action="/viaje" method="POST">
-    <input type="hidden" name="idViaje" value="viaje._id" />
     <label for="ruta">Elige una ruta:</label>
     <select name="ruta" id="ruta">
-      <% rutas.forEach( (ruta) => { %>
+      <% 
+      rutas.forEach( (ruta) => { %>
       <option value="<%= ruta._id %>">
-        <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %>
+        <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %> -<%= ruta.hora %>
       </option>
+      
       <% }); %>
     </select>
-
+    
     <label for="fecha">Fecha:</label>
-    <input type="date" id="fecha" name="fecha" value="<%= viaje.fecha %>" />
-
+    <input type="date" id="fecha" name="fecha" value="<%= fecha.mediaFecha() %>"  min="<%= fecha.mediaFecha() %>"/>
+    <label for="fecha">hora:</label>
+    <input type="time" id="hora" name="hora" value="<%= fecha.hora() %>" disabled />
+    
     <label for="llegada">Fecha de llegada:</label>
-
+    <input type="hidden" id="l" value="">
     <input
       type="datetime-local"
       id="llegada"
       name="llegada"
-      value="<%= viaje.llegada %>"
-      min=""
+      value="<%=llegada.fullFecha()%>"
+      min="<%= fecha.fullFecha() %>"
       max=""
     />
 
     <label for="precio">Precio:</label>
     <input type="text" id="precio" name="precio" value="<%= viaje.precio %>" />
-
+   
     <label for="asientos">Cantidad de asientos:</label>
     <input
       type="text"
       id="asientos"
       name="asientos"
-      value="<%= viaje.asientos %>"
+      value="<%= viaje.asientosDisponibles %>"
     />
     <br />
+<input type="hidden" name="idViaje" id="idViaje" value="<%= viaje._id %>">
 
-    <button type="submit" name="button">Guardar cambios</button>
+
+      <button type="submit" name="button">Guardar cambios</button>
+
 
     <a href="http://localhost:3000/home">Cancelar</a>
   </form>
 </div>
-
+<% 
+      rutas.forEach( (ruta) => { %>
+<input type="hidden" id="<%=ruta._id%>" value="<%=ruta.hora%>">
+      
+      <% }); %>
+<script>
+  document.getElementById("ruta").onchange=function(){
+    let r =document.getElementById("ruta").value;
+    let hora=document.getElementById(r).value;
+    document.getElementById("hora").value=hora;
+  }
+</script>
 <%- include("partials/footer"); -%>

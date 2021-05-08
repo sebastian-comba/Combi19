@@ -292,7 +292,14 @@ app.get("/insumo/:id", (req, res) => {
             "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro"
           );
         } else {
-          Insumo.updateOne({ _id: req.params.id }, { borrado: true });
+          Insumo.updateOne({_id:resultInsumo.id }, { borrado: true }, (err) =>{
+            if(err){
+              console.log(err);
+            } else {
+              console.log("se elimino el insumo");
+              res.redirect("/listar-insumos");              
+            }
+          });
         }
       }
     );

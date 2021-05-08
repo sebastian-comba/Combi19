@@ -305,6 +305,7 @@ app.post("/alta-insumo", (req, res) => {
 // FALTA CREAR PASAJES CON INSUMOS COMPRADOS PARA TESTEAR
 app.get("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre
+<<<<<<< HEAD
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
@@ -335,6 +336,24 @@ app.get("/insumo/:id", (req, res) => {
             }
           }
         );
+=======
+  Insumo.findOne({ _id: req.params.id }, (err, resultInsumo) => {
+    Pasaje.findOne({ fecha: { $gte: hoy}, insumos: { $elemMatch: {nombre:resultInsumo.nombre} }}, (err, resultPasaje) => {
+        if (resultPasaje !== null) {
+          console.log(
+            "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro"
+          );
+        } else {
+          Insumo.updateOne({_id:resultInsumo.id }, { borrado: true }, (err) =>{
+            if(err){
+              console.log(err);
+            } else {
+              console.log("se elimino el insumo");
+              res.redirect("/listar-insumos");              
+            }
+          });
+        }
+>>>>>>> modificar-ruta
       }
     });
   }
@@ -1199,38 +1218,63 @@ app.post("/modificar-ruta", (req, res) => {
           Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
             Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
               Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
-                Ruta.updateOne(
-                  { _id: req.body.id },
-                  {
-                    origen: {
-                      nombre: origenR.ciudad,
-                      provincia: origenR.provincia,
-                      idLugar: origenR._id,
-                    },
-                    destino: {
-                      nombre: destinoR.ciudad,
-                      provincia: destinoR.provincia,
-                      idLugar: destinoR._id,
-                    },
-                    combi: {
-                      patente: combiR.patente,
-                      marca: combiR.marca,
-                      modelo: combiR.modelo,
-                      idCombi: combiR._id,
-                    },
-                    distancia: req.body.distancia,
-                    hora: req.body.hora,
-                    borrado: false,
-                  },
-                  (err, updRuta) => {
-                    if (err) {
-                      console.log(err);
+                Ruta.findOne({
+                  "origen.nombre": origenR.ciudad,
+                  "origen.provincia": origenR.provincia,
+                  "origen.idLugar": origenR._id,
+                  "destino.nombre": destinoR.ciudad,
+                  "destino.provincia": destinoR.provincia,
+                  "destino.idLugar": destinoR._id,          
+                  "combi.patente": combiR.patente,
+                  "combi.marca": combiR.marca,
+                  "combi.modelo": combiR.modelo,
+                  "combi.idCombi": combiR._id,
+                  distancia: req.body.distancia,
+                  hora: req.body.hora,
+                  borrado: false,
+                },(err,resultRuta) => {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    if (resultRuta !== null){
+                      console.log("La ruta ya existe");
                     } else {
-                      console.log("se modifico la ruta");
-                      res.redirect("/listar-rutas");
+                      Ruta.updateOne(
+                        { _id: req.body.id },
+                        {
+                          origen: {
+                            nombre: origenR.ciudad,
+                            provincia: origenR.provincia,
+                            idLugar: origenR._id,
+                          },
+                          destino: {
+                            nombre: destinoR.ciudad,
+                            provincia: destinoR.provincia,
+                            idLugar: destinoR._id,
+                          },
+                          combi: {
+                            patente: combiR.patente,
+                            marca: combiR.marca,
+                            modelo: combiR.modelo,
+                            idCombi: combiR._id,
+                          },
+                          distancia: req.body.distancia,
+                          hora: req.body.hora,
+                          borrado: false,
+                        },
+                        (err, updRuta) => {
+                          if (err) {
+                            console.log(err);
+                          } else {
+                            console.log("se modifico la ruta");
+                            res.redirect("/listar-rutas");
+                          }
+                        }
+                      );
                     }
                   }
-                );
+                });
+                
               });
             });
           });

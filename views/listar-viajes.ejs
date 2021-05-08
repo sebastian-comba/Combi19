@@ -6,18 +6,20 @@
 <% if (!viajes.length) { %>
 <h2>No hay viajes cargados</h2>
 <% } else { %>
-<table>
+<table class="table">
   <thead>
     <tr>
-      <th>Origen</th>
-      <th>Destino</th>
-      <th>Combi</th>
-      <th>Chofer</th>
-      <th>Fecha salida</th>
-      <th>Fecha llegada</th>
-      <th>Precio</th>
+      <th scope="col">Origen</th>
+      <th scope="col">Destino</th>
+      <th scope="col">Combi</th>
+      <th scope="col">Chofer</th>
+      <th scope="col">Fecha salida</th>
+      <th scope="col">Fecha llegada</th>
+      <th cope="col">Precio</th>
     </tr>
   </thead>
+</table>
+<table class="table table-striped">
   <tbody>
     <% viajes.forEach( (viaje) => { %>
     <tr>

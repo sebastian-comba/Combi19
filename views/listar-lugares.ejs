@@ -4,6 +4,9 @@
   <button id="cargar-lugar">Cargar Lugar</button>
 </a>
 
+<% if (!data.length) { %>
+  <h2>No hay lugares cargados</h2>
+<% } else { %>
 <table class="table">
   <thead>
     <tr>
@@ -34,4 +37,5 @@
     <% }); %>
   </tbody>
 </table>
+<% } %>
 <%- include("partials/footer"); -%>

@@ -11,19 +11,19 @@
 
     Date.prototype.fullFecha = function() {
       return this.getUTCFullYear() +
-        '-' + pad(this.getUTCMonth() + 1) +
-        '-' + pad(this.getUTCDate()) +
-        'T' + pad(this.getUTCHours()) +
-        ':' + pad(this.getUTCMinutes()) 
+        '-' + pad(this.getMonth() + 1) +
+        '-' + pad(this.getDate()) +
+        'T' + pad(this.getHours()) +
+        ':' + pad(this.getMinutes()) 
     };
      Date.prototype.mediaFecha = function() {
-      return this.getUTCFullYear() +
-        '-' + pad(this.getUTCMonth() + 1) +
-        '-' + pad(this.getUTCDate()) 
+      return this.getFullYear() +
+        '-' + pad(this.getMonth() + 1) +
+        '-' + pad(this.getDate()) 
     };
     Date.prototype.hora = function() {
-      return pad(this.getUTCHours()) +
-        ':' + pad(this.getUTCMinutes()) 
+      return pad(this.getHours()) +
+        ':' + pad(this.getMinutes()) 
     };
 
   }());%>

@@ -1116,7 +1116,7 @@ app.post("/cargar-viaje", (req, res) => {
                   });
                   v.save((err) => {
                     if (err) {
-                      console.log("err");
+                      console.log(err);
                     } else {
                       console.log("Viaje cargado");
                     }
@@ -1175,61 +1175,59 @@ app.get("/modificar-viaje/:id", (req, res) => {
       }
     }
   });
-  
 });
 
-// UPDATE VIAJE
-app.get("/modificar-viaje", (req, res) => { });
 
-app.put("/viaje/:id", (req, res) => {
+app.post("/viaje", (req, res) => {
   Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {
     if (err) {
       console.log(err);
     } else {
-      if (resPasaje.length) {
+      if (resPasaje) {
         console.log("No se puede modificar el viaje, tiene pasajes comprados.");
         res.send("No se puede modificar el viaje, tiene pasajes comprados.");
       } else {
-        Combi.findOne({ _id: req.body.combi }, (err, resCombi) => {
+        Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
           if (err) {
             console.log(err);
           } else {
-            if (req.body.asientos > resCombi.asientos) {
-              console.log(
-                "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
-              );
-              res.send(
-                "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
-              );
-            } else {
-              Viaje.findOne({ _id: req.body.idViaje }, (err, resViaje) => {
-                if (err) {
-                  console.log(err);
+            Combi.findOne({ patente: resRuta.combi.patente }, (err, resCombi) => {
+              if (err) {
+                console.log(err);
+              } else {
+                if (req.body.asientos > resCombi.asientos) {
+                  console.log(
+                    "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
+                  );
+                  res.send(
+                    "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
+                  );
                 } else {
-                  if (req.body.fecha < res.fecha) {
-                    console.log(
-                      "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
-                    );
-                    res.send(
-                      "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
-                    );
-                  } else {
-                    Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
-                      if (err) {
-                        console.log(err);
+                  Viaje.findOne({ _id: req.body.idViaje }, (err, resViaje) => {
+                    if (err) {
+                      console.log(err);
+                    } else {
+                      if (transformarFecha(req.body.fecha + "T" + resRuta.hora) < resViaje.fecha) {
+                        console.log(
+                          "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
+                        );
+                        res.send(
+                          "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
+                        );
                       } else {
-                        Viaje.find(
-                          { ruta: { idRuta: resRuta._id } },
+                        Viaje.find({ "ruta.idRuta": resRuta._id },
                           (err, resultV) => {
-                            if (condition) {
+                            if (err) {
                               console.log(err);
                             } else {
                               let bool = false;
+                              if (!resultV) {
+                                bool = true;
+                              }
                               resultV.forEach((viaje) => {
-                                if (
-                                  req.body.fecha + "T" + resRuta.hora >
-                                  resultV.llegada ||
-                                  req.body.llegada < resultV.fecha
+                                if ((transformarFecha(req.body.fecha + "T" + resRuta.hora) >
+                                  viaje.llegada ||
+                                  transformarFecha(req.body.llegada) < viaje.fecha) && (resViaje !== viaje)
                                 ) {
                                   bool = true;
                                 }
@@ -1265,25 +1263,35 @@ app.put("/viaje/:id", (req, res) => {
                                     asientosDisponibles: req.body.asientos,
                                     estado: "En espera",
                                     borrado: false,
+                                  },
+                                  (err) => {
+                                    if (err) {
+                                      console.log(err)
+                                    } else {
+                                      res.redirect("/viajes");
+                                    }
                                   }
                                 );
+                              } else {
+                                console.log("combi en uso en ese rango de dias");
+
                               }
                             }
                           }
                         );
                       }
-                    });
-                  }
-                }
-              });
-            }
+                    };
+                  });
+                };
+              };
+            })
           }
         });
-      }
+      };
     }
-  });
-  res.redirect("/viajes");
+  })
 });
+
 
 // DELETE VIAJE
 app.delete("/viaje/:id", (req, res) => {

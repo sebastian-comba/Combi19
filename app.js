@@ -179,7 +179,9 @@ app.get("/lugar/:id", (req, res) => {
 
 //UPDATE lugar
 app.get("/modificar-lugar/:id", (req, res) => {
-{
+    if (req.session.rol !== "Admin") {
+      res.redirect("/");
+    } else {
   Lugar.findOne({ _id: req.params.id, borrado: false }, (err, resultLugar) => {
     if (err) {
       console.log(err);
@@ -187,6 +189,7 @@ app.get("/modificar-lugar/:id", (req, res) => {
       res.render("modificar-lugar", { data: resultLugar });
     }
   });
+}
 });
 app.post("/modificar-lugar", (req, res) => {
   //hay que verificar si el lugar está como destino de una ruta
@@ -233,7 +236,7 @@ app.post("/modificar-lugar", (req, res) => {
       );
     }
   });
-}
+
 });
 
 //CRUD Insumo

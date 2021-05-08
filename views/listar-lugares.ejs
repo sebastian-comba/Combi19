@@ -7,17 +7,15 @@
 <% if (!data.length) { %>
   <h2>No hay lugares cargados</h2>
 <% } else { %>
-<table class="table">
+<table class="table table-striped">
   <thead>
     <tr>
-      <th scope="col" class="col-md-3">Ciudad</th>
-      <th scope="col"  class="col-md-3">Provincia</th>
-      <th scope="col" class="col-md-3"></th>
-      <th scope="col" class="col-md-3"></th>
+      <th scope="col" >Ciudad</th>
+      <th scope="col"  >Provincia</th>
+      <th scope="col" ></th>
+      <th scope="col" ></th>
     </tr>
   </thead>
-</table>
-<table class="table table-striped">
   <tbody>
     <% data.forEach((lugar) => { %>
     <tr>

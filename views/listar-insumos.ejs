@@ -6,16 +6,16 @@
 <% if (!data.length) { %>
     <h2>No hay insumos cargados</h2>
 <% } else { %>
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th scope="col" >Nombre</th>
                 <th scope="col" >Tipo</th>
                 <th scope="col" >Precio</th>
+                <th scope="col" ></th>
+                <th scope="col" ></th>
             </tr>
         </thead>
-    </table>
-    <table class="table table-striped">
         <tbody>
         <% data.forEach(function(insumo) { %>
             <tr>

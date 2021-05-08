@@ -146,30 +146,41 @@ app.post("/cargar-lugar", (req, res) => {
 });
 
 // DELETE lugar
-app.delete("/lugar/:id", (req, res) => {
-  Viaje.find(
-    {
-      ruta: { origen: { idLugar: req.params.id } },
-      fecha: { $gte: new Date() },
-    },
-    (err, result) => {
-      if (result.length) {
-        console.log("No se puede borrar, tiene viaje futuro");
-      } else {
-        Lugar.updateOne(
-          {
-            _id: req.params.id,
-          },
-          { borrado: true },
-          (err) => {
-            if (err) {
-              console.log(err);
-            }
+app.get("/lugar/:id", (req, res) => {
+  Lugar.findOne({_id:req.params.id},(err,resLugar) => {
+    if(err){
+      console.log(err);
+    } else {
+      Viaje.findOne(
+        {
+          $or: [{"ruta.origen.nombre": resLugar.ciudad,
+          "ruta.origen.provincia": resLugar.provincia},
+          {"ruta.destino.nombre": resLugar.ciudad,
+          "ruta.destino.provincia": resLugar.provincia}
+        ],
+          fecha: { $gte: new Date() },
+        },
+        (err, result) => {
+          if (result !== null) {
+            console.log("No se puede borrar, tiene viaje futuro");
+          } else {
+            Lugar.updateOne(
+              {
+                _id: req.params.id,
+              },
+              { borrado: true },
+              (err) => {
+                if (err) {
+                  console.log(err);
+                }
+              }
+            );
+            res.redirect("/listar-lugares");
           }
-        );
-      }
+        }
+      );
     }
-  );
+  });
 });
 
 //UPDATE lugar

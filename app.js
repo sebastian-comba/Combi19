@@ -1254,7 +1254,7 @@ app.post("/cargar-viaje", (req, res) => {
                       console.log("Viaje cargado");
                     }
                   });
-                  res.redirect("/home");
+                  res.redirect("/viajes");
                 } else {
                   console.log(
                     "La cantidad de asientos debe ser menor o igual a " +
@@ -1450,7 +1450,7 @@ app.post("/viaje/:id", (req, res) => {
       console.log(err);
     } else {
       console.log(result);
-      if (result.length) {
+      if (result !== null) {
         console.log("No se puede borrar el viaje, tiene pasajes comprados");
         res.send("No se puede borrar el viaje, tiene pasajes comprados");
       } else {

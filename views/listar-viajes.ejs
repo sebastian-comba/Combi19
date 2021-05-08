@@ -6,9 +6,6 @@
 <% if (!viajes.length) { %>
 <h2>No hay viajes cargados</h2>
 <% } else { %>
-<table class="table">
-  
-</table>
 <table class="table table-striped">
   <thead>
     <tr>
@@ -22,6 +19,8 @@
       <th scope="col"></th>
       <th cope="col"></th>
     </tr>
+  </thead>
+  <tbody>
     <% viajes.forEach( (viaje) => { %>
     <tr>
       <td>

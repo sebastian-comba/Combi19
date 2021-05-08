@@ -865,39 +865,62 @@ app.post("/cargar-rutas", (req, res) => {
   Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
     Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
       Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
-        var ruta = new Ruta({
-          origen: {
-            nombre: origenR.ciudad,
-            provincia: origenR.provincia,
-            idLugar: origenR._id,
-          },
-          destino: {
-            nombre: destinoR.ciudad,
-            provincia: destinoR.provincia,
-            idLugar: destinoR._id,
-          },
-          combi: {
-            patente: combiR.patente,
-            marca: combiR.marca,
-            modelo: combiR.modelo,
-            idCombi: combiR._id,
-          },
+        Ruta.findOne({
+          "origen.nombre": origenR.ciudad,
+          "origen.provincia": origenR.provincia,
+          "origen.idLugar": origenR._id,
+          "destino.nombre": destinoR.ciudad,
+          "destino.provincia": destinoR.provincia,
+          "destino.idLugar": destinoR._id,          
+          "combi.patente": combiR.patente,
+          "combi.marca": combiR.marca,
+          "combi.modelo": combiR.modelo,
+          "combi.idCombi": combiR._id,
           distancia: req.body.distancia,
           hora: req.body.hora,
           borrado: false,
-        });
-        ruta.save((err) => {
+        },(err,resultRuta) => {
           if (err) {
             console.log(err);
-            console.log("no se guardo la ruta");
           } else {
-            console.log("se guardo la ruta");
+            if (resultRuta !== null){
+              console.log("La ruta ya existe");
+            } else {
+              var ruta = new Ruta({
+                origen: {
+                  nombre: origenR.ciudad,
+                  provincia: origenR.provincia,
+                  idLugar: origenR._id,
+                },
+                destino: {
+                  nombre: destinoR.ciudad,
+                  provincia: destinoR.provincia,
+                  idLugar: destinoR._id,
+                },
+                combi: {
+                  patente: combiR.patente,
+                  marca: combiR.marca,
+                  modelo: combiR.modelo,
+                  idCombi: combiR._id,
+                },
+                distancia: req.body.distancia,
+                hora: req.body.hora,
+                borrado: false,
+              });
+              ruta.save((err) => {
+                if (err) {
+                  console.log(err);
+                  console.log("no se guardo la ruta");
+                } else {
+                  console.log("se guardo la ruta");
+                }
+              });
+            }
           }
         });
       });
     });
   });
-
   res.redirect("/listar-rutas");
 });
 

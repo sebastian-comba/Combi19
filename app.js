@@ -902,7 +902,6 @@ app.get("/ruta/:id", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        console.log(viajes);
         if (viajes !== null) {
           console.log(
             "No se puede eliminar la ruta porque tiene viajes a futuro"

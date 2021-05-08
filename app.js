@@ -81,9 +81,12 @@ app.get("/home", (req, res) => {
 //
 // READ todos los lugares
 app.get("/lugares", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Lugar.find({}, (err, result) => {
     res.json(result);
-  });
+  });}
 });
 
 // READ lugares no borrados
@@ -105,7 +108,11 @@ app.get("/listar-lugares", (req, res) => {
 // falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
 // falta normalizar los datos de entrada para que se guarden siempre capitalizados y no en minuscula o mayuscula
 app.get("/cargar-lugar", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   res.render("cargar-lugar", {});
+}
 });
 
 app.post("/cargar-lugar", (req, res) => {
@@ -126,6 +133,9 @@ app.post("/cargar-lugar", (req, res) => {
 
 // DELETE lugar
 app.get("/lugar/:id", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Lugar.findOne({ _id: req.params.id }, (err, resLugar) => {
     if (err) {
       console.log(err);
@@ -164,11 +174,12 @@ app.get("/lugar/:id", (req, res) => {
         }
       );
     }
-  });
+  });}
 });
 
 //UPDATE lugar
 app.get("/modificar-lugar/:id", (req, res) => {
+{
   Lugar.findOne({ _id: req.params.id, borrado: false }, (err, resultLugar) => {
     if (err) {
       console.log(err);
@@ -222,15 +233,19 @@ app.post("/modificar-lugar", (req, res) => {
       );
     }
   });
+}
 });
 
 //CRUD Insumo
 //
 // READ todos los insumos
 app.get("/insumos", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Insumo.find({}, (err, result) => {
     res.json(result);
-  });
+  });}
 });
 
 // READ todos los insumos no borrados
@@ -251,7 +266,11 @@ app.get("/listar-insumos", (req, res) => {
 //CREATE insumo
 //primero busca si ya hay uno con el mismo nombre
 app.get("/alta-insumo", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   res.render("alta-insumo", {});
+  }
 });
 
 app.post("/alta-insumo", (req, res) => {
@@ -285,6 +304,9 @@ app.post("/alta-insumo", (req, res) => {
 // FALTA CREAR PASAJES CON INSUMOS COMPRADOS PARA TESTEAR
 app.get("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Insumo.findOne({ _id: req.params.id }, (err, resultInsumo) => {
     Pasaje.findOne(
       { fecha: { $gte: hoy, insumos: { $elemMatch: resultInsumo.nombre } } },
@@ -299,11 +321,15 @@ app.get("/insumo/:id", (req, res) => {
       }
     );
   });
+}
 });
 
 // UPDATE Insumo
 app.get("/modificar-insumo/:id", (req, res) => {
   //findOne poner en una variable y enviar eso en el data de render
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Insumo.findOne(
     { _id: req.params.id, borrado: false },
     (err, resultInsumo) => {
@@ -314,6 +340,7 @@ app.get("/modificar-insumo/:id", (req, res) => {
       }
     }
   );
+  }
 });
 app.post("/modificar-insumo", (req, res) => {
   //busca insumos con el mismo nombre, pero diferente id
@@ -385,7 +412,7 @@ app.post("/iniciar", (req, res) => {
 
 //cerrarSesion
 app.get("/cerrarSesion", (req, res) => {
-  if (req.session) {
+  if (req.session.nombre) {
     req.session.destroy(function () {
       req.session = null;
     });
@@ -983,6 +1010,9 @@ app.get("/listar-rutas", (req, res) => {
 
 // CREATE rutas
 app.get("/cargar-rutas", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Lugar.find({ borrado: false }, (err, lugares) => {
     if (err) {
       console.log(err);
@@ -998,6 +1028,7 @@ app.get("/cargar-rutas", (req, res) => {
       });
     }
   });
+}
 });
 app.post("/cargar-rutas", (req, res) => {
   Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
@@ -1064,6 +1095,9 @@ app.post("/cargar-rutas", (req, res) => {
 
 // DELETE Ruta
 app.get("/ruta/:id", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Viaje.findOne(
     {
       "ruta.idRuta": req.params.id,
@@ -1095,10 +1129,14 @@ app.get("/ruta/:id", (req, res) => {
       }
     }
   );
+  }
 });
 
 // UPDATE Ruta
 app.get("/modificar-ruta/:id", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Ruta.findOne({ _id: req.params.id, borrado: false }, (err, resultRuta) => {
     if (err) {
       console.log(err);
@@ -1121,6 +1159,7 @@ app.get("/modificar-ruta/:id", (req, res) => {
       });
     }
   });
+}
 });
 app.post("/modificar-ruta", (req, res) => {
   Viaje.findOne(
@@ -1186,6 +1225,9 @@ app.post("/modificar-ruta", (req, res) => {
 //
 //CREATE viaje
 app.get("/cargar-viaje", (req, res) => {
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Ruta.find({ borrado: false }, (err, result) => {
     if (err) {
       console.log(err);
@@ -1198,6 +1240,7 @@ app.get("/cargar-viaje", (req, res) => {
       }
     }
   });
+}
 });
 app.post("/cargar-viaje", (req, res) => {
   Ruta.findOne(
@@ -1289,7 +1332,9 @@ app.get("/viajes", (req, res) => {
 
 // UPDATE VIAJE
 app.get("/modificar-viaje/:id", (req, res) => {
-  console.log("entre");
+  if (req.session.rol !== "Admin") {
+    res.redirect("/");
+  } else {
   Ruta.find({ borrado: false }, (err, rutaResult) => {
     if (err) {
       console.log(err);
@@ -1308,6 +1353,7 @@ app.get("/modificar-viaje/:id", (req, res) => {
       }
     }
   });
+}
 });
 
 app.post("/viaje", (req, res) => {

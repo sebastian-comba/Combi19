@@ -1,14 +1,14 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Insumo </h1>
-
+<datalist id="tiposInsumos">
+    <option value="dulce">Dulce</option>
+    <option value="salado">Salado</option>
+</datalist>
 <form action = "/modificar-insumo" method="POST">
     <label for="nombre" required>Nombre:</label><br>
     <input type="text" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre" name="nombre"/><br>
     <label for="tipo" required>Tipo:</label><br>
-    <select name="tipo" id="tipo" name="tipo" >
-        <option value="dulce">Dulce</option>
-        <option value="salado">Salado</option>  
-    </select><br>
+    <input type="search" name="tipo" id="tipo" list="tiposInsumos" class="form-control alta"value="<%=data.tipo%>">
     <label for="precio" required>Precio:</label><br>
     <input type="text" placeholder="<%= data.precio %>" value="<%= data.precio %>" id="precio" name="precio"/><br>
     <input type="hidden" value="<%= data._id %>" id="id" name="id"/>

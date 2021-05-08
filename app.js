@@ -132,13 +132,13 @@ app.post("/cargar-lugar", (req, res) => {
 });
 
 // DELETE lugar
-app.get("/lugar/:id", (req, res) => {
+app.delete("/lugar/:id", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
   Lugar.findOne({ _id: req.params.id }, (err, resLugar) => {
     if (err) {
-      console.log(err);
+      res.json({ response: "Error al conectar en la base de datos, intentelo en unos minutos" })
     } else {
       Viaje.findOne(
         {
@@ -156,7 +156,7 @@ app.get("/lugar/:id", (req, res) => {
         },
         (err, result) => {
           if (result !== null) {
-            console.log("No se puede borrar, tiene viaje futuro");
+            res.json({response : "No se puede borrar, tiene viaje futuro"});
           } else {
             Lugar.updateOne(
               {
@@ -166,10 +166,11 @@ app.get("/lugar/:id", (req, res) => {
               (err) => {
                 if (err) {
                   console.log(err);
+                }else{
+                  res.json({ response: "bien" });
                 }
               }
             );
-            res.redirect("/listar-lugares");
           }
         }
       );
@@ -184,7 +185,7 @@ app.get("/modificar-lugar/:id", (req, res) => {
     } else {
   Lugar.findOne({ _id: req.params.id, borrado: false }, (err, resultLugar) => {
     if (err) {
-      console.log(err);
+      res.redirect("/listar-lugares");
     } else {
       res.render("modificar-lugar", { data: resultLugar });
     }
@@ -213,7 +214,7 @@ app.post("/modificar-lugar", (req, res) => {
         },
         (err, result) => {
           if (result) {
-            console.log("No se puede modificar, tiene viaje futuro");
+            res.json({response:"No se puede modificar, tiene viaje futuro"});
           } else {
             Lugar.updateOne(
               {
@@ -230,7 +231,7 @@ app.post("/modificar-lugar", (req, res) => {
                 }
               }
             );
-            res.redirect("/listar-lugares");
+            res.json({ response: "bien" });
           }
         }
       );

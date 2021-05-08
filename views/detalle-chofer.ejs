@@ -36,11 +36,7 @@
         method: "DELETE"}).then((res) => res.json())
         .then((data) => {
             switch (data.response) {
-                case "hay viajes":
-                    document.getElementById("error").innerHTML =
-                        '<small  style="color:red"><p class="er">No se puede eliminar por que tiene viajes futuros </p></small>';
 
-                    break;
                 case "error":
                     document.getElementById("error").innerHTML =
                         '<small  style="color:red"><p class="er">Hubo un error al eliminar el chofer </p></small>';
@@ -48,6 +44,12 @@
                 case "bien":
                     location.replace("/listar-chofer");
                     break;
+                default:
+                    document.getElementById("error").innerHTML =
+                        '<small  style="color:red"><p class="er">'+data.response+'</p></small>';
+                    break;
+
+                    break
                 
             }
            

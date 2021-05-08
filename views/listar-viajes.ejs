@@ -7,6 +7,9 @@
 <h2>No hay viajes cargados</h2>
 <% } else { %>
 <table class="table">
+  
+</table>
+<table class="table table-striped">
   <thead>
     <tr>
       <th scope="col">Origen</th>
@@ -18,8 +21,6 @@
       <th cope="col">Precio</th>
     </tr>
   </thead>
-</table>
-<table class="table table-striped">
   <tbody>
     <% viajes.forEach( (viaje) => { %>
     <tr>
@@ -34,8 +35,7 @@
         viaje.combi.modelo %>
       </td>
       <td>
-        <%= viaje.chofer.nombre %>, <%= viaje.chofer.apellido %>, <%=
-        viaje.chofer.mail %>
+        <%= viaje.chofer.nombre %>, <%= viaje.chofer.apellido %>, <%= viaje.chofer.mail %>
       </td>
       <td><%= viaje.fecha %></td>
       <td><%= viaje.llegada %></td>

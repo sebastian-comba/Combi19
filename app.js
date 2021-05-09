@@ -1300,7 +1300,7 @@ app.get("/cargar-viaje", (req, res) => {
     });
   }
 });
-app.put("/cargar-viaje", (req, res) => {
+app.post("/cargar-viaje", (req, res) => {
   Ruta.findOne(
     {
       _id: req.body.ruta,
@@ -1317,7 +1317,7 @@ app.put("/cargar-viaje", (req, res) => {
             if (err) {
               console.log(err);
             } else {
-              if (transformarFecha(req.body.fecha) >= hoy) {
+              if (transformarFecha(req.body.fecha + "T" + rutaResult.hora) >= new Date) {
                 if (req.body.asientos <= combiResult.asientos) {
                   let v = new Viaje({
                     ruta: {
@@ -1352,18 +1352,17 @@ app.put("/cargar-viaje", (req, res) => {
                     if (err) {
                       console.log(err);
                     } else {
-                      console.log("Viaje cargado");
+                      res.json({response: "bien"});
                     }
                   });
-                  res.redirect("/viajes");
                 } else {
-                  console.log(
+                  res.json({response:
                     "La cantidad de asientos debe ser menor o igual a " +
                     combiResult.asientos
-                  );
+                });
                 }
               } else {
-                console.log("La fecha debe ser mayor o igual a la actual");
+                res.json({response:"La fecha debe ser mayor o igual a la actual"});
               }
             }
           }

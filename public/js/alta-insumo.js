@@ -1,5 +1,5 @@
 function camposVacios() {
-    let form = document.getElementsByClassName("mlugar");
+    let form = document.getElementsByClassName("insumo");
     for (let i = 0; i < form.length; i++) {
         let e = form[i];
         if (e.value === "") {
@@ -9,48 +9,39 @@ function camposVacios() {
     }
 }
 function limpiar() {
-    let errores = document.getElementsByClassName("err");
-    for (let index = 0; index < errores.length; index++) {
-        errores[index].innerHTML = "";
-    }
+    document.getElementById("err").innerHTML ="";
+    
 }
 
 function modificar() {
-    fetch("/modificar-lugar", {
-        method: "put",
+    fetch("/alta-insumo", {
+        method: "post",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            id: id.value,
-            ciudad:ciudad.value,
-            provincia: provincia.value,
+            nombre: nombre.value,
+            tipo: tipo.value,
+            precio: precio.value,
         }),
     })
         .then((res) => res.json())
         .then((data) => {
             switch (data.response) {
                 case "bien":
-                    location.replace("/listar-lugares")
+                    location.replace("/listar-insumos")
                     break;
                 default:
                     document.getElementById("err").innerHTML =
-                        '<small  style="color:red"><p class="er">'+data.response+'</p></small>';
-                break;
+                        '<small  style="color:red"><p class="er">' + data.response + '</p></small>';
+                    break;
             }
         });
 }
-function hayCambios(){
-    if(cv.value===ciudad.value && pv.value === provincia.value ){
- 
-        return false;
-    }
-    return true;
-}
 
-document.getElementById("modificar").onclick = function () {
+document.getElementById("guardar").onclick = function () {
     limpiar();
     camposVacios();
     let errores = document.getElementsByClassName("er").length;
-    if (errores === 0 && hayCambios() ) {
+    if (errores === 0) {
         modificar();
     }
 }

@@ -1,13 +1,14 @@
 <%- include("partials/header"); -%>
 <h2>Alta lugar</h2>
 <div>
-  <form action="/cargar-lugar" method="POST">
-    <label for="ciudad" required>Ciudad:</label><br>
-    <input type="text" name="ciudad" /><br>
-    <label for="provincia" required>Provincia:</label><br>
-    <input type="text" name="provincia" />
+  <div id="err"></div>
+    <label for="ciudad"  required>Ciudad:</label><br>
+    <input type="text"class="lugar" name="ciudad" id="ciudad"/><br>
+    <label for="provincia" class="lugar" required>Provincia:</label><br>
+    <input type="text" name="provincia" id="provincia" />
     <br />
-    <button type="submit" name="button">Cargar</button>
-  </form>
+    <button id="guardar" name="button">Cargar</button>
+
 </div>
+<script src="/js/alta-lugar.js"></script>
 <%- include("partials/footer"); -%>

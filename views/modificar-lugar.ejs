@@ -1,17 +1,19 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Lugar </h1>
 
-<form action = "/modificar-lugar" method="POST">
     <label for="Ciudad" required>Ciudad:</label><br>
-    <input type="text" placeholder="<%= data.ciudad %>" value="<%= data.ciudad %>" id="ciudad" name="ciudad"/><br>
+    <input type="text" class="mlugar"placeholder="<%= data.ciudad %>" value="<%= data.ciudad %>" id="ciudad" name="ciudad"/><br>
     <label for="Provincia" required>Provincia:</label><br>
-    <input type="text" placeholder="<%= data.provincia %>" value="<%= data.provincia %>" id="provincia" name="provincia"/><br>
+    <input type="text" class="mlugar"placeholder="<%= data.provincia %>" value="<%= data.provincia %>" id="provincia" name="provincia"/><br>
     <input type="hidden" value="<%= data._id %>" id="id" name="id"/>
-    <button type="submit">Modificar</button>
-</form> 
+    <input type="hidden" value="<%= data.ciudad %>" id="cv" name="cv"/>
+    <input type="hidden" value="<%= data.provincia %>" id="pv" name="pv"/>
+   <div id="err"></div>
+    <button id="modificar">Modificar</button>
+
 <a href="http://localhost:3000/listar-lugares">
     <button id="cancelar">Cancelar</button>
 </a>
-
+<script src="/js/modificar-lugar.js"></script>
 
 <%- include("partials/footer"); -%>

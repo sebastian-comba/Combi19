@@ -1,15 +1,17 @@
 <%- include("partials/header"); -%>
 <h1>Alta Insumo</h1>
-<form action = "/alta-insumo" method="POST">
-    <label for="nombre" required>Nombre:</label><br>
-    <input type="text" id="nombre" name="nombre"/><br>
+
+  <div id="err"></div>
+    <label for="nombre"  required>Nombre:</label><br>
+    <input type="text" id="nombre" class="insumo"name="nombre"/><br>
     <label for="tipo" required>Tipo:</label><br>
-    <select name="tipo" id="tipo" name="tipo">
+    <select name="tipo" id="tipo"class="insumo" name="tipo">
         <option value="dulce">Dulce</option>
         <option value="salado">Salado</option>
     </select><br>
     <label for="precio" required>Precio:</label><br>
-    <input type="text" id="precio" name="precio"/><br>
-    <button type="submit">Agregar</button>
-</form> 
+    <input type="text" class="insumo" id="precio" name="precio"/><br>
+    <button id="guardar">Agregar</button>
+ 
+<script src="/js/alta-insumo.js"></script>
 <%- include("partials/footer"); -%>

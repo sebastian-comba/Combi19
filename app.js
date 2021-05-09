@@ -121,14 +121,26 @@ app.post("/cargar-lugar", (req, res) => {
     provincia: req.body.provincia,
     borrado: false,
   });
-  l.save((err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("lugar guardado");
-    }
-    res.redirect("/listar-lugares");
-  });
+  Lugar.findOne({
+    ciudad: req.body.ciudad,
+    provincia: req.body.provincia, borrado:false},(err,result)=>{
+      if(!err){
+        if(result){
+
+          res.json({ response: "Ya existe un lugar identico" });
+        }
+        else{
+          l.save((err) => {
+            if (err) {
+              res.json({ response: "Ya existe un lugar identico" });
+            } else {
+              res.json({ response: "bien" });
+            }
+          });
+        }
+      }
+    })
+  
 });
 
 // DELETE lugar
@@ -153,6 +165,7 @@ app.delete("/lugar/:id", (req, res) => {
             },
           ],
           fecha: { $gte: new Date() },
+          borrado:false,
         },
         (err, result) => {
           if (result !== null) {
@@ -192,7 +205,7 @@ app.get("/modificar-lugar/:id", (req, res) => {
   });
 }
 });
-app.post("/modificar-lugar", (req, res) => {
+app.put("/modificar-lugar", (req, res) => {
   //hay que verificar si el lugar está como destino de una ruta
   Lugar.findOne({ _id: req.body.id }, (err, resLugar) => {
     if (err) {
@@ -211,6 +224,7 @@ app.post("/modificar-lugar", (req, res) => {
             },
           ],
           fecha: { $gte: hoy },
+          borrado:false,
         },
         (err, result) => {
           if (result) {
@@ -291,22 +305,22 @@ app.post("/alta-insumo", (req, res) => {
         });
         insumo.save((err) => {
           if (err) {
-            console.log(err);
+            res.json({ response: "Ya Existe un insumo con el mismo nombre"});
           } else {
-            console.log("se guardo el insumo");
+            res.json({ response: "bien" });
           }
         });
       } else {
-        console.log("el insumo ya existe");
+
+        res.json({ response: "Ya Existe un insumo con el mismo nombre" });
       }
     }
-    res.redirect("/listar-insumos");
   });
 });
 
 // DELETE Insumo
 // FALTA CREAR PASAJES CON INSUMOS COMPRADOS PARA TESTEAR
-app.get("/insumo/:id", (req, res) => {
+app.delete("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre
   if (req.session.rol !== "Admin") {
     res.redirect("/");
@@ -316,11 +330,22 @@ app.get("/insumo/:id", (req, res) => {
       { fecha: { $gte: hoy, insumos: { $elemMatch: resultInsumo.nombre } } },
       (err, resultPasaje) => {
         if (resultPasaje !== null) {
-          console.log(
+          res.json({response:
             "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro"
-          );
+          });
         } else {
-          Insumo.updateOne({ _id: req.params.id }, { borrado: true });
+          Insumo.updateOne({ _id: req.params.id }, { borrado: true },(err)=>{
+            if(err){
+              res.json({
+                response:
+                  "No se pudo eliminar"
+              });
+            }else{
+              res.json({
+                response:"bien"
+              });
+            }
+          });
         }
       }
     );

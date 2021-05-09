@@ -7,7 +7,7 @@
 <h2>No hay viajes cargados</h2>
 <% } else { %>
 <table class="table">
-  
+  <div id="error"></div>
 </table>
 <table class="table table-striped">
   <thead>
@@ -46,12 +46,33 @@
         </form>
       </td>
       <td>
-        <form action="/viaje/<%= viaje._id %>" method="POST">
-          <button type="submit">Eliminar</button>
-        </form>
+          <button id="<%= viaje._id %>" onclick="eliminar(this)">Eliminar</button>
+    
       </td>
     </tr>
     <% }); %>
   </tbody>
 </table>
-<% } %> <%- include("partials/footer"); -%>
+<% } %>
+<script>
+  function eliminar(comp){
+    document.getElementById("error").innerHTML ="";
+  let id = comp.id;
+    fetch("/viaje/"+ id, {
+        method: "delete"}).then((res) => res.json())
+        .then((data) => {
+            switch (data.response) {
+                case "bien":
+                    location.reload();
+                    break;
+                default:
+                   document.getElementById("error").innerHTML =
+                        '<small  style="color:red"><p class="er">'+data.response+' </p></small>';
+                    break;
+                break;
+            }
+           
+        });
+}
+</script>
+<%- include("partials/footer"); -%>

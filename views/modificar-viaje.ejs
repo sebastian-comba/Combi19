@@ -28,24 +28,40 @@
 
   }());%>
 <div>
+<datalist id="rutas">
+  <% 
+        rutas.forEach( (ruta) => { %>
+  <option value="<%= ruta._id %>">
+    <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %> -<%= ruta.hora %>
+  </option>
+  <% }); %>
+
+  </datalist>
   <!-- falta checkear los valores que ya estar cargados en la ruta a modificar -->
+  <h1>Modificar viaje</h1>
+  <br>
   <div id="err"></div>
-    <label for="ruta">Elige una ruta:</label>
-    <select name="ruta" id="ruta" class="mV">
-      <% 
-      rutas.forEach( (ruta) => { %>
-      <option value="<%= ruta._id %>">
-        <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %> -<%= ruta.hora %>
-      </option>
-      
-      <% }); %>
-    </select>
+  <br>
+    <label for="ruta"> Ruta:</label>
+    <input type="search" name=" ruta" id="ruta" class="mV" value="<%=viaje.ruta.idRuta%>" list="rutas">
+
+    <label for="ciudadO">Cuidad Origen:</label>
+    <input type="text" name="ciudadO" id="ciudadO" disabled>
+
+    <label for="ciudadD">Cuidad Destino:</label>
+    <input type="text" name="ciudadD" id="ciudadD" disabled>
+
+    <label for="ciudadD">Combi:</label>
+    <input type="text" name="combi" id="combi" disabled>
+ 
     
-    <label for="fecha">Fecha:</label>
-    <input type="date"class="mV" id="fecha" name="fecha" value="<%= fecha.mediaFecha() %>"  min="<%= fecha.mediaFecha() %>"/>
-    <label for="fecha">hora:</label>
+    <label for="hora">Hora:</label>
     <input type="time" class="mV" id="hora" name="hora" value="<%= fecha.hora() %>" disabled />
-    
+    <hr>
+    <label for="fecha">Fecha:</label>
+    <input type="date"class="mV" id="fecha" name="fecha" value="<%= fecha.mediaFecha() %>"  min="<%= fecha.mediaFecha() %>"/> 
+    <br>
+    <br>
     <label for="llegada">Fecha de llegada:</label>
     <input type="hidden" id="l" value="">
     <input
@@ -56,6 +72,8 @@
       min="<%= fecha.fullFecha() %>"
       max=""class="mV"
     />
+    <br>
+    <br>
 
     <label for="precio">Precio:</label>
     <input type="text" class="mV"id="precio" name="precio" value="<%= viaje.precio %>" />
@@ -69,7 +87,7 @@
     />
     <br />
 <input type="hidden" name="idViaje" id="idViaje" value="<%= viaje._id %>">
-
+  <br>
 
       <button type="submit" id="modificar">Guardar cambios</button>
 
@@ -80,8 +98,12 @@
 <% 
       rutas.forEach( (ruta) => { %>
 <input type="hidden" id="<%=ruta._id%>" value="<%=ruta.hora%>">
-      
+      <input type="hidden" class="<%=ruta._id%>" name="origen" value="<%=ruta.origen.nombre%>-<%=ruta.origen.provincia%>">
+      <input type="hidden" class="<%=ruta._id%>" name="destino" value="<%=ruta.destino.nombre%>-<%=ruta.destino.provincia%>">
+
+      <input type="hidden" class="<%=ruta._id%>" name="combi" value="<%=ruta.combi.patente%>">
       <% }); %>
+      
 <script src="/js/modificar-viaje.js">
    
 </script>

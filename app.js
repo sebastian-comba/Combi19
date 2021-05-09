@@ -345,19 +345,21 @@ app.delete("/insumo/:id", (req, res) => {
       },
       (err, resultPasaje) => {
         if (resultPasaje !== null) {
-          console.log(
+          res.json({response:
             "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro"
-          );
+        });
         } else {
           Insumo.updateOne(
-            { _id: resultInsumo.id },
+            { _id: resultInsumo._id },
             { borrado: true },
             (err) => {
               if (err) {
                 console.log(err);
               } else {
-                console.log("se elimino el insumo");
-                res.redirect("/listar-insumos");
+                res.json({
+                  response:
+                    "bien"
+                });
               }
             }
           );
@@ -1111,8 +1113,17 @@ app.get("/cargar-rutas", (req, res) => {
 });
 app.post("/cargar-rutas", (req, res) => {
   Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
+    if(err){
+      res.json({ response: "El lugar de Origen no existe por favor selecione uno de la lista" });
+    }else{
     Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
-      Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
+      if (err) {
+        res.json({ response: "El lugar de Destino no existe por favor selecione uno de la lista" });
+      } else {
+      Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
+        if (err) {
+          res.json({ response: "La combi no existe por favor selecione uno de la lista" });
+        } else {
         Ruta.findOne({
           "origen.nombre": origenR.ciudad,
           "origen.provincia": origenR.provincia,
@@ -1166,8 +1177,11 @@ app.post("/cargar-rutas", (req, res) => {
             }
           }
         });
+      }
       });
+    }
     });
+  }
   });
 });
 
@@ -1248,7 +1262,7 @@ app.put("/modificar-ruta", (req, res) => {
     },
     (err, viajes) => {
       if (err) {
-        console.log(err);
+        res.redirect("/listar-rutas")
       } else {
         if (viajes !== null) {
           res.json({
@@ -1261,8 +1275,17 @@ app.put("/modificar-ruta", (req, res) => {
           console.log(req.body.destino);
           console.log(req.body.combi);
           Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
+            if (err) {
+              res.json({ response: "El lugar de Origen no existe por favor selecione uno de la lista" });
+            } else {
             Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
+              if (err) {
+                res.json({ response: "El lugar de Destino no existe por favor selecione uno de la lista" });
+              } else {
               Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
+                if (err) {
+                  res.json({ response: "El lugar de Origen no existe por favor selecione uno de la lista" });
+                } else {
                 Ruta.findOne(
                   {
                     "origen.nombre": origenR.ciudad,
@@ -1322,8 +1345,11 @@ app.put("/modificar-ruta", (req, res) => {
                     }
                   }
                 );
+              }
               });
+            }
             });
+          }
           });
         }
       }
@@ -1511,7 +1537,7 @@ app.put("/viaje", (req, res) => {
                             });
                           } else {
                             Viaje.find(
-                              { "ruta.idRuta": resRuta._id },
+                              { "ruta.idRuta": resRuta._id, borrado:false },
                               (err, resultV) => {
                                 if (err) {
                                   console.log(err);
@@ -1520,14 +1546,16 @@ app.put("/viaje", (req, res) => {
                                   if (!resultV) {
                                     bool = true;
                                   }
+
+                                  
                                   resultV.forEach((viaje) => {
                                     if (
                                       (transformarFecha(
                                         req.body.fecha + "T" + resRuta.hora
                                       ) > viaje.llegada ||
                                         transformarFecha(req.body.llegada) <
-                                        viaje.fecha) &&
-                                      resViaje !== viaje
+                                        viaje.fecha) ||
+                                      ""+resViaje._id === ""+viaje._id
                                     ) {
                                       bool = true;
                                     }

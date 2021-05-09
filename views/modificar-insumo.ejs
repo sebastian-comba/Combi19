@@ -1,16 +1,24 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Insumo </h1>
-<datalist id="tiposInsumos">
-    <option value="dulce">Dulce</option>
-    <option value="salado">Salado</option>
-</datalist>
 <div id="err"></div>
     <label for="nombre" required>Nombre:</label><br>
     <input type="text" class="minsumo" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre" name="nombre"/><br>
     <label for="tipo" required>Tipo:</label><br>
-    <input type="search" name="tipo" class="minsumo" id="tipo" list="tiposInsumos" class="form-control alta"value="<%=data.tipo%>">
+    <select name="tipo" id="tipo" class="minsumo" >
+        <% if(data.tipo==="dulce"){%>
+
+    <option value="dulce" selected>Dulce</option>
+    <option value="salado">Salado</option>
+            <%}else{%>
+
+    <option value="dulce">Dulce</option>
+    <option value="salado" selected>Salado</option>
+                <%}%>
+    </select>
+    <br>
+    
     <label for="precio" required>Precio:</label><br>
-    <input type="text" placeholder="<%= data.precio %>" value="<%= data.precio %>" id="precio" name="precio"/><br>
+    <input type="text" placeholder="<%= data.precio %>" class="minsumo"  value="<%= data.precio %>" id="precio" name="precio"/><br>
     <input type="hidden" value="<%= data._id %>" id="id" name="id"/>
     <button id="modificar">Modificar</button>
 

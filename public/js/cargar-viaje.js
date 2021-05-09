@@ -83,23 +83,56 @@ let mañana = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1)
 function minFecha() {
     if (document.getElementById("hora").value <= hoy.hora()) {
         fecha.min = mañana.mediaFecha()
+        llegada.min = mañana.fullFecha()
     } else {
-        fecha.min = hoy.mediaFecha()
+        fecha.min = hoy.mediaFecha();
+        llegada.min = hoy.fullFecha();
+
     }
-    llegada.min = (fecha.min + "T" + document.getElementById("hora").value)
-}
-document.getElementById("ruta").onchange = function () {
-    let r = document.getElementById("ruta").value;
-    let hora = document.getElementById(r).value;
-    document.getElementById("hora").value = hora;
-    minFecha();
 }
 
-let r = document.getElementById("ruta").value;
-let hora = document.getElementById(r).value;
-document.getElementById("hora").value = hora;
+
 minFecha();
 
 document.getElementById("fecha").onchange = function () {
     llegada.min = (fecha.value + "T" + document.getElementById("hora").value);
+}
+function obtenerLugar(id) {
+    let lugar = document.getElementsByClassName(id);
+    let l = [{ ciudad: 1, provincia: 1 }]
+
+    for (let i = 0; i < lugar.length; i++) {
+        const e = lugar[i];
+        switch (e.name) {
+            case "origen":
+
+                l.push(e.value);
+                break;
+            case "destino":
+
+                l.push(e.value);
+                break;
+            default:
+
+                l.push(e.value);
+                break;
+        }
+    }
+    return (l);
+}
+
+document.getElementById("ruta").onchange = function () {
+    let id = ruta.value;
+    let l = obtenerLugar(id);
+
+    ciudadO.value = l[1];
+    ciudadD.value = l[2];
+    combi.value = l[3];
+
+    let r = document.getElementById("ruta").value;
+    let hora = document.getElementById(r).value;
+    document.getElementById("hora").value = hora;
+    minFecha();
+
+    llegada.min = (fecha.min + "T" + document.getElementById("hora").value)
 }

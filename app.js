@@ -305,38 +305,6 @@ app.post("/alta-insumo", (req, res) => {
 // FALTA CREAR PASAJES CON INSUMOS COMPRADOS PARA TESTEAR
 app.get("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre
-<<<<<<< HEAD
-  if (req.session.rol !== "Admin") {
-    res.redirect("/");
-  } else {
-    Insumo.findOne({ _id: req.params.id }, (err, resultInsumo) => {
-      if (err) {
-        console.log(err);
-      } else {
-        Pasaje.findOne(
-          {
-            fecha: { $gte: hoy },
-            insumos: [{ nombre: resultInsumo.nombre }],
-          },
-          (err, resultPasaje) => {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log(resultPasaje);
-              if (resultPasaje !== null) {
-                console.log(
-                  "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro"
-                );
-              } else {
-                Insumo.updateOne({ _id: req.params.id }, { borrado: true }, (err) => {
-                  console.log(err);
-                });
-                res.redirect("/listar-insumos");
-              }
-            }
-          }
-        );
-=======
   Insumo.findOne({ _id: req.params.id }, (err, resultInsumo) => {
     Pasaje.findOne(
       {
@@ -362,7 +330,6 @@ app.get("/insumo/:id", (req, res) => {
             }
           );
         }
->>>>>>> b92609ff756a1ce88ce04dfe171760a5d7d0ec19
       }
     );
   });

@@ -1413,32 +1413,29 @@ app.get("/modificar-viaje/:id", (req, res) => {
   }
 });
 
-app.post("/viaje", (req, res) => {
+app.put("/viaje", (req, res) => {
   Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {
     if (err) {
       console.log(err);
     } else {
       if (resPasaje) {
         console.log("No se puede modificar el viaje, tiene pasajes comprados.");
-        res.send("No se puede modificar el viaje, tiene pasajes comprados.");
+        res.json({response:"No se puede modificar el viaje, tiene pasajes comprados."});
       } else {
         Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
           if (err) {
-            console.log(err);
+            res.json({ response: "la Ruta selecionada no existe" });
           } else {
             Combi.findOne(
               { patente: resRuta.combi.patente },
               (err, resCombi) => {
                 if (err) {
-                  console.log(err);
+                  res.json({ response: "la Combi selecionada no existe" });
                 } else {
                   if (req.body.asientos > resCombi.asientos) {
-                    console.log(
+                    res.json({response:
                       "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
-                    );
-                    res.send(
-                      "No se puede modificar el viaje, la cantidad de asientos es mayor a la permitida."
-                    );
+                  });
                   } else {
                     Viaje.findOne(
                       { _id: req.body.idViaje },
@@ -1451,12 +1448,10 @@ app.post("/viaje", (req, res) => {
                               req.body.fecha + "T" + resRuta.hora
                             ) < resViaje.fecha
                           ) {
-                            console.log(
+                            res.json({
+                              response:
                               "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
-                            );
-                            res.send(
-                              "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
-                            );
+                            });
                           } else {
                             Viaje.find(
                               { "ruta.idRuta": resRuta._id },
@@ -1516,16 +1511,20 @@ app.post("/viaje", (req, res) => {
                                       },
                                       (err) => {
                                         if (err) {
-                                          console.log(err);
+
+                                          res.json({
+                                            response: "Lo sentimos ocurrio un error al momento de modificar. Por favor intentelo de nuevo en unos minutos"
+                                          });
                                         } else {
-                                          res.redirect("/viajes");
+                                          res.json({
+                                            response:"bien"})
                                         }
                                       }
                                     );
                                   } else {
-                                    console.log(
-                                      "combi en uso en ese rango de dias"
-                                    );
+                                    res.json({response:
+                                      "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha "
+                                    });
                                   }
                                 }
                               }

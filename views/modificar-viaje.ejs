@@ -82,11 +82,7 @@
 <input type="hidden" id="<%=ruta._id%>" value="<%=ruta.hora%>">
       
       <% }); %>
-<script>
-  document.getElementById("ruta").onchange=function(){
-    let r =document.getElementById("ruta").value;
-    let hora=document.getElementById(r).value;
-    document.getElementById("hora").value=hora;
-  }
+<script src="/js/modificar-viaje.js">
+   
 </script>
 <%- include("partials/footer"); -%>

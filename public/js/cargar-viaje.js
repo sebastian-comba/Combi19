@@ -14,7 +14,6 @@ function validarLLegada() {
         document.getElementById("err").innerHTML =
             '<small  style="color:red"><p class="er">La fecha de llegada no puede ser menor o igual a la fecha de salida </p></small>';
     }
-    console.log(f)
 }
 function limpiar() {
     document.getElementById("err").innerHTML = "";

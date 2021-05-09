@@ -14,20 +14,23 @@ function limpiar() {
 }
 
 function modificar() {
-    fetch("/modificar-lugar", {
+    fetch("/viaje", {
         method: "put",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            id: id.value,
-            ciudad: ciudad.value,
-            provincia: provincia.value,
+            idViaje: idViaje.value,
+            ruta: ruta.value,
+            fecha: fecha.value,
+            llegada: llegada.value,
+            precio: precio.value,
+            asientos: asientos.value,
         }),
     })
         .then((res) => res.json())
         .then((data) => {
             switch (data.response) {
                 case "bien":
-                    location.replace("/listar-lugares")
+                    location.replace("/viajes")
                     break;
                 default:
                     document.getElementById("err").innerHTML =
@@ -37,12 +40,69 @@ function modificar() {
         });
 }
 
+function validarLLegada() {
+    let f = fecha.value + "T" + document.getElementById("hora").value
+    if (llegada.value <= f) {
+        document.getElementById("err").innerHTML =
+            '<small  style="color:red"><p class="er">La fecha de llegada no puede ser menor o igual a la fecha de salida </p></small>';
+    }
+}
 
 document.getElementById("modificar").onclick = function () {
     limpiar();
+    validarLLegada();
     camposVacios();
     let errores = document.getElementsByClassName("er").length;
     if (errores === 0) {
         modificar();
     }
+} 
+
+
+
+function pad(number) {
+    if (number < 10) {
+        return '0' + number;
+    }
+    return number;
+}
+
+Date.prototype.fullFecha = function () {
+    return this.getUTCFullYear() +
+        '-' + pad(this.getMonth() + 1) +
+        '-' + pad(this.getDate()) +
+        'T' + pad(this.getHours()) +
+        ':' + pad(this.getMinutes())
+};
+Date.prototype.mediaFecha = function () {
+    return this.getFullYear() +
+        '-' + pad(this.getMonth() + 1) +
+        '-' + pad(this.getDate())
+};
+Date.prototype.hora = function () {
+    return pad(this.getHours()) +
+        ':' + pad(this.getMinutes())
+};
+let hoy = new Date;
+let mañana = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1)
+
+function minFecha() {
+    if (document.getElementById("hora").value <= hoy.hora()) {
+        fecha.min = mañana.mediaFecha()
+    } else {
+        fecha.min = hoy.mediaFecha()
+    }
+    llegada.min = (fecha.min + "T" + document.getElementById("hora").value)
+}
+document.getElementById("ruta").onchange = function () {
+    let r = document.getElementById("ruta").value;
+    let hora = document.getElementById(r).value;
+    document.getElementById("hora").value = hora;
+    minFecha();
+}
+
+minFecha();
+
+document.getElementById("fecha").onchange = function () {
+    llegada.min = (fecha.value + "T" + document.getElementById("hora").value);
 }

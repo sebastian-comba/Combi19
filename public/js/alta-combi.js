@@ -63,3 +63,8 @@ document.getElementById("guardar").onclick=function(){
         guardar();
     }
 }
+document.getElementById("chofer").onchange=function(){
+    let n= document.getElementById("chofer").value;
+    nombre.value="";
+    nombre.value = document.getElementById(n).value
+}

@@ -125,6 +125,9 @@ document.getElementById("ruta").onchange = function () {
     let id = ruta.value;
     let l = obtenerLugar(id);
 
+    ciudadO.value = "";
+    ciudadD.value = "";
+    combi.value = "";
     ciudadO.value = l[1];
     ciudadD.value = l[2];
     combi.value = l[3];

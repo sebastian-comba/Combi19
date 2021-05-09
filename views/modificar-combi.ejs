@@ -10,26 +10,31 @@
     </datalist>
     <div class="form-group">
         <label for="">Patente:</label>
-      <input type="text" name="patente" id="patente" class="form-control  alta" value="<%=data.combi.patente%>">
+      <input type="text" name="patente" id="patente" class="    alta" value="<%=data.combi.patente%>">
     </div>
     <input type="hidden" id="patenteV" value="<%=data.combi.patente%>">
       <div id="errP" class="err"></div>
+      <br>
     <div class="form-group">
       <label for="marca">Marca:</label>
-      <input type="text" name="marca" id="marca" class="form-control  alta" value="<%=data.combi.marca%>">
+      <input type="text" name="marca" id="marca" class="    alta" value="<%=data.combi.marca%>">
     </div>
+    <br>
     <div class="form-group">
       <label for="modelo">Modelo:</label>
-      <input type="text" name="modelo" id="modelo" class="form-control  alta" value="<%=data.combi.modelo%>" >
+      <input type="text" name="modelo" id="modelo" class="    alta" value="<%=data.combi.modelo%>" >
     </div>
+    <hr>
     <div class="form-group">
       <label for="chofer">Chofer:</label>
-    <input type="search" name="chofer" id="chofer" list="choferes" class="form-control alta"value="<%=data.combi.chofer.email%>">
+    <input type="search" name="chofer" id="chofer" list="choferes" class="   alta"value="<%=data.combi.chofer.email%>">
+    <input type="text" id="nombre" name="nombre" value="<%=data.combi.chofer.nombre%>-<%=data.combi.chofer.apellido%>" disabled>
     </div>
       <div id="errC" class="err"></div>
+      <hr>
     <div class="form-group">
       <label for="asientos">Cantidad de Asientos</label>
-      <input type="number" name="asientos" id="asientos" min="1" class="form-control  alta" value="<%=data.combi.asientos%>" >
+      <input type="number" name="asientos" id="asientos" min="1" class="    alta" value="<%=data.combi.asientos%>" >
     </div>
     <label for="tipo">Tipo de Combi: </label>
     <br>
@@ -54,5 +59,11 @@
         document.getElementById("super").checked=true;
     }
 </script>
+<% 
+            data.choferes.forEach( (chofer) => {  %>
+<input type="hidden" id="<%= chofer.email %>" value="<%=chofer.nombre%>-<%=chofer.apellido%>">
+
+
+<% }); %>
 <script src="/js/modificar-combi.js"></script>
 <%- include("partials/footer"); -%>

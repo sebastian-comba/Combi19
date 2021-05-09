@@ -123,6 +123,10 @@ function obtenerLugar(id) {
 
 document.getElementById("ruta").onchange = function () {
     let l = obtenerLugar(ruta.value);
+    ciudadO.value = "";
+    ciudadD.value = "";
+    combi.value = "";
+    document.getElementById("hora").value ="";
     ciudadO.value = l[1];
     ciudadD.value = l[2];
     combi.value=l[3];

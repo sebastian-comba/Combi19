@@ -80,11 +80,16 @@ chofer.value = document.getElementById(p).value;
 
 document.getElementById("origen").onchange = function () {
     let l = obtenerLugar(origen.value);
+
+    ciudadO.value = "";
+    provinciaO.value = "";
     ciudadO.value = l[1];
     provinciaO.value = l[2];
 }
 document.getElementById("destino").onchange = function () {
     let l = obtenerLugar(destino.value);
+    ciudadD.value = "";
+    provinciaD.value ="";
     ciudadD.value = l[1];
     provinciaD.value = l[2];
 }

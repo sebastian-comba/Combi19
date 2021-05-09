@@ -11,21 +11,19 @@
      <option value="<%= combi._id %>"><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %> </small></option>
            <% }); %>
 </datalist>
-<form action = "/cargar-rutas" method="POST">
     <label for="origen">Origen:</label><br>
-    <input type="search" name="origen" id="origen" list="lugares" class="form-control alta">
+    <input type="search"class="ruta" name="origen" id="origen" list="lugares" class="form-control alta">
     <br>
     <label for="destino">Destino:</label><br>
-    <input type="search" name="destino" id="destino" list="lugares" class="form-control alta">
+    <input type="search" class="ruta"name="destino" id="destino" list="lugares" class="form-control alta">
     <br>
     <label for="combi">Combi:</label><br>
-    <input type="search" name="combi" id="combi" list="combis" class="form-control alta">
+    <input type="search" class="ruta" name="combi" id="combi" list="combis" class="form-control alta">
     <br>  
     <label for="distancia">Distancia:</label><br>
-    <input type="text" id="distancia" name="distancia" required/><br>
+    <input class="ruta" type="text" id="distancia" name="distancia" required/><br>
     <label for="hora">Hora:</label><br>
-    <input type="time" id="hora" name="hora" required /><br>
-    <button type="submit">Agregar</button>
-</form>
-
+    <input class="ruta" type="time" id="hora" name="hora" required /><br>
+    <button type="submit" id="guardar">Agregar</button>
+<script src="/js/cargar-ruta.js"></script>
 <%- include("partials/footer"); -%>

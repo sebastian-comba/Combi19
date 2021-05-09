@@ -1,22 +1,24 @@
 <%- include("partials/header"); -%>
 <h2>Alta viaje</h2>
 <div>
-  <form action="/cargar-viaje" method="POST">
+    <div id="err"></div>
     <label for="ruta">Elige una ruta:</label>
-    <select name="ruta" id="ruta">
+    <select name="ruta" class="viaje" id="ruta">
       <% data.forEach( (ruta) => { %>
       <option value="<%= ruta._id %>">
-        <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %>
+        <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %>-<%= ruta.hora %>
       </option>
       <% }); %>
     </select>
-
+  
     <label for="fecha">Fecha:</label>
-    <input type="date" id="fecha" name="fecha" />
-
+    <input type="date" class="viaje" id="fecha" name="fecha" />
+    <label for="hora">Hora:</label>
+    <input type="text" class="viaje" id="hora" name="hora" disabled />
     <label for="llegada">Fecha de llegada:</label>
 
     <input
+    class="viaje"
       type="datetime-local"
       id="llegada"
       name="llegada"
@@ -26,12 +28,18 @@
     />
 
     <label for="ruta">Precio:</label>
-    <input type="text" id="precio" name="precio" />
+    <input type="text" class="viaje" id="precio" name="precio" />
 
     <label for="asientos">Cantidad de asientos:</label>
-    <input type="text" id="asientos" name="asientos" />
+    <input type="text" class="viaje" id="asientos" name="asientos" />
     <br />
-    <button type="submit" name="button">Cargar</button>
-  </form>
+    <button id="guardar">Cargar</button>
 </div>
+
+<% 
+      data.forEach( (ruta) => { %>
+<input type="hidden" id="<%=ruta._id%>" value="<%=ruta.hora%>">
+      
+      <% }); %>
+<script src="/js/cargar-viaje.js"></script>
 <%- include("partials/footer"); -%>

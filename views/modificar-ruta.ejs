@@ -19,15 +19,15 @@
     <label for="combi">Combi:</label><br>
     <input type="search" name="combi" id="combi" list="combis" class="form-control alta" value="<%= ruta.combi.idCombi %>"/><br>
     <label for="distancia">Distancia:</label><br>
-    <input type="text" placeholder="<%= ruta.distancia %>" value="<%= ruta.distancia %>" id="distancia" name="distancia" required/><br>
+    <input type="text" placeholder="<%= ruta.distancia %>" class="mR" value="<%= ruta.distancia %>" id="distancia" name="distancia" required/><br>
     <label for="hora">Hora:</label><br>
-    <input type="time" placeholder="<%= ruta.hora %>" value="<%= ruta.hora %>" id="hora" name="hora" required /><br>
+    <input type="time" placeholder="<%= ruta.hora %>" class="mR" value="<%= ruta.hora %>" id="hora" name="hora" required /><br>
 
     <input type="hidden" value="<%= ruta._id %>" id="id" name="id"/>
-    <button type="submit">Modificar</button>
-</form> 
+    <button id="modificar">Modificar</button>
+ 
 <a href="http://localhost:3000/listar-rutas">
   <button id="cancelar">Cancelar</button>
 </a>
-
+<script src="/js/modificar-ruta.js"></script>
 <%- include("partials/footer"); -%>

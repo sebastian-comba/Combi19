@@ -8,6 +8,7 @@
   <h2>No hay lugares cargados</h2>
 <% } else { %>
 <table class="table table-striped">
+  <div id="error"></div>
   <thead>
     <tr>
       <th scope="col" >Ciudad</th>
@@ -27,13 +28,33 @@
         </form>
       </td>
       <td class="col-md-3">
-          <form action="/lugar/<%= lugar._id %>" method="GET">
-              <button type="submit">Eliminar</button>
-          </form>
+              <button class="eliminar" id="<%= lugar._id %>" onclick="eliminar(this)">Eliminar</button>
       </td>
     </tr>
     <% }); %>
   </tbody>
 </table>
+<script>
+  function eliminar(comp){
+    document.getElementById("error").innerHTML ="";
+  let id = comp.id;
+    fetch("/lugar/"+ id, {
+        method: "DELETE"}).then((res) => res.json())
+        .then((data) => {
+            switch (data.response) {
+                case "bien":
+                    location.reload();
+                    break;
+                default:
+                   document.getElementById("error").innerHTML =
+                        '<small  style="color:red"><p class="er">'+data.response+' </p></small>';
+                    break;
+                break;
+            }
+           
+        });
+}
+</script>
 <% } %>
+
 <%- include("partials/footer"); -%>

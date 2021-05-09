@@ -1,31 +1,26 @@
 <%- include("partials/header"); -%>
 <h2>Alta de rutas</h2>
-
+<datalist id="lugares">
+  <% lugares.forEach(function(lugar) { %>
+     <option value="<%= lugar._id %>"><%= lugar.ciudad%> <small>
+          <%= lugar.provincia %> </small></option>
+           <% }); %>
+</datalist>
+<datalist id="combis">
+  <% combis.forEach(function(combi) { %>
+     <option value="<%= combi._id %>"><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %> </small></option>
+           <% }); %>
+</datalist>
 <form action = "/cargar-rutas" method="POST">
     <label for="origen">Origen:</label><br>
-    <select name="origen" id="origen">
-        <% lugares.forEach( (lugar) => { %>
-        <option value="<%= lugar._id %>">
-          <%= lugar.ciudad %>-<%= lugar.provincia %>
-        </option>
-        <% }); %>
-    </select><br>
+    <input type="search" name="origen" id="origen" list="lugares" class="form-control alta">
+    <br>
     <label for="destino">Destino:</label><br>
-    <select name="destino" id="destino">
-        <% lugares.forEach( (lugar) => { %>
-        <option value="<%= lugar._id %>">
-          <%= lugar.ciudad %>-<%= lugar.provincia %>
-        </option>
-        <% }); %>
-    </select><br>
+    <input type="search" name="destino" id="destino" list="lugares" class="form-control alta">
+    <br>
     <label for="combi">Combi:</label><br>
-    <select name="combi" id="combi">
-        <% combis.forEach( (combi) => { %>
-        <option value="<%= combi._id %>">
-          <%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
-        </option>
-        <% }); %>
-    </select><br>  
+    <input type="search" name="combi" id="combi" list="combis" class="form-control alta">
+    <br>  
     <label for="distancia">Distancia:</label><br>
     <input type="text" id="distancia" name="distancia" required/><br>
     <label for="hora">Hora:</label><br>

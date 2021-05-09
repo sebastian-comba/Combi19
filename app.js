@@ -305,7 +305,6 @@ app.post("/alta-insumo", (req, res) => {
 // FALTA CREAR PASAJES CON INSUMOS COMPRADOS PARA TESTEAR
 app.get("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre
-<<<<<<< HEAD
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
@@ -336,24 +335,6 @@ app.get("/insumo/:id", (req, res) => {
             }
           }
         );
-=======
-  Insumo.findOne({ _id: req.params.id }, (err, resultInsumo) => {
-    Pasaje.findOne({ fecha: { $gte: hoy}, insumos: { $elemMatch: {nombre:resultInsumo.nombre} }}, (err, resultPasaje) => {
-        if (resultPasaje !== null) {
-          console.log(
-            "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro"
-          );
-        } else {
-          Insumo.updateOne({_id:resultInsumo.id }, { borrado: true }, (err) =>{
-            if(err){
-              console.log(err);
-            } else {
-              console.log("se elimino el insumo");
-              res.redirect("/listar-insumos");              
-            }
-          });
-        }
->>>>>>> modificar-ruta
       }
     });
   }
@@ -1215,6 +1196,9 @@ app.post("/modificar-ruta", (req, res) => {
             "No se puede modificar la ruta porque tiene viajes a futuro"
           );
         } else {
+          console.log(req.body.origen);
+          console.log(req.body.destino);
+          console.log(req.body.combi);
           Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
             Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
               Combi.findOne({ _id: req.body.combi }, (err, combiR) => {

@@ -1,33 +1,23 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Ruta </h1>
-
+<datalist id="lugares">
+  <% lugares.forEach(function(lugar) { %>
+     <option value="<%= lugar._id %>"><%= lugar.ciudad%> <small>
+          <%= lugar.provincia %> </small></option>
+           <% }); %>
+</datalist>
+<datalist id="combis">
+  <% combis.forEach(function(combi) { %>
+     <option value="<%= combi._id %>"><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %> </small></option>
+           <% }); %>
+</datalist>
 <form action = "/modificar-ruta" method="POST">
     <label for="origen">Origen:</label><br>
-    <select placeholder="<%= ruta.origen.nombre %>" value="<%= ruta.origen.nombre %>" name="origen" id="origen">
-        <% lugares.forEach( (lugar) => {
-            %>
-        <!--habria que ver como marcar selected=true para que aparezca por default el valor original-->
-        <option value="<%= lugar._id %>">
-          <%= lugar.ciudad %>-<%= lugar.provincia %>
-        </option>
-        <% }); %>
-    </select><br>
+    <input type="search" name="origen" id="origen" list="lugares" class="form-control alta" value="<%= ruta.origen.idLugar %>"/><br>
     <label for="destino">Destino:</label><br>
-    <select placeholder="<%= ruta.destino.nombre %>" value="<%= ruta.destino.nombre %>" name="destino" id="destino">
-        <% lugares.forEach( (lugar) => {%>
-        <option value="<%= lugar._id %>" >
-          <%= lugar.ciudad %>-<%= lugar.provincia %>
-        </option>
-        <% }); %>
-    </select><br>
+    <input type="search" name="destino" id="destino" list="lugares" class="form-control alta" value="<%= ruta.destino.idLugar %>"/><br>
     <label for="combi">Combi:</label><br>
-    <select placeholder="<%= ruta.combi.nombre %>" value="<%= ruta.combi.nombre %>" name="combi" id="combi">
-        <% combis.forEach( (combi) => { %>
-        <option value="<%= combi._id %>" >
-          <%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
-        </option>
-        <% }); %>
-    </select><br>  
+    <input type="search" name="combi" id="combi" list="combis" class="form-control alta" value="<%= ruta.combi.idCombi %>"/><br>
     <label for="distancia">Distancia:</label><br>
     <input type="text" placeholder="<%= ruta.distancia %>" value="<%= ruta.distancia %>" id="distancia" name="distancia" required/><br>
     <label for="hora">Hora:</label><br>

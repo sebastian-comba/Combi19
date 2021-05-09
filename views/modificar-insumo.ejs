@@ -1,21 +1,21 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Insumo </h1>
-
-<form action = "/modificar-insumo" method="POST">
+    <div id="err"></div>
     <label for="nombre" required>Nombre:</label><br>
-    <input type="text" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre" name="nombre"/><br>
+    <input type="text" class="minsumo" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre" name="nombre"/><br>
     <label for="tipo" required>Tipo:</label><br>
     <select name="tipo" id="tipo" name="tipo" >
         <option value="dulce">Dulce</option>
         <option value="salado">Salado</option>  
     </select><br>
-    <label for="precio" required>Precio:</label><br>
+    <label for="precio" class="minsumo" required>Precio:</label><br>
     <input type="text" placeholder="<%= data.precio %>" value="<%= data.precio %>" id="precio" name="precio"/><br>
     <input type="hidden" value="<%= data._id %>" id="id" name="id"/>
-    <button type="submit">Modificar</button>
-</form> 
+    <button id="modificar">Modificar</button>
+
 <a href="http://localhost:3000/listar-insumos">
     <button id="cancelar">Cancelar</button>
 </a>
+<script src="/js/modificar-insumo.js"></script>
 
 <%- include("partials/footer"); -%>

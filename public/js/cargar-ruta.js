@@ -1,5 +1,5 @@
 function camposVacios() {
-    let form = document.getElementsByClassName("mlugar");
+    let form = document.getElementsByClassName("ruta");
     for (let i = 0; i < form.length; i++) {
         let e = form[i];
         if (e.value === "") {
@@ -10,39 +10,39 @@ function camposVacios() {
 }
 function limpiar() {
     document.getElementById("err").innerHTML = "";
-    
 }
 
 function modificar() {
-    fetch("/modificar-lugar", {
-        method: "put",
+    fetch("/cargar-rutas", {
+        method: "post",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            id: id.value,
-            ciudad:ciudad.value,
-            provincia: provincia.value,
+            origen:origen.value,
+            destino: destino.value,
+            combi: combi.value,
+            distancia: distancia.value,
+            hora: hora.value,
         }),
     })
         .then((res) => res.json())
         .then((data) => {
             switch (data.response) {
                 case "bien":
-                    location.replace("/listar-lugares")
+                    location.replace("/listar-rutas")
                     break;
                 default:
                     document.getElementById("err").innerHTML =
-                        '<small  style="color:red"><p class="er">'+data.response+'</p></small>';
-                break;
+                        '<small  style="color:red"><p class="er">' + data.response + '</p></small>';
+                    break;
             }
         });
 }
 
-
-document.getElementById("modificar").onclick = function () {
+document.getElementById("guardar").onclick = function () {
     limpiar();
     camposVacios();
     let errores = document.getElementsByClassName("er").length;
-    if (errores === 0  ) {
+    if (errores === 0) {
         modificar();
     }
 }

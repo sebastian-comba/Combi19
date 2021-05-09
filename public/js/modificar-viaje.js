@@ -1,5 +1,5 @@
 function camposVacios() {
-    let form = document.getElementsByClassName("mlugar");
+    let form = document.getElementsByClassName("mV");
     for (let i = 0; i < form.length; i++) {
         let e = form[i];
         if (e.value === "") {
@@ -10,7 +10,7 @@ function camposVacios() {
 }
 function limpiar() {
     document.getElementById("err").innerHTML = "";
-    
+
 }
 
 function modificar() {
@@ -19,7 +19,7 @@ function modificar() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             id: id.value,
-            ciudad:ciudad.value,
+            ciudad: ciudad.value,
             provincia: provincia.value,
         }),
     })
@@ -31,8 +31,8 @@ function modificar() {
                     break;
                 default:
                     document.getElementById("err").innerHTML =
-                        '<small  style="color:red"><p class="er">'+data.response+'</p></small>';
-                break;
+                        '<small  style="color:red"><p class="er">' + data.response + '</p></small>';
+                    break;
             }
         });
 }
@@ -42,7 +42,7 @@ document.getElementById("modificar").onclick = function () {
     limpiar();
     camposVacios();
     let errores = document.getElementsByClassName("er").length;
-    if (errores === 0  ) {
+    if (errores === 0) {
         modificar();
     }
 }

@@ -29,9 +29,9 @@
   }());%>
 <div>
   <!-- falta checkear los valores que ya estar cargados en la ruta a modificar -->
-  <form action="/viaje" method="POST">
+  <div id="err"></div>
     <label for="ruta">Elige una ruta:</label>
-    <select name="ruta" id="ruta">
+    <select name="ruta" id="ruta" class="mV">
       <% 
       rutas.forEach( (ruta) => { %>
       <option value="<%= ruta._id %>">
@@ -42,9 +42,9 @@
     </select>
     
     <label for="fecha">Fecha:</label>
-    <input type="date" id="fecha" name="fecha" value="<%= fecha.mediaFecha() %>"  min="<%= fecha.mediaFecha() %>"/>
+    <input type="date"class="mV" id="fecha" name="fecha" value="<%= fecha.mediaFecha() %>"  min="<%= fecha.mediaFecha() %>"/>
     <label for="fecha">hora:</label>
-    <input type="time" id="hora" name="hora" value="<%= fecha.hora() %>" disabled />
+    <input type="time" class="mV" id="hora" name="hora" value="<%= fecha.hora() %>" disabled />
     
     <label for="llegada">Fecha de llegada:</label>
     <input type="hidden" id="l" value="">
@@ -54,28 +54,28 @@
       name="llegada"
       value="<%=llegada.fullFecha()%>"
       min="<%= fecha.fullFecha() %>"
-      max=""
+      max=""class="mV"
     />
 
     <label for="precio">Precio:</label>
-    <input type="text" id="precio" name="precio" value="<%= viaje.precio %>" />
+    <input type="text" class="mV"id="precio" name="precio" value="<%= viaje.precio %>" />
    
     <label for="asientos">Cantidad de asientos:</label>
     <input
       type="text"
       id="asientos"
-      name="asientos"
+      name="asientos" class="mV"
       value="<%= viaje.asientosDisponibles %>"
     />
     <br />
 <input type="hidden" name="idViaje" id="idViaje" value="<%= viaje._id %>">
 
 
-      <button type="submit" name="button">Guardar cambios</button>
+      <button type="submit" id="modificar">Guardar cambios</button>
 
 
     <a href="http://localhost:3000/home">Cancelar</a>
-  </form>
+
 </div>
 <% 
       rutas.forEach( (ruta) => { %>

@@ -48,7 +48,8 @@
                     location.assign("/listar-combi");
                     break;
                 default:
-                    location.assign("/listar-combi");
+                    document.getElementById("error").innerHTML =
+                        '<small  style="color:red"><p class="er">'+data.response+'</p></small>';
                 break;
             }
            

@@ -1,9 +1,8 @@
 <%- include("partials/header"); -%>
 <h2>Alta de rutas</h2>
-
-<form action = "/cargar-rutas" method="POST">
+<div id="err"></div>
     <label for="origen">Origen:</label><br>
-    <select name="origen" id="origen">
+    <select  class="ruta" name="origen" id="origen">
         <% lugares.forEach( (lugar) => { %>
         <option value="<%= lugar._id %>">
           <%= lugar.ciudad %>-<%= lugar.provincia %>
@@ -11,7 +10,7 @@
         <% }); %>
     </select><br>
     <label for="destino">Destino:</label><br>
-    <select name="destino" id="destino">
+    <select class="ruta" name="destino" id="destino">
         <% lugares.forEach( (lugar) => { %>
         <option value="<%= lugar._id %>">
           <%= lugar.ciudad %>-<%= lugar.provincia %>
@@ -19,7 +18,7 @@
         <% }); %>
     </select><br>
     <label for="combi">Combi:</label><br>
-    <select name="combi" id="combi">
+    <select class="ruta" name="combi" id="combi">
         <% combis.forEach( (combi) => { %>
         <option value="<%= combi._id %>">
           <%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
@@ -27,10 +26,9 @@
         <% }); %>
     </select><br>  
     <label for="distancia">Distancia:</label><br>
-    <input type="text" id="distancia" name="distancia" required/><br>
+    <input class="ruta" type="text" id="distancia" name="distancia" required/><br>
     <label for="hora">Hora:</label><br>
-    <input type="time" id="hora" name="hora" required /><br>
-    <button type="submit">Agregar</button>
-</form>
-
+    <input class="ruta" type="time" id="hora" name="hora" required /><br>
+    <button type="submit" id="guardar">Agregar</button>
+<script src="/js/cargar-ruta.js"></script>
 <%- include("partials/footer"); -%>

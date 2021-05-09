@@ -1,11 +1,10 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Ruta </h1>
-
-<form action = "/modificar-ruta" method="POST">
+  <div id="err"></div>
     <label for="origen">Origen:</label><br>
-    <select placeholder="<%= ruta.origen.nombre %>" value="<%= ruta.origen.nombre %>" name="origen" id="origen">
+    <select placeholder="<%= ruta.origen.nombre %>" class="mR" value="<%= ruta.origen.nombre %>" name="origen" id="origen">
         <% lugares.forEach( (lugar) => {
-            %>
+            %> 
         <!--habria que ver como marcar selected=true para que aparezca por default el valor original-->
         <option value="<%= lugar._id %>">
           <%= lugar.ciudad %>-<%= lugar.provincia %>
@@ -13,7 +12,7 @@
         <% }); %>
     </select><br>
     <label for="destino">Destino:</label><br>
-    <select placeholder="<%= ruta.destino.nombre %>" value="<%= ruta.destino.nombre %>" name="destino" id="destino">
+    <select placeholder="<%= ruta.destino.nombre %>" class="mR" value="<%= ruta.destino.nombre %>" name="destino" id="destino">
         <% lugares.forEach( (lugar) => {%>
         <option value="<%= lugar._id %>" >
           <%= lugar.ciudad %>-<%= lugar.provincia %>
@@ -21,7 +20,7 @@
         <% }); %>
     </select><br>
     <label for="combi">Combi:</label><br>
-    <select placeholder="<%= ruta.combi.nombre %>" value="<%= ruta.combi.nombre %>" name="combi" id="combi">
+    <select placeholder="<%= ruta.combi.nombre %>" class="mR" value="<%= ruta.combi.nombre %>" name="combi" id="combi">
         <% combis.forEach( (combi) => { %>
         <option value="<%= combi._id %>" >
           <%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
@@ -29,15 +28,15 @@
         <% }); %>
     </select><br>  
     <label for="distancia">Distancia:</label><br>
-    <input type="text" placeholder="<%= ruta.distancia %>" value="<%= ruta.distancia %>" id="distancia" name="distancia" required/><br>
+    <input type="text" placeholder="<%= ruta.distancia %>" class="mR" value="<%= ruta.distancia %>" id="distancia" name="distancia" required/><br>
     <label for="hora">Hora:</label><br>
-    <input type="time" placeholder="<%= ruta.hora %>" value="<%= ruta.hora %>" id="hora" name="hora" required /><br>
+    <input type="time" placeholder="<%= ruta.hora %>" class="mR" value="<%= ruta.hora %>" id="hora" name="hora" required /><br>
 
     <input type="hidden" value="<%= ruta._id %>" id="id" name="id"/>
-    <button type="submit">Modificar</button>
-</form> 
+    <button id="modificar">Modificar</button>
+ 
 <a href="http://localhost:3000/listar-rutas">
   <button id="cancelar">Cancelar</button>
 </a>
-
+<script src="/js/modificar-ruta.js"></script>
 <%- include("partials/footer"); -%>

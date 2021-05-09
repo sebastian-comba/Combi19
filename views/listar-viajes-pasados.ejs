@@ -1,15 +1,11 @@
 <%- include("partials/header"); -%>
-<h1>Lista de Viajes</h1>
-<a href="/viajes-pasados">
-  <button id="cargar-viaje">Viajes Pasados</button>
-</a>
+<h1>Lista de Viajes que ya salieron/terminaron</h1>
 <a href="/cargar-viaje">
   <button id="cargar-viaje">Cargar Viaje</button>
 </a>
-
 <hr>
 <% if (!viajes.length) { %>
-<h2>No hay viajes cargados</h2>
+<h2>No hay viajes que hayan comenzado/terminado</h2>
 <% } else { %>
 
   <div id="error"></div>
@@ -24,8 +20,6 @@
       <th scope="col">Fecha salida</th>
       <th scope="col">Fecha llegada</th>
       <th cope="col">Precio</th>
-      <th scope="col"></th>
-      <th cope="col"></th>
     </tr>
   </thead>
   <tbody>
@@ -47,39 +41,10 @@
       <td><%= viaje.fecha %></td>
       <td><%= viaje.llegada %></td>
       <td><%= viaje.precio %></td>
-      <td>
-        <form action="/modificar-viaje/<%= viaje._id %>" method="GET">
-          <button type="submit">Modificar</button>
-        </form>
-      </td>
-      <td>
-          <button id="<%= viaje._id %>" onclick="eliminar(this)">Eliminar</button>
-    
-      </td>
     </tr>
     <% }); %>
   </tbody>
 </table>
 <% } %>
-<script>
-  function eliminar(comp){
-    document.getElementById("error").innerHTML ="";
-  let id = comp.id;
-    fetch("/viaje/"+ id, {
-        method: "delete"}).then((res) => res.json())
-        .then((data) => {
-            switch (data.response) {
-                case "bien":
-                    location.reload();
-                    break;
-                default:
-                   document.getElementById("error").innerHTML =
-                        '<small  style="color:red"><p class="er">'+data.response+' </p></small>';
-                    break;
-                break;
-            }
-           
-        });
-}
-</script>
+
 <%- include("partials/footer"); -%>

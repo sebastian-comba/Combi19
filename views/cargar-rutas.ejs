@@ -11,6 +11,12 @@
   <option value="<%= combi.patente %>"><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %> </small></option>
   <% }); %>
 </datalist>
+<div><% if(!combis.length){ %>
+  <p class="er">No hay Combis cargadas, pulse <a href="/alta-combi">aqui</a> para cargar un combi</p>
+  <% }%></div>
+  <div><% if(!lugares.length){ %>
+    <p class="er">No hay Lugares cargar, pulse <a href="/cargar-lugar">aqui</a> para cargar un lugar</p>
+    <% }%></div>
 <div id="err"></div>
 <label for="origen">Origen:</label>
 <input type="search" class="ruta" name="origen" id="origen" list="lugares" class="form-control alta">

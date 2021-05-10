@@ -771,7 +771,6 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
           console.log(err);
         } else {
           if (viajes.length) {
-            console.log(1);
             res.json({
               response: "No se puede eliminar esta asignado a combis",
             });
@@ -787,7 +786,6 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
                   console.log(err);
                 } else {
                   if (viajes.length) {
-                    console.log(1);
                     res.json({
                       response: "No se puede eliminar esta asignado a viajes",
                     });
@@ -936,7 +934,6 @@ app.delete("/eliminar-combi/:patente", (req, res) => {
           console.log(err);
         } else {
           if (viajes.length) {
-            console.log(1);
             res.json({ response: "hay viajes" });
           } else {
             Ruta.find(
@@ -1046,8 +1043,6 @@ app.put("/modificar-combi", (req, res) => {
                 if (err) {
                   console.log(err);
                 }
-
-                console.log(1);
               }
             );
             Viaje.updateMany(
@@ -1063,7 +1058,6 @@ app.put("/modificar-combi", (req, res) => {
                 if (err) {
                   console.log(err);
                 }
-                console.log(2);
               }
             );
             res.json({ response: "bien" });
@@ -1273,9 +1267,6 @@ app.put("/modificar-ruta", (req, res) => {
           }
           );
         } else {
-          console.log(req.body.origen);
-          console.log(req.body.destino);
-          console.log(req.body.combi);
           Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
             if (err) {
               res.json({ response: "El lugar de Origen no existe por favor selecione uno de la lista" });
@@ -1309,7 +1300,7 @@ app.put("/modificar-ruta", (req, res) => {
                             console.log(err);
                           } else {
                             if (resultRuta !== null) {
-                              console.log("La ruta ya existe");
+                              res.json({response:"La ruta ya existe"});
                             } else {
                               Ruta.updateOne(
                                 { _id: req.body.id },
@@ -1338,7 +1329,6 @@ app.put("/modificar-ruta", (req, res) => {
                                   if (err) {
                                     console.log(err);
                                   } else {
-                                    console.log("se modifico la ruta");
                                     res.redirect("/listar-rutas");
                                   }
                                 }
@@ -1370,12 +1360,7 @@ app.get("/cargar-viaje", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        if (result.length) {
           res.render("cargar-viaje", { data: result });
-        } else {
-          console.log("No se encontraron rutas disponibles");
-          res.send("No se encontraron rutas disponibles");
-        }
       }
     });
   }
@@ -1523,7 +1508,6 @@ app.get("/modificar-viaje/:id", (req, res) => {
             }
           });
         } else {
-          console.log("No hay rutas disponibles");
           res.send("No hay rutas disponibles");
         }
       }
@@ -1537,7 +1521,6 @@ app.put("/viaje", (req, res) => {
       console.log(err);
     } else {
       if (resPasaje) {
-        console.log("No se puede modificar el viaje, tiene pasajes comprados.");
         res.json({ response: "No se puede modificar el viaje, tiene pasajes comprados." });
       } else {
         Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {

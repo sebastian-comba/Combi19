@@ -10,7 +10,11 @@
 <% }); %>
 
 </datalist>
+
 <div>
+  <div><% if(!data.length){ %>
+    <p class="er">No hay Lugares cargar, pulse <a href="/cargar-lugar">aqui</a> para cargar un lugar</p>
+    <% }%></div>
     <div id="err"></div>
 
 

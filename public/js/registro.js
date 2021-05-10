@@ -36,6 +36,7 @@ fechaN.value = (mayor.getFullYear() - 30)+'-' + pad(hoy.getMonth() + 1) +
 //metodos
 function limpiar() {
     document.getElementById("errFN").innerHTML = "";
+    document.getElementById("errFV").innerHTML = "";
     document.getElementById("errE").innerHTML = "";
     document.getElementById("errC1").innerHTML = "";
     document.getElementById("errC2").innerHTML = "";
@@ -134,6 +135,90 @@ function validarCodigoS() {
 
 
 }
+function validarFechaN() {
+    let guion = 0;
+    let año = "";
+    let mes = "";
+    let dia = "";
+    for (let i = 0; i < fechaN.value.length; i++) {
+        const e = fechaN.value[i];
+        if (e === '-') {
+            guion++;
+        } else {
+            switch (guion) {
+                case 0:
+                    año = año + "" + e;
+                    break;
+                case 1:
+                    mes = mes + "" + e;
+                    break;
+                case 2:
+                    dia = dia + "" + e;
+                    break;
+            }
+        }
+
+    }
+    let na = new Date(año, (mes - 1), dia);
+    let edad;
+    if (
+        hoy.getMonth() >= na.getMonth() &&
+        hoy.getDate() >= na.getDate()
+    ) {
+        edad = hoy.getFullYear() - na.getFullYear()
+    } else {
+        edad = hoy.getFullYear() - na.getFullYear() - 1;
+    }
+    if (edad < 18) {
+        document.getElementById("errFN").innerHTML =
+            '<small  style="color:red"><p class="er">Debes ser mayor de 18 años</p></small>';
+    }
+};
+function validarFechaV() {
+    let vencimiento = document.getElementById("vencimiento");
+    let guion = 0;
+    let año = "";
+    let mes = "";
+    let dia = "";
+    for (let i = 0; i < vencimiento.value.length; i++) {
+        const e = vencimiento.value[i];
+        if (e === '-') {
+            guion++;
+        } else {
+            switch (guion) {
+                case 0:
+                    año = año + "" + e;
+                    break;
+                case 1:
+                    mes = mes + "" + e;
+                    break;
+                case 2:
+                    dia = dia + "" + e;
+                    break;
+            }
+        }
+
+    }
+    let na = new Date(año, (mes - 1), dia);
+    let vencida=false;
+    if (
+        hoy.getFullYear()>na.getFullYear()
+    ) {
+        vencida = true
+    } else {
+        if (
+            hoy.getMonth() > na.getMonth() &&
+            hoy.getFullYear() === na.getMonth()
+        ) {
+            vencida = true
+        }
+    }
+    if (vencida) {
+        document.getElementById("errFV").innerHTML =
+            '<small  style="color:red"><p class="er">La tarjeta esta vencida</p></small>';
+    }
+};
+
 function camposCompletosR() {
     let camposIn;
     if (!nombre.value || !apellido.value || !dni.value || !email.value || !fechaN.value || !clave.value || !clave1.value) {
@@ -161,7 +246,10 @@ document.getElementById("enviar").onclick = function () {
     camposCompletosR();
     validarClave1();
     validarClave2();
+    validarFechaN();
     validarCodigoS();
+
+    validarFechaV();
     let errores = document.getElementsByClassName("er").length;
     console.log(errores);
     if (errores === 0) {

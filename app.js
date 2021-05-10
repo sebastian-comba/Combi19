@@ -1258,7 +1258,7 @@ app.put("/modificar-ruta", (req, res) => {
     },
     (err, viajes) => {
       if (err) {
-        res.redirect("/listar-rutas")
+        console.log(err);
       } else {
         if (viajes !== null) {
           res.json({
@@ -1275,9 +1275,9 @@ app.put("/modificar-ruta", (req, res) => {
                 if (err) {
                   res.json({ response: "El lugar de Destino no existe por favor selecione uno de la lista" });
                 } else {
-                  Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
+                  Combi.findOne({patente: req.body.combi }, (err, combiR) => {
                     if (err) {
-                      res.json({ response: "El lugar de Origen no existe por favor selecione uno de la lista" });
+                      res.json({ response: "La combi no existe por favor selecione uno de la lista" });
                     } else {
                       Ruta.findOne(
                         {
@@ -1329,7 +1329,7 @@ app.put("/modificar-ruta", (req, res) => {
                                   if (err) {
                                     console.log(err);
                                   } else {
-                                    res.redirect("/listar-rutas");
+                                    res.json({ response: "bien" });
                                   }
                                 }
                               );

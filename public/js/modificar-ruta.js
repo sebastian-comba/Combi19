@@ -30,7 +30,7 @@ function modificar() {
         .then((data) => {
             switch (data.response) {
                 case "bien":
-                    location.replace("/listar-lugares")
+                    location.replace("/listar-rutas")
                     break;
                 default:
                     document.getElementById("err").innerHTML =

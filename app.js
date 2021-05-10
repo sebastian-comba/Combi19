@@ -154,24 +154,23 @@ app.delete("/lugar/:id", (req, res) => {
       if (err) {
         res.json({ response: "Error al conectar en la base de datos, intentelo en unos minutos" })
       } else {
-        Viaje.findOne(
+        Ruta.findOne(
           {
             $or: [
               {
-                "ruta.origen.nombre": resLugar.ciudad,
-                "ruta.origen.provincia": resLugar.provincia,
+                "origen.nombre": resLugar.ciudad,
+                "origen.provincia": resLugar.provincia,
               },
               {
-                "ruta.destino.nombre": resLugar.ciudad,
-                "ruta.destino.provincia": resLugar.provincia,
+                "destino.nombre": resLugar.ciudad,
+                "destino.provincia": resLugar.provincia,
               },
             ],
-            fecha: { $gte: new Date() },
             borrado: false,
           },
           (err, result) => {
             if (result !== null) {
-              res.json({ response: "No se puede borrar, tiene viaje futuro" });
+              res.json({ response: "No se puede borrar, tiene ruta asignada" });
             } else {
               Lugar.updateOne(
                 {
@@ -214,24 +213,23 @@ app.put("/modificar-lugar", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      Viaje.findOne(
+      Ruta.findOne(
         {
           $or: [
             {
-              "ruta.origen.nombre": resLugar.ciudad,
-              "ruta.origen.provincia": resLugar.provincia,
+              "origen.nombre": resLugar.ciudad,
+              "origen.provincia": resLugar.provincia,
             },
             {
-              "ruta.destino.nombre": resLugar.ciudad,
-              "ruta.destino.provincia": resLugar.provincia,
+              "destino.nombre": resLugar.ciudad,
+              "destino.provincia": resLugar.provincia,
             },
           ],
-          fecha: { $gte: hoy },
           borrado: false,
         },
         (err, result) => {
           if (result) {
-            res.json({ response: "No se puede modificar, tiene viaje futuro" });
+            res.json({ response: "No se puede modificar, tiene ruta asignada" });
           } else {
             Lugar.findOne(
               { ciudad: req.body.ciudad, provincia: req.body.provincia, _id: { $ne: req.body.id }, borrado: false },

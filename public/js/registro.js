@@ -175,7 +175,7 @@ function validarFechaN() {
     }
 };
 function validarFechaV() {
-    if (cat.value === "gold" && c){
+    if (cat.value === "gold" && vencimiento.value){
     let vencimiento = document.getElementById("vencimiento");
     let guion = 0;
     let año = "";

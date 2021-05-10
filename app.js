@@ -235,9 +235,10 @@ app.put("/modificar-lugar", (req, res) => {
           borrado: false,
         },
         (err, result) => {
-          if (result) {
-            res.json({ response: "No se puede modificar, tiene ruta asignada" });
+          if (err) {
+            console.log(err);
           } else {
+            
             Lugar.findOne(
               {
                 ciudad: req.body.ciudad,
@@ -255,73 +256,89 @@ app.put("/modificar-lugar", (req, res) => {
                         "No se puede modificar ya existe un lugar con la misma ciudad y provincia",
                     });
                   } else {
-                    Ruta.updateMany({
-                      "origen.idLugar": req.body.id,
-                    }, {
-                      origen: {
-                        nombre: req.body.ciudad,
-                        provincia: req.body.provincia,
-                        idLugar: resLugar._id,
-                      }
-                    }, (err) => {
-                      if (err) {
-                        console.log(err);
+                    Lugar.updateOne(
+                      {
+                        _id: req.body.id,
+                      },
+                      {
+                        ciudad: req.body.ciudad,
+                        provincia: req.body.provincia,},
+                        (err)=>{
+                          if(err){
+                            console.log(err)
+                          }else{
+                            Ruta.updateMany({
+                              "origen.idLugar": req.body.id,
+                            }, {
+                              origen: {
+                                nombre: req.body.ciudad,
+                                provincia: req.body.provincia,
+                                idLugar: resLugar._id,
+                              }
+                            }, (err) => {
+                              if (err) {
+                                console.log(err);
 
-                      }
+                              }
 
-                    })
-                    Ruta.updateMany({
-                      "destino.idLugar": req.body.id,
-                    }, {
-                      destino: {
-                        nombre: req.body.ciudad,
-                        provincia: req.body.provincia,
-                        idLugar:resLugar._id,
-                      }
-                    }, (err,result) => {
-                      if (err) {
-                        console.log(err);
-                      }
-                    })
-                    Ruta.find({
-                      $or: [
-                        {
-                          "origen.nombre": req.body.ciudad,
-                          "origen.provincia": req.body.provincia,
-                        },
-                        {
-                          "destino.nombre": req.body.ciudad,
-                          "destino.provincia": req.body.provincia,
-                        },
-                      ],
-                      borrado: false,},(err,result)=>{
-                        if(err){
-                          console.log(err);
-                        }else{
-                          result.forEach(e => {
-                            Viaje.updateMany({ "ruta.idRuta":e._id},{
-                              ruta:{
-                                origen:{
-                                  nombre:e.origen.nombre,
-                                  provincia:e.origen.provincia
-                                },
-                                destino: {
-                                  nombre: e.destino.nombre,
-                                  provincia: e.destino.provincia
-                                },
-                                idRuta:e._id
-
-                              }},(err) =>{
-                                if(err){
-                                  console.log(err);
-                                }
                             })
-                          });
-                        }
-                      })
+                            Ruta.updateMany({
+                              "destino.idLugar": req.body.id,
+                            }, {
+                              destino: {
+                                nombre: req.body.ciudad,
+                                provincia: req.body.provincia,
+                                idLugar: resLugar._id,
+                              }
+                            }, (err, result) => {
+                              if (err) {
+                                console.log(err);
+                              }
+                            })
+                            Ruta.find({
+                              $or: [
+                                {
+                                  "origen.nombre": req.body.ciudad,
+                                  "origen.provincia": req.body.provincia,
+                                },
+                                {
+                                  "destino.nombre": req.body.ciudad,
+                                  "destino.provincia": req.body.provincia,
+                                },
+                              ],
+                              borrado: false,
+                            }, (err, result) => {
+                              if (err) {
+                                console.log(err);
+                              } else {
+                                result.forEach(e => {
+                                  Viaje.updateMany({ "ruta.idRuta": e._id }, {
+                                    ruta: {
+                                      origen: {
+                                        nombre: e.origen.nombre,
+                                        provincia: e.origen.provincia
+                                      },
+                                      destino: {
+                                        nombre: e.destino.nombre,
+                                        provincia: e.destino.provincia
+                                      },
+                                      idRuta: e._id
+
+                                    }
+                                  }, (err) => {
+                                    if (err) {
+                                      console.log(err);
+                                    }
+                                  })
+                                });
+                              }
+                            })
+                            res.json({ response: "bien" });
+                          }
+                        }    
                     
-                    res.json({ response: "bien" });
-                  }
+                    
+                    )}
                 }
               }
             );

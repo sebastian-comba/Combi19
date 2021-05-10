@@ -1,0 +1,57 @@
+<%- include("partials/header-pasajero"); -%>
+<h1>Lista de Pasajes</h1>
+
+<% if (!data.length) { %>
+<h2>No hay pasajes cargados</h2>
+<% } else { %>
+<div id="error"></div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Precio</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <% data.forEach(function(pasaje) { %>
+        <tr>
+            <td><%= pasaje.idViaje %></td>
+            <td><%= pasaje.fecha  %></td>
+            <td><%= pasaje.precio  %></td>
+            
+            <td>
+                <button class="eliminar" id="<%= pasaje._id %>" onclick="eliminar(this)">Eliminar</button>
+
+            </td>
+        </tr>
+        <% }); %>
+    </tbody>
+</table>
+<script>
+    function eliminar(comp) {
+        document.getElementById("error").innerHTML = "";
+        let id = comp.id;
+        fetch("/pasaje/" + id, {
+            method: "DELETE"
+        }).then((res) => res.json())
+            .then((data) => {
+                switch (data.response) {
+                    case "bien":
+                        location.reload();
+                        break;
+                    default:
+                        document.getElementById("error").innerHTML =
+                            '<small  style="color:red"><p class="er">' + data.response + ' </p></small>';
+                        break;
+                        break;
+                }
+
+            });
+    }
+</script>
+<% } %>
+
+<%- include("partials/footer"); -%>

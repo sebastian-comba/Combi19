@@ -344,6 +344,7 @@ app.delete("/insumo/:id", (req, res) => {
         insumos: { $elemMatch: { nombre: resultInsumo.nombre } },
       },
       (err, resultPasaje) => {
+        console.log(resultPasaje)
         if (resultPasaje !== null) {
           res.json({
             response:
@@ -1676,22 +1677,45 @@ app.delete("/viaje/:id", (req, res) => {
 //
 // PASAJE DE PRUEBA
 // let p = new Pasaje({
-//   emailPasajero: "sebastian@mail.com",
+//   emailPasajero: "juan@gmail.com",
 //   insumos: [
 //     {
-//       nombre: "papitas",
-//       precio: "salado",
+//       nombre: "Papas Fritas",
+//       precio: "50",
 //       cantidad: 5,
 //     },
 //   ],
-//   idViaje: "6095a22f9ca3773cecf8c74a",
-//   fecha: "2021-05-17 19:30:00.000Z",
-//   precio: "568",
+//   idViaje: "60988670173c235a2073d5ed",
+//   fecha: "2021-05-12T18:00:00.000+00:00",
+//   precio: "1300",
 // });
 // p.save((err) => {
 //   console.log(err);
 // });
-
+app.get("/pasajes",(req,res)=>{
+  if (req.session.rol !== "Cliente") {
+    res.redirect("/");
+  } else {
+    Pasaje.find({
+      emailPasajero: req.session.email,
+          fecha: { $gte: hoy },}, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("listar-pasajes", { data: result });
+      }
+    });
+  }
+})
+app.delete("/pasaje/:id", (req, res) => {
+  Pasaje.deleteOne({_id:req.params.id},(err)=>{
+    if(err){
+      console.log(err);
+    }else{
+      res.json({response:"bien"})
+    }
+  })
+})
 // NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);

@@ -175,6 +175,7 @@ function validarFechaN() {
     }
 };
 function validarFechaV() {
+    if (cat.value === "gold" && c){
     let vencimiento = document.getElementById("vencimiento");
     let guion = 0;
     let año = "";
@@ -217,7 +218,7 @@ function validarFechaV() {
         document.getElementById("errFV").innerHTML =
             '<small  style="color:red"><p class="er">La tarjeta esta vencida</p></small>';
     }
-};
+}};
 
 function camposCompletosR() {
     let camposIn;

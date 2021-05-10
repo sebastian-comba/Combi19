@@ -344,7 +344,6 @@ app.delete("/insumo/:id", (req, res) => {
         insumos: { $elemMatch: { nombre: resultInsumo.nombre } },
       },
       (err, resultPasaje) => {
-        console.log(resultPasaje)
         if (resultPasaje !== null) {
           res.json({
             response:

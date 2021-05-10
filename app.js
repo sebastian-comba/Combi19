@@ -213,58 +213,103 @@ app.put("/modificar-lugar", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      Viaje.findOne(
-        {
-          $or: [
-            {
-              "ruta.origen.nombre": resLugar.ciudad,
-              "ruta.origen.provincia": resLugar.provincia,
-            },
-            {
-              "ruta.destino.nombre": resLugar.ciudad,
-              "ruta.destino.provincia": resLugar.provincia,
-            },
-          ],
-          fecha: { $gte: hoy },
-          borrado: false,
-        },
-        (err, result) => {
-          if (result) {
-            res.json({ response: "No se puede modificar, tiene viaje futuro" });
+      Lugar.findOne(
+        { ciudad: req.body.ciudad, provincia: req.body.provincia, _id: { $ne: req.body.id }, borrado: false },
+        (err, found) => {
+          if (err) {
+            console.log(err);
           } else {
-            Lugar.findOne(
-              { ciudad: req.body.ciudad, provincia: req.body.provincia, _id: { $ne: req.body.id }, borrado: false },
-              (err, found) => {
-                if (err) {
-                  console.log(err);
-                } else {
-                  if (found) {
-                    res.json({ response: "No se puede modificar ya existe un lugar con la misma ciudad y provincia" });
+            if (found) {
+              res.json({ response: "No se puede modificar ya existe un lugar con la misma ciudad y provincia" });
+            } else {
+              Lugar.updateOne(
+                {
+                  _id: req.body.id,
+                },
+                {
+                  ciudad: req.body.ciudad,
+                  provincia: req.body.provincia,
+                  borrado: false,
+                },
+                (err) => {
+                  if (err) {
+                    console.log(err);
                   } else {
-                    Lugar.updateOne(
-                      {
-                        _id: req.body.id,
-                      },
-                      {
-                        ciudad: req.body.ciudad,
+                    Ruta.updateMany({
+                      "origen.idLugar": req.body.id,
+                    }, {
+                      origen: {
+                        nombre: req.body.ciudad,
                         provincia: req.body.provincia,
-                        borrado: false,
-                      },
-                      (err) => {
-                        if (err) {
-                          console.log(err);
-                        }
-                        res.json({ response: "bien" });
+                        idLugar: resLugar._id,
                       }
-                    );
+                    }, (err) => {
+                      if (err) {
+                        console.log(err);
+
+                      }
+
+                    })
+                    Ruta.updateMany({
+                      "destino.idLugar": req.body.id,
+                    }, {
+                      destino: {
+                        nombre: req.body.ciudad,
+                        provincia: req.body.provincia,
+                        idLugar:resLugar._id,
+                      }
+                    }, (err,result) => {
+                      if (err) {
+                        console.log(err);
+                      }
+                    })
+                    Ruta.find({
+                      $or: [
+                        {
+                          "origen.nombre": req.body.ciudad,
+                          "origen.provincia": req.body.provincia,
+                        },
+                        {
+                          "destino.nombre": req.body.ciudad,
+                          "destino.provincia": req.body.provincia,
+                        },
+                      ],
+                      borrado: false,},(err,result)=>{
+                        if(err){
+                          console.log(err);
+                        }else{
+                          result.forEach(e => {
+                            Viaje.updateMany({ "ruta.idRuta":e._id},{
+                              ruta:{
+                                origen:{
+                                  nombre:e.origen.nombre,
+                                  provincia:e.origen.provincia
+                                },
+                                destino: {
+                                  nombre: e.destino.nombre,
+                                  provincia: e.destino.provincia
+                                },
+                                idRuta:e._id
+
+                              }},(err) =>{
+                                if(err){
+                                  console.log(err);
+                                }
+                            })
+                          });
+                        }
+                      })
+                    
+                    res.json({ response: "bien" });
                   }
                 }
-              })
+              );
+            }
           }
-        }
-      );
+        })
     }
-  });
+  }
+  );
 });
 
 //CRUD Insumo
@@ -1274,7 +1319,7 @@ app.put("/modificar-ruta", (req, res) => {
                 if (err) {
                   res.json({ response: "El lugar de Destino no existe por favor selecione uno de la lista" });
                 } else {
-                  Combi.findOne({patente: req.body.combi }, (err, combiR) => {
+                  Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
                     if (err) {
                       res.json({ response: "La combi no existe por favor selecione uno de la lista" });
                     } else {
@@ -1299,7 +1344,7 @@ app.put("/modificar-ruta", (req, res) => {
                             console.log(err);
                           } else {
                             if (resultRuta !== null) {
-                              res.json({response:"La ruta ya existe"});
+                              res.json({ response: "La ruta ya existe" });
                             } else {
                               Ruta.updateOne(
                                 { _id: req.body.id },
@@ -1359,7 +1404,7 @@ app.get("/cargar-viaje", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-          res.render("cargar-viaje", { data: result });
+        res.render("cargar-viaje", { data: result });
       }
     });
   }
@@ -1400,7 +1445,7 @@ app.post("/cargar-viaje", (req, res) => {
                           transformarFecha(req.body.llegada) <
                           viaje.fecha)
                       ) {
-                        
+
                         bool = true;
                       }
                     });
@@ -1463,7 +1508,7 @@ app.get("/viajes", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ borrado: false, fecha: { $gte: hoy }}, (err, result) => {
+    Viaje.find({ borrado: false, fecha: { $gte: (new Date) } }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -1476,7 +1521,7 @@ app.get("/viajes-pasados", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ borrado: false, fecha: { $lt: hoy }, }, (err, result) => {
+    Viaje.find({ borrado: false, fecha: { $lt: (new Date) }, }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -1690,13 +1735,14 @@ app.delete("/viaje/:id", (req, res) => {
 // p.save((err) => {
 //   console.log(err);
 // });
-app.get("/pasajes",(req,res)=>{
+app.get("/pasajes", (req, res) => {
   if (req.session.rol !== "Cliente") {
     res.redirect("/");
   } else {
     Pasaje.find({
       emailPasajero: req.session.email,
-          fecha: { $gte: hoy },}, (err, result) => {
+      fecha: { $gte: hoy },
+    }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -1706,11 +1752,11 @@ app.get("/pasajes",(req,res)=>{
   }
 })
 app.delete("/pasaje/:id", (req, res) => {
-  Pasaje.deleteOne({_id:req.params.id},(err)=>{
-    if(err){
+  Pasaje.deleteOne({ _id: req.params.id }, (err) => {
+    if (err) {
       console.log(err);
-    }else{
-      res.json({response:"bien"})
+    } else {
+      res.json({ response: "bien" })
     }
   })
 })

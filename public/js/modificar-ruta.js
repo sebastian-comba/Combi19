@@ -13,32 +13,30 @@ function limpiar() {
 }
 
 function modificar() {
-  fetch("/modificar-ruta", {
-    method: "put",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      id: id.value,
-      origen: origen.value,
-      destino: destino.value,
-      combi: combi.value,
-      distancia: distancia.value,
-      hora: hora.value,
-    }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      switch (data.response) {
-        case "bien":
-          location.replace("/listar-rutas");
-          break;
-        default:
-          document.getElementById("err").innerHTML =
-            '<small  style="color:red"><p class="er">' +
-            data.response +
-            "</p></small>";
-          break;
-      }
-    });
+    fetch("/modificar-ruta", {
+        method: "put",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            id: id.value, 
+            origen: origen.value,
+            destino: destino.value,
+            combi: combi.value,
+            distancia: distancia.value,
+            hora: hora.value,
+        }),
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            switch (data.response) {
+                case "bien":
+                    location.replace("/listar-rutas")
+                    break;
+                default:
+                    document.getElementById("err").innerHTML =
+                        '<small  style="color:red"><p class="er">' + data.response + '</p></small>';
+                    break;
+            }
+        });
 }
 
 document.getElementById("modificar").onclick = function () {

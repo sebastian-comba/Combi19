@@ -122,27 +122,28 @@ app.post("/cargar-lugar", (req, res) => {
     provincia: req.body.provincia,
     borrado: false,
   });
-  Lugar.findOne({
-    ciudad: req.body.ciudad,
-    provincia: req.body.provincia, borrado: false
-  }, (err, result) => {
-    if (!err) {
-      if (result) {
-
-        res.json({ response: "Ya existe un lugar identico" });
-      }
-      else {
-        l.save((err) => {
-          if (err) {
-            res.json({ response: "Ya existe un lugar identico" });
-          } else {
-            res.json({ response: "bien" });
-          }
-        });
+  Lugar.findOne(
+    {
+      ciudad: req.body.ciudad,
+      provincia: req.body.provincia,
+      borrado: false,
+    },
+    (err, result) => {
+      if (!err) {
+        if (result) {
+          res.json({ response: "Ya existe un lugar identico" });
+        } else {
+          l.save((err) => {
+            if (err) {
+              res.json({ response: "Ya existe un lugar identico" });
+            } else {
+              res.json({ response: "bien" });
+            }
+          });
+        }
       }
     }
-  })
-
+  );
 });
 
 // DELETE lugar
@@ -152,7 +153,10 @@ app.delete("/lugar/:id", (req, res) => {
   } else {
     Lugar.findOne({ _id: req.params.id }, (err, resLugar) => {
       if (err) {
-        res.json({ response: "Error al conectar en la base de datos, intentelo en unos minutos" })
+        res.json({
+          response:
+            "Error al conectar en la base de datos, intentelo en unos minutos",
+        });
       } else {
         Viaje.findOne(
           {
@@ -199,13 +203,16 @@ app.get("/modificar-lugar/:id", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Lugar.findOne({ _id: req.params.id, borrado: false }, (err, resultLugar) => {
-      if (err) {
-        res.redirect("/listar-lugares");
-      } else {
-        res.render("modificar-lugar", { data: resultLugar });
+    Lugar.findOne(
+      { _id: req.params.id, borrado: false },
+      (err, resultLugar) => {
+        if (err) {
+          res.redirect("/listar-lugares");
+        } else {
+          res.render("modificar-lugar", { data: resultLugar });
+        }
       }
-    });
+    );
   }
 });
 app.put("/modificar-lugar", (req, res) => {
@@ -234,13 +241,21 @@ app.put("/modificar-lugar", (req, res) => {
             res.json({ response: "No se puede modificar, tiene viaje futuro" });
           } else {
             Lugar.findOne(
-              { ciudad: req.body.ciudad, provincia: req.body.provincia, _id: { $ne: req.body.id }, borrado: false },
+              {
+                ciudad: req.body.ciudad,
+                provincia: req.body.provincia,
+                _id: { $ne: req.body.id },
+                borrado: false,
+              },
               (err, found) => {
                 if (err) {
                   console.log(err);
                 } else {
                   if (found) {
-                    res.json({ response: "No se puede modificar ya existe un lugar con la misma ciudad y provincia" });
+                    res.json({
+                      response:
+                        "No se puede modificar ya existe un lugar con la misma ciudad y provincia",
+                    });
                   } else {
                     Lugar.updateOne(
                       {
@@ -260,7 +275,8 @@ app.put("/modificar-lugar", (req, res) => {
                     );
                   }
                 }
-              })
+              }
+            );
           }
         }
       );
@@ -326,7 +342,6 @@ app.post("/alta-insumo", (req, res) => {
           }
         });
       } else {
-
         res.json({ response: "Ya Existe un insumo con el mismo nombre" });
       }
     }
@@ -347,7 +362,7 @@ app.delete("/insumo/:id", (req, res) => {
         if (resultPasaje !== null) {
           res.json({
             response:
-              "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro"
+              "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro",
           });
         } else {
           Insumo.updateOne(
@@ -358,8 +373,7 @@ app.delete("/insumo/:id", (req, res) => {
                 console.log(err);
               } else {
                 res.json({
-                  response:
-                    "bien"
+                  response: "bien",
                 });
               }
             }
@@ -408,8 +422,10 @@ app.put("/modificar-insumo", (req, res) => {
             },
             (err) => {
               if (err) {
-
-                res.json({ response: "Lo sentimos ocurrio un error intentelo en un momento" });
+                res.json({
+                  response:
+                    "Lo sentimos ocurrio un error intentelo en un momento",
+                });
               } else {
                 res.json({ response: "bien" });
               }
@@ -418,7 +434,7 @@ app.put("/modificar-insumo", (req, res) => {
         } else {
           res.json({
             response:
-              "El insumo no se puede modificar porque ya existe uno con el mismo nombre"
+              "El insumo no se puede modificar porque ya existe uno con el mismo nombre",
           });
         }
       }
@@ -551,7 +567,7 @@ app.post("/registro", (req, res) => {
           if (
             result.dni === req.body.dniT &&
             Date.parse(result.vencimiento) ==
-            Date.parse(req.body.vencimiento + "-01") &&
+              Date.parse(req.body.vencimiento + "-01") &&
             result.nombreCompleto === req.body.nombreT &&
             result.codSeguridad === req.body.codS
           ) {
@@ -808,7 +824,7 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
           }
         }
       }
-    )
+    );
   }
 });
 // CRUD Combi
@@ -946,7 +962,10 @@ app.delete("/eliminar-combi/:patente", (req, res) => {
                   console.log(err);
                 } else {
                   if (ruta.length) {
-                    res.json({ response: "No se puede eliminar por que esta asiganada a rutas" });
+                    res.json({
+                      response:
+                        "No se puede eliminar por que esta asiganada a rutas",
+                    });
                   } else {
                     Combi.updateOne(
                       { patente: req.params.patente },
@@ -961,9 +980,9 @@ app.delete("/eliminar-combi/:patente", (req, res) => {
                       }
                     );
                   }
-
                 }
-              })
+              }
+            );
           }
         }
       }
@@ -1110,69 +1129,84 @@ app.get("/cargar-rutas", (req, res) => {
 app.post("/cargar-rutas", (req, res) => {
   Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
     if (err) {
-      res.json({ response: "El lugar de Origen no existe por favor selecione uno de la lista" });
+      res.json({
+        response:
+          "El lugar de Origen no existe por favor selecione uno de la lista",
+      });
     } else {
       Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
         if (err) {
-          res.json({ response: "El lugar de Destino no existe por favor selecione uno de la lista" });
+          res.json({
+            response:
+              "El lugar de Destino no existe por favor selecione uno de la lista",
+          });
         } else {
           Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
             if (err) {
-              res.json({ response: "La combi no existe por favor selecione uno de la lista" });
+              res.json({
+                response:
+                  "La combi no existe por favor selecione uno de la lista",
+              });
             } else {
-              Ruta.findOne({
-                "origen.nombre": origenR.ciudad,
-                "origen.provincia": origenR.provincia,
-                "origen.idLugar": origenR._id,
-                "destino.nombre": destinoR.ciudad,
-                "destino.provincia": destinoR.provincia,
-                "destino.idLugar": destinoR._id,
-                "combi.patente": combiR.patente,
-                "combi.marca": combiR.marca,
-                "combi.modelo": combiR.modelo,
-                "combi.idCombi": combiR._id,
-                distancia: req.body.distancia,
-                hora: req.body.hora,
-                borrado: false,
-              }, (err, resultRuta) => {
-                if (err) {
-                  console.log(err);
-                } else {
-                  if (resultRuta !== null) {
-                    res.json({ response: "La ruta ya existe" });
+              Ruta.findOne(
+                {
+                  "origen.nombre": origenR.ciudad,
+                  "origen.provincia": origenR.provincia,
+                  "origen.idLugar": origenR._id,
+                  "destino.nombre": destinoR.ciudad,
+                  "destino.provincia": destinoR.provincia,
+                  "destino.idLugar": destinoR._id,
+                  "combi.patente": combiR.patente,
+                  "combi.marca": combiR.marca,
+                  "combi.modelo": combiR.modelo,
+                  "combi.idCombi": combiR._id,
+                  distancia: req.body.distancia,
+                  hora: req.body.hora,
+                  borrado: false,
+                },
+                (err, resultRuta) => {
+                  if (err) {
+                    console.log(err);
                   } else {
-                    var ruta = new Ruta({
-                      origen: {
-                        nombre: origenR.ciudad,
-                        provincia: origenR.provincia,
-                        idLugar: origenR._id,
-                      },
-                      destino: {
-                        nombre: destinoR.ciudad,
-                        provincia: destinoR.provincia,
-                        idLugar: destinoR._id,
-                      },
-                      combi: {
-                        patente: combiR.patente,
-                        marca: combiR.marca,
-                        modelo: combiR.modelo,
-                        idCombi: combiR._id,
-                      },
-                      distancia: req.body.distancia,
-                      hora: req.body.hora,
-                      borrado: false,
-                    });
-                    ruta.save((err) => {
-                      if (err) {
-                        console.log(err);
-                        res.json({ response: "Lo sentimos no se pudo guardar la ruta.Intentelo en unos minutos" });
-                      } else {
-                        res.json({ response: "bien" });
-                      }
-                    });
+                    if (resultRuta !== null) {
+                      res.json({ response: "La ruta ya existe" });
+                    } else {
+                      var ruta = new Ruta({
+                        origen: {
+                          nombre: origenR.ciudad,
+                          provincia: origenR.provincia,
+                          idLugar: origenR._id,
+                        },
+                        destino: {
+                          nombre: destinoR.ciudad,
+                          provincia: destinoR.provincia,
+                          idLugar: destinoR._id,
+                        },
+                        combi: {
+                          patente: combiR.patente,
+                          marca: combiR.marca,
+                          modelo: combiR.modelo,
+                          idCombi: combiR._id,
+                        },
+                        distancia: req.body.distancia,
+                        hora: req.body.hora,
+                        borrado: false,
+                      });
+                      ruta.save((err) => {
+                        if (err) {
+                          console.log(err);
+                          res.json({
+                            response:
+                              "Lo sentimos no se pudo guardar la ruta.Intentelo en unos minutos",
+                          });
+                        } else {
+                          res.json({ response: "bien" });
+                        }
+                      });
+                    }
                   }
                 }
-              });
+              );
             }
           });
         }
@@ -1199,7 +1233,7 @@ app.delete("/ruta/:id", (req, res) => {
           if (viajes !== null) {
             res.json({
               response:
-                "No se puede eliminar la ruta porque tiene viajes a futuro"
+                "No se puede eliminar la ruta porque tiene viajes a futuro",
             });
           } else {
             Ruta.updateOne(
@@ -1258,26 +1292,34 @@ app.put("/modificar-ruta", (req, res) => {
     },
     (err, viajes) => {
       if (err) {
-        res.redirect("/listar-rutas")
+        console.log(err);
       } else {
         if (viajes !== null) {
           res.json({
             response:
-              "No se puede modificar la ruta porque tiene viajes a futuro"
-          }
-          );
+              "No se puede modificar la ruta porque tiene viajes a futuro",
+          });
         } else {
           Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
             if (err) {
-              res.json({ response: "El lugar de Origen no existe por favor selecione uno de la lista" });
+              res.json({
+                response:
+                  "El lugar de Origen no existe por favor selecione uno de la lista",
+              });
             } else {
               Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
                 if (err) {
-                  res.json({ response: "El lugar de Destino no existe por favor selecione uno de la lista" });
+                  res.json({
+                    response:
+                      "El lugar de Destino no existe por favor selecione uno de la lista",
+                  });
                 } else {
-                  Combi.findOne({ _id: req.body.combi }, (err, combiR) => {
+                  Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
                     if (err) {
-                      res.json({ response: "El lugar de Origen no existe por favor selecione uno de la lista" });
+                      res.json({
+                        response:
+                          "La combi no existe por favor selecione una de la lista",
+                      });
                     } else {
                       Ruta.findOne(
                         {
@@ -1300,7 +1342,7 @@ app.put("/modificar-ruta", (req, res) => {
                             console.log(err);
                           } else {
                             if (resultRuta !== null) {
-                              res.json({response:"La ruta ya existe"});
+                              res.json({ response: "La ruta ya existe" });
                             } else {
                               Ruta.updateOne(
                                 { _id: req.body.id },
@@ -1360,7 +1402,7 @@ app.get("/cargar-viaje", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-          res.render("cargar-viaje", { data: result });
+        res.render("cargar-viaje", { data: result });
       }
     });
   }
@@ -1370,101 +1412,96 @@ app.post("/cargar-viaje", (req, res) => {
     if (err) {
       res.json({ response: "la Ruta selecionada no existe" });
     } else {
-      Combi.findOne(
-        { patente: resRuta.combi.patente },
-        (err, resCombi) => {
-          if (err) {
-            res.json({ response: "la Combi selecionada no existe" });
+      Combi.findOne({ patente: resRuta.combi.patente }, (err, resCombi) => {
+        if (err) {
+          res.json({ response: "la Combi selecionada no existe" });
+        } else {
+          if (req.body.asientos > resCombi.asientos) {
+            res.json({
+              response:
+                "No se puede guardar el viaje, la cantidad de asientos es mayor o igual a " +
+                resCombi.asientos,
+            });
           } else {
-            if (req.body.asientos > resCombi.asientos) {
-              res.json({
-                response:
-                  "No se puede guardar el viaje, la cantidad de asientos es mayor o igual a " + resCombi.asientos
-              });
-            } else {
-              Viaje.find(
-                { "ruta.idRuta": resRuta._id, borrado: false },
-                (err, resultV) => {
-                  if (err) {
-                    console.log(err);
-                  } else {
-                    let bool = false;
+            Viaje.find(
+              { "ruta.idRuta": resRuta._id, borrado: false },
+              (err, resultV) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  let bool = false;
 
-                    if (!resultV.length) {
+                  if (!resultV.length) {
+                    bool = true;
+                  }
+                  resultV.forEach((viaje) => {
+                    if (
+                      transformarFecha(req.body.fecha + "T" + resRuta.hora) >
+                        viaje.llegada ||
+                      transformarFecha(req.body.llegada) < viaje.fecha
+                    ) {
                       bool = true;
                     }
-                    resultV.forEach((viaje) => {
-                      if (
-                        (transformarFecha(
-                          req.body.fecha + "T" + resRuta.hora
-                        ) > viaje.llegada ||
-                          transformarFecha(req.body.llegada) <
-                          viaje.fecha)
-                      ) {
-                        
-                        bool = true;
+                  });
+                  if (bool) {
+                    let v = new Viaje({
+                      ruta: {
+                        origen: {
+                          nombre: resRuta.origen.nombre,
+                          provincia: resRuta.origen.provincia,
+                        },
+                        destino: {
+                          nombre: resRuta.destino.nombre,
+                          provincia: resRuta.destino.provincia,
+                        },
+                        idRuta: req.body.ruta,
+                      },
+                      combi: {
+                        patente: resCombi.patente,
+                        marca: resCombi.marca,
+                        modelo: resCombi.modelo,
+                      },
+                      chofer: {
+                        nombre: resCombi.chofer.nombre,
+                        apellido: resCombi.chofer.apellido,
+                        mail: resCombi.chofer.email,
+                      },
+                      fecha: req.body.fecha + "T" + resRuta.hora,
+                      llegada: req.body.llegada,
+                      precio: req.body.precio,
+                      asientosDisponibles: req.body.asientos,
+                      estado: "En espera",
+                      borrado: false,
+                    });
+                    v.save((err) => {
+                      if (err) {
+                        console.log(err);
+                      } else {
+                        res.json({ response: "bien" });
                       }
                     });
-                    if (bool) {
-                      let v = new Viaje({
-                        ruta: {
-                          origen: {
-                            nombre: resRuta.origen.nombre,
-                            provincia: resRuta.origen.provincia,
-                          },
-                          destino: {
-                            nombre: resRuta.destino.nombre,
-                            provincia: resRuta.destino.provincia,
-                          },
-                          idRuta: req.body.ruta,
-                        },
-                        combi: {
-                          patente: resCombi.patente,
-                          marca: resCombi.marca,
-                          modelo: resCombi.modelo,
-                        },
-                        chofer: {
-                          nombre: resCombi.chofer.nombre,
-                          apellido: resCombi.chofer.apellido,
-                          mail: resCombi.chofer.email,
-                        },
-                        fecha: req.body.fecha + "T" + resRuta.hora,
-                        llegada: req.body.llegada,
-                        precio: req.body.precio,
-                        asientosDisponibles: req.body.asientos,
-                        estado: "En espera",
-                        borrado: false,
-                      });
-                      v.save((err) => {
-                        if (err) {
-                          console.log(err);
-                        } else {
-                          res.json({ response: "bien" });
-                        }
-                      });
-                    } else {
-                      res.json({
-                        response:
-                          "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha "
-                      });
-                    }
+                  } else {
+                    res.json({
+                      response:
+                        "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
+                    });
                   }
                 }
-              );
-            }
+              }
+            );
           }
-        })
+        }
+      });
     }
-  })
-}
-);
+  });
+});
 
 // READ VIAJES
 app.get("/viajes", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ borrado: false, fecha: { $gte: hoy }}, (err, result) => {
+    Viaje.find({ borrado: false, fecha: { $gte: hoy } }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -1477,7 +1514,7 @@ app.get("/viajes-pasados", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ borrado: false, fecha: { $lt: hoy }, }, (err, result) => {
+    Viaje.find({ borrado: false, fecha: { $lt: hoy } }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -1521,7 +1558,9 @@ app.put("/viaje", (req, res) => {
       console.log(err);
     } else {
       if (resPasaje) {
-        res.json({ response: "No se puede modificar el viaje, tiene pasajes comprados." });
+        res.json({
+          response: "No se puede modificar el viaje, tiene pasajes comprados.",
+        });
       } else {
         Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
           if (err) {
@@ -1536,7 +1575,8 @@ app.put("/viaje", (req, res) => {
                   if (req.body.asientos > resCombi.asientos) {
                     res.json({
                       response:
-                        "No se puede modificar el viaje, la cantidad de asientos es mayor o igual a " + resCombi.asientos
+                        "No se puede modificar el viaje, la cantidad de asientos es mayor o igual a " +
+                        resCombi.asientos,
                     });
                   } else {
                     Viaje.findOne(
@@ -1552,7 +1592,7 @@ app.put("/viaje", (req, res) => {
                           ) {
                             res.json({
                               response:
-                                "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente."
+                                "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente.",
                             });
                           } else {
                             Viaje.find(
@@ -1566,14 +1606,13 @@ app.put("/viaje", (req, res) => {
                                     bool = true;
                                   }
 
-
                                   resultV.forEach((viaje) => {
                                     if (
-                                      (transformarFecha(
+                                      transformarFecha(
                                         req.body.fecha + "T" + resRuta.hora
                                       ) > viaje.llegada ||
-                                        transformarFecha(req.body.llegada) <
-                                        viaje.fecha) ||
+                                      transformarFecha(req.body.llegada) <
+                                        viaje.fecha ||
                                       "" + resViaje._id === "" + viaje._id
                                     ) {
                                       bool = true;
@@ -1616,19 +1655,20 @@ app.put("/viaje", (req, res) => {
                                       (err) => {
                                         if (err) {
                                           res.json({
-                                            response: "Lo sentimos ocurrio un error al momento de modificar. Por favor intentelo de nuevo en unos minutos"
+                                            response:
+                                              "Lo sentimos ocurrio un error al momento de modificar. Por favor intentelo de nuevo en unos minutos",
                                           });
                                         } else {
                                           res.json({
-                                            response: "bien"
-                                          })
+                                            response: "bien",
+                                          });
                                         }
                                       }
                                     );
                                   } else {
                                     res.json({
                                       response:
-                                        "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha "
+                                        "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
                                     });
                                   }
                                 }
@@ -1656,15 +1696,17 @@ app.delete("/viaje/:id", (req, res) => {
       console.log(err);
     } else {
       if (result !== null) {
-        res.json({ response: "No se puede borrar el viaje, tiene pasajes comprados" });
+        res.json({
+          response: "No se puede borrar el viaje, tiene pasajes comprados",
+        });
       } else {
         Viaje.updateOne({ _id: req.params.id }, { borrado: true }, (error) => {
           if (error) {
             console.log(error);
           } else {
             res.json({
-              response: "bien"
-            })
+              response: "bien",
+            });
           }
         });
       }
@@ -1691,30 +1733,34 @@ app.delete("/viaje/:id", (req, res) => {
 // p.save((err) => {
 //   console.log(err);
 // });
-app.get("/pasajes",(req,res)=>{
+app.get("/pasajes", (req, res) => {
   if (req.session.rol !== "Cliente") {
     res.redirect("/");
   } else {
-    Pasaje.find({
-      emailPasajero: req.session.email,
-          fecha: { $gte: hoy },}, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("listar-pasajes", { data: result });
+    Pasaje.find(
+      {
+        emailPasajero: req.session.email,
+        fecha: { $gte: hoy },
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("listar-pasajes", { data: result });
+        }
       }
-    });
+    );
   }
-})
+});
 app.delete("/pasaje/:id", (req, res) => {
-  Pasaje.deleteOne({_id:req.params.id},(err)=>{
-    if(err){
+  Pasaje.deleteOne({ _id: req.params.id }, (err) => {
+    if (err) {
       console.log(err);
-    }else{
-      res.json({response:"bien"})
+    } else {
+      res.json({ response: "bien" });
     }
-  })
-})
+  });
+});
 // NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);

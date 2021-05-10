@@ -1598,140 +1598,143 @@ app.get("/modificar-viaje/:id", (req, res) => {
 });
 
 app.put("/viaje", (req, res) => {
-  Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {
-    if (err) {
-      console.log(err);
-    } else {
-      if (resPasaje) {
-        res.json({
-          response: "No se puede modificar el viaje, tiene pasajes comprados.",
-        });
+  Viaje.findOne({_id:req.body.idViaje},(err,viajeR)=>{
+    Pasaje.findOne({ idViaje: req.body.idViaje }, (err, resPasaje) => {
+      if (err) {
+        console.log(err);
       } else {
-        Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
-          if (err) {
-            res.json({ response: "la Ruta selecionada no existe" });
-          } else {
-            Combi.findOne(
-              { patente: resRuta.combi.patente },
-              (err, resCombi) => {
-                if (err) {
-                  res.json({ response: "la Combi selecionada no existe" });
-                } else {
-                  if (req.body.asientos > resCombi.asientos) {
-                    res.json({
-                      response:
-                        "No se puede modificar el viaje, la cantidad de asientos es mayor o igual a " +
-                        resCombi.asientos,
-                    });
+        if (resPasaje && viajeR.ruta.idRuta !== req.body.ruta ) {
+          res.json({
+            response: "No se puede modificar la ruta del viaje, tiene pasajes comprados.",
+          });
+        } else {
+          Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
+            if (err) {
+              res.json({ response: "la Ruta selecionada no existe" });
+            } else {
+              Combi.findOne(
+                { patente: resRuta.combi.patente },
+                (err, resCombi) => {
+                  if (err) {
+                    res.json({ response: "la Combi selecionada no existe" });
                   } else {
-                    Viaje.findOne(
-                      { _id: req.body.idViaje },
-                      (err, resViaje) => {
-                        if (err) {
-                          console.log(err);
-                        } else {
-                          if (
-                            transformarFecha(
-                              req.body.fecha + "T" + resRuta.hora
-                            ) < resViaje.fecha
-                          ) {
-                            res.json({
-                              response:
-                                "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente.",
-                            });
+                    if (req.body.asientos > resCombi.asientos) {
+                      res.json({
+                        response:
+                          "No se puede modificar el viaje, la cantidad de asientos es mayor o igual a " +
+                          resCombi.asientos,
+                      });
+                    } else {
+                      Viaje.findOne(
+                        { _id: req.body.idViaje },
+                        (err, resViaje) => {
+                          if (err) {
+                            console.log(err);
                           } else {
-                            Viaje.find(
-                              { "ruta.idRuta": resRuta._id, borrado: false },
-                              (err, resultV) => {
-                                if (err) {
-                                  console.log(err);
-                                } else {
-                                  let bool = false;
-                                  if (!resultV.length) {
-                                    bool = true;
-                                  }
-
-                                  resultV.forEach((viaje) => {
-                                    if (
-                                      transformarFecha(
-                                        req.body.fecha + "T" + resRuta.hora
-                                      ) > viaje.llegada ||
-                                      transformarFecha(req.body.llegada) <
-                                        viaje.fecha ||
-                                      "" + resViaje._id === "" + viaje._id
-                                    ) {
+                            if (
+                              transformarFecha(
+                                req.body.fecha + "T" + resRuta.hora
+                              ) < resViaje.fecha
+                            ) {
+                              res.json({
+                                response:
+                                  "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente.",
+                              });
+                            } else {
+                              Viaje.find(
+                                { "ruta.idRuta": resRuta._id, borrado: false },
+                                (err, resultV) => {
+                                  if (err) {
+                                    console.log(err);
+                                  } else {
+                                    let bool = false;
+                                    if (!resultV.length) {
                                       bool = true;
                                     }
-                                  });
-                                  if (bool) {
-                                    Viaje.updateOne(
-                                      { _id: req.body.idViaje },
-                                      {
-                                        ruta: {
-                                          origen: {
-                                            nombre: resRuta.origen.nombre,
-                                            provincia: resRuta.origen.provincia,
-                                          },
-                                          destino: {
-                                            nombre: resRuta.destino.nombre,
-                                            provincia:
-                                              resRuta.destino.provincia,
-                                          },
-                                          idRuta: resRuta._id,
-                                        },
-                                        combi: {
-                                          patente: resRuta.combi.patente,
-                                          marca: resRuta.combi.marca,
-                                          modelo: resRuta.combi.modelo,
-                                        },
-                                        chofer: {
-                                          nombre: resCombi.chofer.nombre,
-                                          apellido: resCombi.chofer.apellido,
-                                          mail: resCombi.chofer.email,
-                                        },
-                                        fecha:
-                                          req.body.fecha + "T" + resRuta.hora,
-                                        llegada: req.body.llegada,
-                                        precio: req.body.precio,
-                                        asientosDisponibles: req.body.asientos,
-                                        estado: "En espera",
-                                        borrado: false,
-                                      },
-                                      (err) => {
-                                        if (err) {
-                                          res.json({
-                                            response:
-                                              "Lo sentimos ocurrio un error al momento de modificar. Por favor intentelo de nuevo en unos minutos",
-                                          });
-                                        } else {
-                                          res.json({
-                                            response: "bien",
-                                          });
-                                        }
+
+                                    resultV.forEach((viaje) => {
+                                      if (
+                                        transformarFecha(
+                                          req.body.fecha + "T" + resRuta.hora
+                                        ) > viaje.llegada ||
+                                        transformarFecha(req.body.llegada) <
+                                        viaje.fecha ||
+                                        "" + resViaje._id === "" + viaje._id
+                                      ) {
+                                        bool = true;
                                       }
-                                    );
-                                  } else {
-                                    res.json({
-                                      response:
-                                        "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
                                     });
+                                    if (bool) {
+                                      Viaje.updateOne(
+                                        { _id: req.body.idViaje },
+                                        {
+                                          ruta: {
+                                            origen: {
+                                              nombre: resRuta.origen.nombre,
+                                              provincia: resRuta.origen.provincia,
+                                            },
+                                            destino: {
+                                              nombre: resRuta.destino.nombre,
+                                              provincia:
+                                                resRuta.destino.provincia,
+                                            },
+                                            idRuta: resRuta._id,
+                                          },
+                                          combi: {
+                                            patente: resRuta.combi.patente,
+                                            marca: resRuta.combi.marca,
+                                            modelo: resRuta.combi.modelo,
+                                          },
+                                          chofer: {
+                                            nombre: resCombi.chofer.nombre,
+                                            apellido: resCombi.chofer.apellido,
+                                            mail: resCombi.chofer.email,
+                                          },
+                                          fecha:
+                                            req.body.fecha + "T" + resRuta.hora,
+                                          llegada: req.body.llegada,
+                                          precio: req.body.precio,
+                                          asientosDisponibles: req.body.asientos,
+                                          estado: "En espera",
+                                          borrado: false,
+                                        },
+                                        (err) => {
+                                          if (err) {
+                                            res.json({
+                                              response:
+                                                "Lo sentimos ocurrio un error al momento de modificar. Por favor intentelo de nuevo en unos minutos",
+                                            });
+                                          } else {
+                                            res.json({
+                                              response: "bien",
+                                            });
+                                          }
+                                        }
+                                      );
+                                    } else {
+                                      res.json({
+                                        response:
+                                          "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
+                                      });
+                                    }
                                   }
                                 }
-                              }
-                            );
+                              );
+                            }
                           }
                         }
-                      }
-                    );
+                      );
+                    }
                   }
                 }
-              }
-            );
-          }
-        });
+              );
+            }
+          });
+        }
       }
-    }
-  });
+    });
+  })
+  
 });
 
 // DELETE VIAJE

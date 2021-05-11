@@ -38,7 +38,7 @@
     </table>
 <script>
   function eliminar(comp){
-    if (window.confirm("desea eliminar el insumo?")) {
+    if (window.confirm("Esta seguro de eliminar el insumo?")) {
     document.getElementById("error").innerHTML ="";
   let id = comp.id;
     fetch("/insumo/"+ id, {
@@ -46,8 +46,7 @@
         .then((data) => {
             switch (data.response) {
                 case "bien":
-                    location.reload();
-                    window.open("/listar-insumos", "se elimino el insumo ");          
+                    location.reload();        
                     break;
                 default:
                    document.getElementById("error").innerHTML =

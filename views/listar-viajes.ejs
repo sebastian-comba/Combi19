@@ -60,6 +60,7 @@
 <% } %>
 <script>
   function eliminar(comp){
+    if (window.confirm("Esta seguro de eliminar el viaje?")) {
     document.getElementById("error").innerHTML ="";
   let id = comp.id;
     fetch("/viaje/"+ id, {
@@ -77,6 +78,7 @@
             }
            
         });
+      }
 }
 </script>
 <%- include("partials/footer"); -%>

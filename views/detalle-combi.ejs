@@ -30,6 +30,7 @@
 </div>
 <script>
     function eliminar(){
+        if (window.confirm("Esta seguro de eliminar la combi?")) {
         let t= document.getElementById("patente").textContent;
     fetch("/eliminar-combi/"+ t, {
         method: "DELETE"}).then((res) => res.json())
@@ -54,6 +55,7 @@
             }
            
         });
+    }
 }
     document.getElementById("eliminar").onclick=function(){
         eliminar();

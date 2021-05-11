@@ -38,6 +38,7 @@
     </table>
 <script>
   function eliminar(comp){
+    if (window.confirm("desea eliminar el insumo?")) {
     document.getElementById("error").innerHTML ="";
   let id = comp.id;
     fetch("/insumo/"+ id, {
@@ -46,6 +47,7 @@
             switch (data.response) {
                 case "bien":
                     location.reload();
+                    window.open("/listar-insumos", "se elimino el insumo ");          
                     break;
                 default:
                    document.getElementById("error").innerHTML =
@@ -55,6 +57,7 @@
             }
            
         });
+    }
 }
 </script>
 <% } %>

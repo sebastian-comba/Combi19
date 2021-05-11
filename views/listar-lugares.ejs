@@ -5,56 +5,61 @@
 </a>
 
 <% if (!data.length) { %>
-  <h2>No hay lugares cargados</h2>
+<h2>No hay lugares cargados</h2>
 <% } else { %>
 <table class="table table-striped">
   <div id="error"></div>
   <thead>
     <tr>
-      <th scope="col" >Ciudad</th>
-      <th scope="col"  >Provincia</th>
-      <th scope="col" ></th>
-      <th scope="col" ></th>
+      <th scope="col">Ciudad</th>
+      <th scope="col">Provincia</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
     <% data.forEach((lugar) => { %>
     <tr>
-      <td  class="col-md-3"><%= lugar.ciudad %></td>
+      <td class="col-md-3"><%= lugar.ciudad %></td>
       <td class="col-md-3"><%= lugar.provincia %></td>
       <td class="col-md-3">
         <form action="modificar-lugar/<%= lugar._id %>" method="GET">
-            <button type="submit">Modificar</button>
+          <button type="submit">Modificar</button>
         </form>
       </td>
       <td class="col-md-3">
-              <button class="eliminar" id="<%= lugar._id %>" onclick="eliminar(this)">Eliminar</button>
+        <button class="eliminar" id="<%= lugar._id %>" onclick="eliminar(this)">
+          Eliminar
+        </button>
       </td>
     </tr>
     <% }); %>
   </tbody>
 </table>
 <script>
-  function eliminar(comp){
-    document.getElementById("error").innerHTML ="";
-  let id = comp.id;
-    fetch("/lugar/"+ id, {
-        method: "DELETE"}).then((res) => res.json())
+  function eliminar(comp) {
+    if (window.confirm("Desea eliminar el insumo?")) {
+      document.getElementById("error").innerHTML = "";
+      let id = comp.id;
+      fetch("/lugar/" + id, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
         .then((data) => {
-            switch (data.response) {
-                case "bien":
-                    location.reload();
-                    break;
-                default:
-                   document.getElementById("error").innerHTML =
-                        '<small  style="color:red"><p class="er">'+data.response+' </p></small>';
-                    break;
-                break;
-            }
-           
+          switch (data.response) {
+            case "bien":
+              location.reload();
+              break;
+            default:
+              document.getElementById("error").innerHTML =
+                '<small  style="color:red"><p class="er">' +
+                data.response +
+                " </p></small>";
+              break;
+              break;
+          }
         });
-}
+    }
+  }
 </script>
-<% } %>
-
-<%- include("partials/footer"); -%>
+<% } %> <%- include("partials/footer"); -%>

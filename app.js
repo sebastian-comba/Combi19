@@ -62,15 +62,15 @@ mongoose.set("useFindAndModify", false);
 app.get("/home", (req, res) => {
   if (req.session.nombre) {
     switch (req.session.rol) {
-      case "Cliente":
-        res.render("home", {});
-        break;
       case "Chofer":
         res.render("home-chofer", {});
         break;
       case "Admin":
         res.render("home-admin", {});
         break;
+        default:
+        res.render("home", { data: req.session.rol });
+         break;
     }
   } else {
     res.redirect("/");
@@ -644,7 +644,7 @@ app.post("/registro", (req, res) => {
                 clave: req.body.clave,
                 dni: req.body.dni,
                 fechaN: req.body.fechaN,
-                rol: "Cliente",
+                rol: "Cliente " + req.body.categoria,
                 borrado: false,
                 suspendido: false,
                 categoria: req.body.categoria,
@@ -702,7 +702,7 @@ app.post("/registro", (req, res) => {
       clave: req.body.clave,
       dni: req.body.dni,
       fechaN: req.body.fechaN,
-      rol: "Cliente",
+      rol: "Cliente " + req.body.categoria,
       borrado: false,
       suspendido: false,
       categoria: req.body.categoria,

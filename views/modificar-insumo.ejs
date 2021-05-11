@@ -1,26 +1,44 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Insumo </h1>
-<div id="err"></div>
-    <label for="nombre" required>Nombre:</label><br>
-    <input type="text" class="minsumo" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre" name="nombre"/><br>
-    <label for="tipo" required>Tipo:</label><br>
-    <select name="tipo" id="tipo" class="minsumo" >
-        <% if(data.tipo==="dulce"){%>
-
-    <option value="dulce" selected>Dulce</option>
-    <option value="salado">Salado</option>
-            <%}else{%>
-
-    <option value="dulce">Dulce</option>
-    <option value="salado" selected>Salado</option>
-                <%}%>
-    </select>
-    <br>
+<div class="row">
+    <div class="col-6">
+        <div id="err"></div>
+        <label for="nombre" required>Nombre:</label><br>
+        <input type="text" class="minsumo" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre"
+            name="nombre" /><br>
+        <label for="tipo" required>Tipo:</label><br>
+        <select name="tipo" id="tipo" class="minsumo">
+            <% if(data.tipo==="dulce"){%>
     
-    <label for="precio" required>Precio:</label><br>
-    <input type="text" placeholder="<%= data.precio %>" class="minsumo"  value="<%= data.precio %>" id="precio" name="precio"/><br>
-    <input type="hidden" value="<%= data._id %>" id="id" name="id"/>
-    <button id="modificar">Modificar</button>
+            <option value="dulce" selected>Dulce</option>
+            <option value="salado">Salado</option>
+            <%}else{%>
+    
+            <option value="dulce">Dulce</option>
+            <option value="salado" selected>Salado</option>
+            <%}%>
+        </select>
+        <br>
+        
+        <label for="precio" required>Precio:</label><br>
+        <input type="text" placeholder="<%= data.precio %>" class="minsumo" value="<%= data.precio %>" id="precio"
+            name="precio"/><br>
+            <input type="hidden" value="<%= data._id %>" id="id" name="id" />
+            <button id="modificar">Modificar</button>
+    </div>
+    <div class="col-6">
+        <div id="err"></div>
+        <label  >Nombre anterior:</label><br>
+        <input " class="minsumo" disabled value="<%= data.nombre %>" /><br>
+        <label  >Tipo anterior:</label><br>
+        <input value="<%=data.tipo%>" disabled>
+            
+        <br>
+        
+        <label  >Precio anterior:</label><br>
+        <input   value="<%= data.precio %>" disabled/><br>
+    </div>
+</div>
 
 <a href="http://localhost:3000/listar-insumos">
     <button id="cancelar">Cancelar</button>

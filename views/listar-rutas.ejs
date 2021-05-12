@@ -1,66 +1,72 @@
 <%- include("partials/header"); -%>
 <h1>Lista de Rutas</h1>
 <a href="/cargar-rutas">
-    <button id="cargar-rutas">Cargar Ruta</button>
+  <button id="cargar-rutas">Cargar Ruta</button>
 </a>
 <% if (!data.length) { %>
-    <h2>No hay rutas cargadas</h2>
+<h2>No hay rutas cargadas</h2>
 <% } else { %>
-    <div id="error"></div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col" >Origen</th>
-                <th scope="col" >Destino</th>
-                <th scope="col" >Combi</th>
-                <th scope="col" >Distancia</th>
-                <th scope="col" >Hora</th>
-                <th scope="col" ></th>
-                <th scope="col" ></th>
-            </tr>
-        </thead>
-        <tbody>
-        <% data.forEach(function(ruta) { %>
-            <tr>
-                <td><%= ruta.origen.nombre %>, <%= ruta.origen.provincia %></td>
-                <td><%= ruta.destino.nombre %>, <%= ruta.destino.provincia %></td>
-                <td><%= ruta.combi.patente %>, <%= ruta.combi.marca %>, <%= ruta.combi.modelo %></td>
-                <td><%= ruta.distancia %></td>
-                <td><%= ruta.hora %></td>
-                <td>
-                    <form action="modificar-ruta/<%= ruta._id %>" method="GET">
-                        <button type="submit">Modificar</button>
-                    </form>
-                </td>
-                <td>
-                        <button id="<%= ruta._id %>" onclick="eliminar(this)" >Eliminar</button>
-                </td>
-            </tr>
-        <% }); %>
-        </tbody>
-    </table>
+<div id="error"></div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Origen</th>
+      <th scope="col">Destino</th>
+      <th scope="col">Combi</th>
+      <th scope="col">Distancia</th>
+      <th scope="col">Hora</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% data.forEach(function(ruta) { %>
+    <tr>
+      <td><%= ruta.origen.nombre %>, <%= ruta.origen.provincia %></td>
+      <td><%= ruta.destino.nombre %>, <%= ruta.destino.provincia %></td>
+      <td>
+        <%= ruta.combi.patente %>, <%= ruta.combi.marca %>, <%=
+        ruta.combi.modelo %>
+      </td>
+      <td><%= ruta.distancia %></td>
+      <td><%= ruta.hora %></td>
+      <td>
+        <form action="modificar-ruta/<%= ruta._id %>" method="GET">
+          <button type="submit">Modificar</button>
+        </form>
+      </td>
+      <td>
+        <button id="<%= ruta._id %>" onclick="eliminar(this)">Eliminar</button>
+      </td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table>
 <% } %>
 <script>
-  function eliminar(comp){
+  function eliminar(comp) {
     if (window.confirm("Esta seguro de eliminar la ruta?")) {
-    document.getElementById("error").innerHTML ="";
-  let id = comp.id;
-    fetch("/ruta/"+ id, {
-        method: "DELETE"}).then((res) => res.json())
+      document.getElementById("error").innerHTML = "";
+      let id = comp.id;
+      fetch("/ruta/" + id, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
         .then((data) => {
-            switch (data.response) {
-                case "bien":
-                    location.reload();
-                    break;
-                default:
-                   document.getElementById("error").innerHTML =
-                        '<small  style="color:red"><p class="er">'+data.response+' </p></small>';
-                    break;
-                break;
-            }
-           
+          switch (data.response) {
+            case "bien":
+              location.reload();
+              break;
+            default:
+              document.getElementById("error").innerHTML =
+                '<small  style="color:red"><p class="er">' +
+                data.response +
+                " </p></small>";
+              break;
+              break;
+          }
         });
     }
-}
+  }
 </script>
 <%- include("partials/footer"); -%>

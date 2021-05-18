@@ -1842,32 +1842,53 @@ app.post("/comprar-pasaje", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        if (resultTarjeta.monto > (req.body.precio * req.body.cantidad)) {
+        if (resultTarjeta.monto > req.body.total) {
+          // insumos es un diccionario que va a tener el nombre de cada insumo con su cantidad comprada,
+          // falta implementar la carga cuando este el front end listo
+          const insumos = {};
 
-          //nombresInsumos es una variable donde van a estar todos los nombres de los insumos a comprar
-          Insumo.find({title: {$in: nombresInsumos}}, (err, resultInsumos) => {
-            if (err) {
-              console.log(err);
-            } else {
-              p = new Pasaje({
-                emailPasajero: req.session.email,
-                // aca habria que iterar sobre una coleccion de insumos con su cantidad correspondiente
-                insumos: [],
-                cantidad: req.body.cantidad,
-                idViaje: req.body.viaje,
-                fecha: req.body.fecha,
-                precio: req.body.precio,
-              });
-              p.save((err) => {
+          // obtengo todos los nombres de los insumos
+          const nombresInsumos = Object.keys(insumos);
+
+          // busco todos los insumos que esten dentro de la coleccion de nombresInsumos
+          Insumo.find(
+            { title: { $in: nombresInsumos } },
+            (err, resultInsumos) => {
+              if (err) {
                 console.log(err);
-              });
-              Tarjeta.findOneAndUpdate({codigo: req.body.codigo}, {monto = monto - (req.body.precio * cantidad)}, (err) => {
-                console.log(err);
-              });
-              res.redirect("/pasajes");
+              } else {
+                // creo un arreglo donde van a ir todos los insumos correspondientes al pasaje
+                const insumosPasaje = [];
+                resultInsumos.forEach((insumo) => {
+                  insumosPasaje.push({
+                    nombre: insumo.nombre,
+                    precio: insumo.precio,
+                    cantidad: insumos[insumo.nombre],
+                  });
+                });
+                p = new Pasaje({
+                  emailPasajero: req.session.email,
+                  insumos: insumosPasaje,
+                  cantidad: req.body.cantidad,
+                  idViaje: req.body.viaje,
+                  fecha: req.body.fecha,
+                  precio: req.body.precio,
+                });
+                p.save((err) => {
+                  console.log(err);
+                });
+                Tarjeta.findOneAndUpdate(
+                  { codigo: req.body.codigo },
+                  // le resto el total al monto de la tarjeta
+                  { $inc: { monto: -req.body.total } },
+                  (err) => {
+                    console.log(err);
+                  }
+                );
+                res.redirect("/pasajes");
+              }
             }
-          });
-          
+          );
         } else {
           res.send("No hay saldo suficiente en la tarjeta");
         }

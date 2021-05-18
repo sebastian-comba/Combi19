@@ -106,7 +106,6 @@ app.get("/listar-lugares", (req, res) => {
 });
 
 // CREATE lugar
-// falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
 // falta normalizar los datos de entrada para que se guarden siempre capitalizados y no en minuscula o mayuscula
 app.get("/cargar-lugar", (req, res) => {
   if (req.session.rol !== "Admin") {
@@ -238,7 +237,6 @@ app.put("/modificar-lugar", (req, res) => {
           if (err) {
             console.log(err);
           } else {
-
             Lugar.findOne(
               {
                 ciudad: req.body.ciudad,
@@ -266,89 +264,99 @@ app.put("/modificar-lugar", (req, res) => {
                       },
                       (err) => {
                         if (err) {
-                          console.log(err)
+                          console.log(err);
                         } else {
-                          Ruta.updateMany({
-                            "origen.idLugar": req.body.id,
-                          }, {
-                            origen: {
-                              nombre: req.body.ciudad,
-                              provincia: req.body.provincia,
-                              idLugar: resLugar._id,
-                            }
-                          }, (err) => {
-                            if (err) {
-                              console.log(err);
-
-                            }
-
-                          })
-                          Ruta.updateMany({
-                            "destino.idLugar": req.body.id,
-                          }, {
-                            destino: {
-                              nombre: req.body.ciudad,
-                              provincia: req.body.provincia,
-                              idLugar: resLugar._id,
-                            }
-                          }, (err, result) => {
-                            if (err) {
-                              console.log(err);
-                            }
-                          })
-                          Ruta.find({
-                            $or: [
-                              {
-                                "origen.nombre": req.body.ciudad,
-                                "origen.provincia": req.body.provincia,
+                          Ruta.updateMany(
+                            {
+                              "origen.idLugar": req.body.id,
+                            },
+                            {
+                              origen: {
+                                nombre: req.body.ciudad,
+                                provincia: req.body.provincia,
+                                idLugar: resLugar._id,
                               },
-                              {
-                                "destino.nombre": req.body.ciudad,
-                                "destino.provincia": req.body.provincia,
-                              },
-                            ],
-                            borrado: false,
-                          }, (err, result) => {
-                            if (err) {
-                              console.log(err);
-                            } else {
-                              result.forEach(e => {
-                                Viaje.updateMany({ "ruta.idRuta": e._id }, {
-                                  ruta: {
-                                    origen: {
-                                      nombre: e.origen.nombre,
-                                      provincia: e.origen.provincia
-                                    },
-                                    destino: {
-                                      nombre: e.destino.nombre,
-                                      provincia: e.destino.provincia
-                                    },
-                                    idRuta: e._id
-
-                                  }
-                                }, (err) => {
-                                  if (err) {
-                                    console.log(err);
-                                  }
-                                })
-                              });
+                            },
+                            (err) => {
+                              if (err) {
+                                console.log(err);
+                              }
                             }
-                          })
+                          );
+                          Ruta.updateMany(
+                            {
+                              "destino.idLugar": req.body.id,
+                            },
+                            {
+                              destino: {
+                                nombre: req.body.ciudad,
+                                provincia: req.body.provincia,
+                                idLugar: resLugar._id,
+                              },
+                            },
+                            (err, result) => {
+                              if (err) {
+                                console.log(err);
+                              }
+                            }
+                          );
+                          Ruta.find(
+                            {
+                              $or: [
+                                {
+                                  "origen.nombre": req.body.ciudad,
+                                  "origen.provincia": req.body.provincia,
+                                },
+                                {
+                                  "destino.nombre": req.body.ciudad,
+                                  "destino.provincia": req.body.provincia,
+                                },
+                              ],
+                              borrado: false,
+                            },
+                            (err, result) => {
+                              if (err) {
+                                console.log(err);
+                              } else {
+                                result.forEach((e) => {
+                                  Viaje.updateMany(
+                                    { "ruta.idRuta": e._id },
+                                    {
+                                      ruta: {
+                                        origen: {
+                                          nombre: e.origen.nombre,
+                                          provincia: e.origen.provincia,
+                                        },
+                                        destino: {
+                                          nombre: e.destino.nombre,
+                                          provincia: e.destino.provincia,
+                                        },
+                                        idRuta: e._id,
+                                      },
+                                    },
+                                    (err) => {
+                                      if (err) {
+                                        console.log(err);
+                                      }
+                                    }
+                                  );
+                                });
+                              }
+                            }
+                          );
                           res.json({ response: "bien" });
                         }
                       }
-
-
-                    )
+                    );
                   }
                 }
               }
             );
           }
-        })
+        }
+      );
     }
-  }
-  );
+  });
 });
 
 //CRUD Insumo
@@ -634,7 +642,7 @@ app.post("/registro", (req, res) => {
           if (
             result.dni === req.body.dniT &&
             Date.parse(result.vencimiento) ==
-            Date.parse(req.body.vencimiento + "-01") &&
+              Date.parse(req.body.vencimiento + "-01") &&
             result.nombreCompleto === req.body.nombreT &&
             result.codSeguridad === req.body.codS
           ) {
@@ -779,7 +787,8 @@ app.put("/modificar-chofer", (req, res) => {
       console.log(err);
     } else {
       let email = result.email;
-      Usuario.findOne({ email: req.body.email, _id: { $ne: req.body.id } },
+      Usuario.findOne(
+        { email: req.body.email, _id: { $ne: req.body.id } },
         (err, result) => {
           if (!result) {
             Usuario.deleteOne({ _id: req.body.id }, (err) => {
@@ -836,12 +845,12 @@ app.put("/modificar-chofer", (req, res) => {
                   }
                 });
               }
-            })
-          }else{
-
+            });
+          } else {
             res.json({ response: "error" });
           }
-        });
+        }
+      );
     }
   });
 });
@@ -1391,7 +1400,10 @@ app.put("/modificar-ruta", (req, res) => {
                 } else {
                   Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
                     if (err) {
-                      res.json({ response: "La combi no existe por favor selecione uno de la lista" });
+                      res.json({
+                        response:
+                          "La combi no existe por favor selecione uno de la lista",
+                      });
                     } else {
                       Ruta.findOne(
                         {
@@ -1509,7 +1521,7 @@ app.post("/cargar-viaje", (req, res) => {
                   resultV.forEach((viaje) => {
                     if (
                       transformarFecha(req.body.fecha + "T" + resRuta.hora) >
-                      viaje.llegada ||
+                        viaje.llegada ||
                       transformarFecha(req.body.llegada) < viaje.fecha
                     ) {
                       bool = true;
@@ -1573,26 +1585,32 @@ app.get("/viajes", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ borrado: false, fecha: { $gte: (new Date) } }, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("listar-viajes", { viajes: result });
+    Viaje.find(
+      { borrado: false, fecha: { $gte: new Date() } },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("listar-viajes", { viajes: result });
+        }
       }
-    });
+    );
   }
 });
 app.get("/viajes-pasados", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ borrado: false, fecha: { $lt: (new Date) }, }, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("listar-viajes-pasados", { viajes: result });
+    Viaje.find(
+      { borrado: false, fecha: { $lt: new Date() } },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("listar-viajes-pasados", { viajes: result });
+        }
       }
-    });
+    );
   }
 });
 
@@ -1632,7 +1650,8 @@ app.put("/viaje", (req, res) => {
       } else {
         if (resPasaje && viajeR.ruta.idRuta !== req.body.ruta) {
           res.json({
-            response: "No se puede modificar la ruta del viaje, tiene pasajes comprados.",
+            response:
+              "No se puede modificar la ruta del viaje, tiene pasajes comprados.",
           });
         } else {
           Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
@@ -1685,7 +1704,7 @@ app.put("/viaje", (req, res) => {
                                           req.body.fecha + "T" + resRuta.hora
                                         ) > viaje.llegada ||
                                         transformarFecha(req.body.llegada) <
-                                        viaje.fecha ||
+                                          viaje.fecha ||
                                         "" + resViaje._id === "" + viaje._id
                                       ) {
                                         bool = true;
@@ -1698,7 +1717,8 @@ app.put("/viaje", (req, res) => {
                                           ruta: {
                                             origen: {
                                               nombre: resRuta.origen.nombre,
-                                              provincia: resRuta.origen.provincia,
+                                              provincia:
+                                                resRuta.origen.provincia,
                                             },
                                             destino: {
                                               nombre: resRuta.destino.nombre,
@@ -1721,7 +1741,8 @@ app.put("/viaje", (req, res) => {
                                             req.body.fecha + "T" + resRuta.hora,
                                           llegada: req.body.llegada,
                                           precio: req.body.precio,
-                                          asientosDisponibles: req.body.asientos,
+                                          asientosDisponibles:
+                                            req.body.asientos,
                                           estado: "En espera",
                                           borrado: false,
                                         },
@@ -1760,8 +1781,7 @@ app.put("/viaje", (req, res) => {
         }
       }
     });
-  })
-
+  });
 });
 
 // DELETE VIAJE
@@ -1789,50 +1809,84 @@ app.delete("/viaje/:id", (req, res) => {
   });
 });
 
-// COMPRA DE PASAJES
+// CRUD PASAJES
 //
-// PASAJE DE PRUEBA
-// let p = new Pasaje({
-//   emailPasajero: "juan@gmail.com",
-//   insumos: [
-//     {
-//       nombre: "Papas Fritas",
-//       precio: "50",
-//       cantidad: 5,
-//     },
-//   ],
-//   idViaje: "60988670173c235a2073d5ed",
-//   fecha: "2021-05-12T18:00:00.000+00:00",
-//   precio: "1300",
-// });
-// p.save((err) => {
-//   console.log(err);
-// });
+
+// Obtener todos los pasajes
 app.get("/pasajes", (req, res) => {
   if (req.session.rol !== "Cliente") {
     res.redirect("/");
   } else {
-    Pasaje.find({
-      emailPasajero: req.session.email,
-      fecha: { $gte: hoy },
-    }, (err, result) => {
+    Pasaje.find(
+      {
+        emailPasajero: req.session.email,
+        fecha: { $gte: hoy },
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("listar-pasajes", { data: result });
+        }
+      }
+    );
+  }
+});
+
+// Crear pasaje
+app.post("/comprar-pasaje", (req, res) => {
+  if (req.session.rol !== "Cliente") {
+    res.redirect("/");
+  } else {
+    Tarjeta.findOne({ codigo: req.body.codigo }, (err, resultTarjeta) => {
       if (err) {
         console.log(err);
       } else {
-        res.render("listar-pasajes", { data: result });
+        if (resultTarjeta.monto > (req.body.precio * req.body.cantidad)) {
+
+          //nombresInsumos es una variable donde van a estar todos los nombres de los insumos a comprar
+          Insumo.find({title: {$in: nombresInsumos}}, (err, resultInsumos) => {
+            if (err) {
+              console.log(err);
+            } else {
+              p = new Pasaje({
+                emailPasajero: req.session.email,
+                // aca habria que iterar sobre una coleccion de insumos con su cantidad correspondiente
+                insumos: [],
+                cantidad: req.body.cantidad,
+                idViaje: req.body.viaje,
+                fecha: req.body.fecha,
+                precio: req.body.precio,
+              });
+              p.save((err) => {
+                console.log(err);
+              });
+              Tarjeta.findOneAndUpdate({codigo: req.body.codigo}, {monto = monto - (req.body.precio * cantidad)}, (err) => {
+                console.log(err);
+              });
+              res.redirect("/pasajes");
+            }
+          });
+          
+        } else {
+          res.send("No hay saldo suficiente en la tarjeta");
+        }
       }
     });
   }
 });
+
+// Borrar pasaje
 app.delete("/pasaje/:id", (req, res) => {
   Pasaje.deleteOne({ _id: req.params.id }, (err) => {
     if (err) {
       console.log(err);
     } else {
-      res.json({ response: "bien" })
+      res.json({ response: "bien" });
     }
   });
 });
+
 // NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);

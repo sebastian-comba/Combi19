@@ -2,8 +2,7 @@
 <h2>Alta de rutas</h2>
 <datalist id="lugares">
   <% lugares.forEach(function(lugar) { %>
-  <option value="<%= lugar._id %>"><%= lugar.ciudad%> <small>
-      <%= lugar.provincia %> </small></option>
+  <option value="<%= lugar.ciudad%> - <%=lugar.provincia %>"></option>
   <% }); %>
 </datalist>
 <datalist id="combis">

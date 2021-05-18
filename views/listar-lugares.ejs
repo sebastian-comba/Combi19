@@ -38,7 +38,7 @@
 </table>
 <script>
   function eliminar(comp) {
-    if (window.confirm("Esta seguro de eliminar el lugar?" )) {
+    if (window.confirm("Esta seguro de eliminar el lugar?")) {
       document.getElementById("error").innerHTML = "";
       let id = comp.id;
       fetch("/lugar/" + id, {

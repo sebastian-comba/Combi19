@@ -9,6 +9,7 @@ const pasajeSchema = new mongoose.Schema({
       cantidad: Number,
     },
   ],
+  cantidad: { type: Number, required: true},
   idViaje: { type: String, required: true},
   fecha: { type: Date, required: true },
   precio: { type: String, required: true },

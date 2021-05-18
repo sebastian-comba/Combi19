@@ -1,19 +1,14 @@
 const mongoose = require("mongoose");
 
 const comentarioSchema = new mongoose.Schema({
-  emailPasajero: { type: String, required: true },
-  insumos: [
-    {
-      nombre: String,
-      precio: String,
-      cantidad: Number,
-    },
-  ],
-  cantidad: { type: Number, required: true },
-  idViaje: { type: String, required: true },
+  nombre: { type: String, required: true },
+  apellido: { type: String, required: true},
+  email: { type: String, required: true },
   fecha: { type: Date, required: true },
-  precio: { type: String, required: true },
+  texto: { type: String, required: true },
 });
+
+comentarioSchema.index({ email: 1, fecha: 1 }, { unique: true });
 
 const Comentario = mongoose.model("Comentario", comentarioSchema);
 

@@ -1814,18 +1814,18 @@ app.get("/pasajes", (req, res) => {
   } else {
     Pasaje.find({
       emailPasajero: req.session.email,
-      fecha: { $gte: hoy },
-    }, (err, result) => {
+      //fecha: { $gte: hoy },
+    }, (err, resultPasaje) => {
       if (err) {
         console.log(err);
       } else {
-        res.render("listar-pasajes", { data: result });
+        res.render("listar-pasajes", { data: resultPasaje });
       }
     });
   }
 });
-app.delete("/pasaje/:id", (req, res) => {
-  Pasaje.deleteOne({ _id: req.params.id }, (err) => {
+app.put("/pasaje/:id", (req, res) => {
+  Pasaje.updateOne({ _id: req.params.id, },{estadoPasaje: "Cancelado"}, (err) => {
     if (err) {
       console.log(err);
     } else {
@@ -1833,6 +1833,16 @@ app.delete("/pasaje/:id", (req, res) => {
     }
   });
 });
+/*app.delete("/pasaje/:id", (req, res) => {
+  Pasaje.deleteOne({ _id: req.params.id }, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json({ response: "bien" })
+    }
+  });
+});*/
+
 // NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);

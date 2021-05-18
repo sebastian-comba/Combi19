@@ -2,41 +2,73 @@
 <h1>Lista de Pasajes</h1>
 
 <% if (!data.length) { %>
-<h2>No hay pasajes cargados</h2>
+<h2>Todavía no se han comprado pasajes</h2>
 <% } else { %>
 <div id="error"></div>
 <table class="table table-striped">
   <thead>
     <tr>
-      <th scope="col">Nombre</th>
-      <th scope="col">Tipo</th>
+      <th scope="col">Estado</th>
+      <th scope="col">Cantidad de pasajes comprados</th>
       <th scope="col">Precio</th>
-      <th scope="col"></th>
+      <th scope="col">Origen</th>
+      <th scope="col">Destino</th>
+      <th scope="col">Fecha y hora</th>
+      <th scope="col">Tipo de servicio</th>
       <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
     <% data.forEach(function(pasaje) { %>
     <tr>
-      <td><%= pasaje.idViaje %></td>
-      <td><%= pasaje.fecha %></td>
+      <td><%= pasaje.estadoPasaje %></td>
+      <td><%= pasaje.cantidad %></td>
       <td><%= pasaje.precio %></td>
-
-      <td>
+      <td><%= pasaje.fecha %></td>
+      <td><%= pasaje.origen.nombre %> - <%= pasaje.origen.provincia %></td>
+      <td><%= pasaje.destino.nombre %> - <%= pasaje.destino.provincia %></td>
+      <td><%= pasaje.tipoServicio %></td>
+      <td><% if(pasaje.estadoPasaje == "Pendiente"){ %>
         <button
-          class="eliminar"
+          class="cancelar"
           id="<%= pasaje._id %>"
-          onclick="eliminar(this)"
+          onclick="cancelar(this)"
         >
-          Eliminar
+          Cancelar
         </button>
+        <% } %>
       </td>
     </tr>
-    <% }); %>
+    <%  }); %>
   </tbody>
 </table>
 <script>
-  function eliminar(comp) {
+  function cancelar(comp) {
+    if (window.confirm("Esta seguro que quiere cancelar el pasaje?")) {
+      document.getElementById("error").innerHTML = "";
+      let id = comp.id;
+      fetch("/pasaje/" + id, {
+        method: "PUT",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          switch (data.response) {
+            case "bien":
+              location.reload();
+              break;
+            default:
+              document.getElementById("error").innerHTML =
+                '<small  style="color:red"><p class="er">' +
+                data.response +
+                " </p></small>";
+              break;
+              break;
+          }
+        });
+    }
+  }
+
+ /* function eliminar(comp) {
     if (window.confirm("Esta seguro de eliminar el pasaje?")) {
       document.getElementById("error").innerHTML = "";
       let id = comp.id;
@@ -59,6 +91,6 @@
           }
         });
     }
-  }
+  } */
 </script>
 <% } %> <%- include("partials/footer"); -%>

@@ -42,6 +42,14 @@
   <br>
   <div id="err"></div>
   <br>
+  <select >
+    <% 
+            rutas.forEach( (ruta) => { %>
+    <option value="<%= ruta._id %>">
+      <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %>-<%= ruta.combi.patente %> -<%= ruta.hora %>
+    </option>
+    <% }); %>
+  </select> <small>formato: origen, destino, patente de la combi, hora</small> <br> <br>
     <label for="ruta"> Ruta:</label>
     <input type="search" name=" ruta" id="ruta" class="mV" value="<%=viaje.ruta.idRuta%>" list="rutas">
 

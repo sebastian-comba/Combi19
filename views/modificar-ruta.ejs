@@ -1,10 +1,7 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Ruta </h1>
 <datalist id="lugares">
-  <% lugares.forEach(function(lugar) { %>
-  <option value="<%= lugar._id %>"><%= lugar.ciudad%> <small>
-      <%= lugar.provincia %> </small></option>
-  <% }); %>
+ 
 </datalist>
 <datalist id="combis">
   <% combis.forEach(function(combi) { %>
@@ -13,20 +10,32 @@
 </datalist>
 <div id="err"></div>
   <label for="origen">Origen:</label>
-  <input type="search" name="origen" id="origen" list="lugares" class="mR" value="<%= ruta.origen.idLugar %>" />
-  <label
-    for="ciudadO">Ciudad:</label>
-  <input type="text"  name="ciudadO" id="ciudadO" class="mR" disabled>
-  <label for="provinciaO">Provincia:</label>
-  <input type="text"  name="provinciaO" id="provinciaO" class="mR" disabled>
+  <select name="origen" id="origen"  class="mR">
+    <% lugares.forEach(function(lugar) {
+      if(ruta.origen.idLugar==lugar._id){%>
+        <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
+          <%= lugar.provincia %> </option>
+     <% } else{%>
+      <option value="<%= lugar._id %>" ><%= lugar.ciudad%> ,
+        <%= lugar.provincia %> </option>
+      <%} %>
+    <% }); %>
+  </select>
   <hr>
   <label for="destino">Destino:</label>
-  <input type="search" name="destino" id="destino" list="lugares" class="mR"
-    value="<%= ruta.destino.idLugar %>" />
-    <label for="ciudadD">Ciudad:</label>
-    <input type="text" name="ciudadD" id="ciudadD" class="mR" disabled>
-    <label for="provinciaD">Provincia:</label>
-    <input type="text" name="provinciaD" id="provinciaD" class="mR" disabled>
+  <select name="destino" id="destino" class="mR">
+    <% lugares.forEach(function(lugar) {
+      console.log(ruta.destino.idLugar==lugar._id)
+        if(ruta.destino.idLugar==lugar._id){%>
+    <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
+      <%= lugar.provincia %> </option>
+    <% } else{%>
+    <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
+      <%= lugar.provincia %> </option>
+    <%} %>
+  
+    <% }); %>
+  </select>
     <hr>   
   <label for="combi">Combi:</label> 
   <input type="search" name="combi" id="combi" list="combis" class="mR"

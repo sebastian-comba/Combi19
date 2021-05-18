@@ -1814,7 +1814,8 @@ app.get("/pasajes", (req, res) => {
   } else {
     Pasaje.find({
       emailPasajero: req.session.email,
-      //fecha: { $gte: hoy },
+      //verificar por qué no funciona la comparacion de fecha
+      fecha: { $gte: hoy },
     }, (err, resultPasaje) => {
       if (err) {
         console.log(err);

@@ -24,6 +24,7 @@ const pasajeSchema = new mongoose.Schema({
   estadoPasaje: { type: String, required: true},
 });
 
+pasajeSchema.index({ email: 1, fecha: 1 }, { unique: true });
 
 const Pasaje = mongoose.model("Pasaje", pasajeSchema);
 

@@ -6,11 +6,13 @@
       <%= lugar.provincia %> </small></option>
   <% }); %>
 </datalist>
+
 <datalist id="combis">
   <% combis.forEach(function(combi) { %>
   <option value="<%= combi.patente %>"><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %> </small></option>
   <% }); %>
 </datalist>
+
 <div id="err"></div>
   <label for="origen">Origen:</label>
   <input type="search" name="origen" id="origen" list="lugares" class="mR" value="<%= ruta.origen.idLugar %>" />

@@ -22,6 +22,7 @@ const pasajeSchema = new mongoose.Schema({
   fecha: { type: Date, required: true },
   precio: { type: String, required: true },
   estadoPasaje: { type: String, required: true},
+  idViaje: { type: String, required: true},
 });
 
 pasajeSchema.index({ email: 1, fecha: 1 }, { unique: true });

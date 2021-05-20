@@ -53,7 +53,12 @@
         .then((res) => res.json())
         .then((data) => {
           switch (data.response) {
+            case "bien48hsAntes":
+              window.alert("Se le ha reembolsado el 100% del costo del pasaje a su tarjeta");
+              location.reload();
+              break;
             case "bien":
+              window.alert("Se le ha reembolsado el 50% del costo del pasaje a su tarjeta");
               location.reload();
               break;
             default:

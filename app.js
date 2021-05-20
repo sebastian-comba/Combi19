@@ -1815,7 +1815,7 @@ app.get("/pasajes", (req, res) => {
     Pasaje.find({
       emailPasajero: req.session.email,
       //verificar por qué no funciona la comparacion de fecha
-      fecha: { $gte: hoy },
+     //fecha: { $gte: hoy },
     }, (err, resultPasaje) => {
       if (err) {
         console.log(err);
@@ -1826,14 +1826,26 @@ app.get("/pasajes", (req, res) => {
   }
 });
 app.put("/pasaje/:id", (req, res) => {
-  Pasaje.updateOne({ _id: req.params.id, },{estadoPasaje: "Cancelado"}, (err) => {
+  Pasaje.findOneAndUpdate({ _id: req.params.id, },{estadoPasaje: "Cancelado"}, (err,resultPasaje) => {
     if (err) {
       console.log(err);
     } else {
-      res.json({ response: "bien" })
+      Viaje.updateOne({_id: resultPasaje.idViaje},{$inc: {asientosDisponibles: resultPasaje.cantidad}},(err) => {
+        if (err) {
+          console.log(err);
+        } else {
+        //falta calcular cuanto tiempo queda para el viaje  
+         //if(resultPasaje.fecha - hoy){
+         //   res.json({ response: "bien48hsAntes" });
+         //} else {
+            res.json({ response: "bien" });
+         //}
+        }
+      });
     }
   });
 });
+
 /*app.delete("/pasaje/:id", (req, res) => {
   Pasaje.deleteOne({ _id: req.params.id }, (err) => {
     if (err) {

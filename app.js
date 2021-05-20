@@ -1834,8 +1834,10 @@ app.get("/pasajes", (req, res) => {
 });
 
 // Crear pasaje
+app.get("/confirmar-compra", (req, res) => {
+  res.render("confirmar-compra", {});
+});
 
-// CAMBIO EN EL ESUEMA DE PASAJE, ARREGLAR
 app.post("/comprar-pasaje", (req, res) => {
   if (req.session.rol !== "Cliente") {
     res.redirect("/");

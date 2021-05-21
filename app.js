@@ -69,7 +69,12 @@ app.get("/home", (req, res) => {
         res.render("home-admin", {});
         break;
       default:
-        res.render("home", { data: req.session.rol });
+        Lugar.find({ borrado: false }, (err, result) => {
+          if (result) {
+            res.locals.lugares = result;
+          }
+          res.render("home", { data: req.session.rol });
+        })
         break;
     }
   } else {
@@ -837,7 +842,7 @@ app.put("/modificar-chofer", (req, res) => {
                 });
               }
             })
-          }else{
+          } else {
 
             res.json({ response: "error" });
           }
@@ -1595,6 +1600,26 @@ app.get("/viajes-pasados", (req, res) => {
     });
   }
 });
+app.post("/buscar-viajes", (req, res) => {
+  let f = transformarFecha(req.body.fecha)
+  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 1);
+  let m = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 2);
+  Viaje.find({
+    "ruta.origen.nombre": req.body.ciudadO,
+    "ruta.origen.provincia":req.body.provinciaO, 
+    "ruta.destino.nombre": req.body.ciudadD,
+    "ruta.destino.provincia": req.body.provinciaD,
+    $and: [
+      { fecha: { $gte: h } },
+      { fecha: { $lt: m } }
+    ]
+  }, (err, result) => {
+    res.json({ viajes: result });
+  })
+})
+
+
+
 
 // UPDATE VIAJE
 app.get("/modificar-viaje/:id", (req, res) => {
@@ -1833,7 +1858,9 @@ app.delete("/pasaje/:id", (req, res) => {
     }
   });
 });
+
 // NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);
 });
+

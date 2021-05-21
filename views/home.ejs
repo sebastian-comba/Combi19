@@ -5,5 +5,44 @@
 
 <h1>Bienvenido <%= data%></h1>
 <%}%>
-<a href="/pasajes"><button>Pasajes</button></a>
+
+<form  id="buscar" action="/buscar-viajes" method="post">
+<table>
+    <thead>
+        <tr>
+            <th>Origen:</th>
+            <th>Destino:</th>
+            <th>Fecha:</th>
+        </tr>
+    </thead>
+    <body>
+        <tr>
+            <td><select class="busqueda" name="origen" id="origen" required>
+                
+                <% lugares.forEach(function(lugar) { %>
+                    <option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
+                <% }) %>
+</select></td>
+<td><select name="destino" class="busqueda" id="destino" required>
+        <% lugares.forEach(function(lugar) { %>
+        <option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
+        <% }) %>
+    </select></td>
+<td><input type="date" class="busqueda" name="fecha" id="fecha" required></td>
+<td><button id="buscar">buscar</button></form>
+</td>
+</tr>
+</body>
+</table>
+<input type="hidden" name="ciudadO" id="ciudadO">
+<input type="hidden" name="provinciaO" id="provinciaO">
+<input type="hidden" name="ciudadD" id="ciudadD">
+<input type="hidden" name="provinciaD" id="provinciaD">
+
+<% lugares.forEach(function(lugar) { %>
+<input type="hidden" value="<%=lugar.ciudad%>" name="ciudad" class="<%=lugar._id%>">
+<input type="hidden" value="<%=lugar.provincia%>" name="provincia" class="<%=lugar._id%>">
+<% }) %>
+<div id="hola">ajslkdjakls</div>
+<script src="./js/home.js"></script>
 <%- include("partials/footer"); -%>

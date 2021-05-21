@@ -6,4 +6,24 @@
 <h1>Bienvenido <%= data%></h1>
 <%}%>
 <a href="/pasajes"><button>Pasajes</button></a>
+
+<% if (!comentarios.length) { %>
+    <h2>Todavía no hay comentarios</h2>
+<% } else { %>
+    <h2>Comentarios:</h2>
+    <a href="/crear-comentario">
+        <button id="crear-comentario">Añadir comentario</button>
+    </a>
+    <% let c = comentarios.slice(0, 10);
+    c.forEach(function(comentario) { %>
+        <p><%= comentario.nombre%> - <%= comentario.apellido%> - <%= comentario.texto%> - <%= comentario.fecha%>
+            <% if (comentario.email == miEmail ) {%>
+                <form action="modificar-comentario/<%= comentario._id %>" method="GET">
+                    <button type="submit">Modificar comentario</button>
+                </form>
+            <% } %>
+        </p>
+    <% }); %>
+<% } %>
+
 <%- include("partials/footer"); -%>

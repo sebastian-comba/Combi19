@@ -14,7 +14,7 @@ const Lugar = require("./js/esquema/lugar");
 const Viaje = require("./js/esquema/viaje");
 const Ruta = require("./js/esquema/ruta");
 const Pasaje = require("./js/esquema/pasaje");
-
+const Comentario = require("./js/esquema/comentario");
 const Tarjeta = require("./js/esquema/tarjeta");
 
 const app = express();
@@ -58,6 +58,20 @@ function transformarFecha(fecha) {
 // by default, you need to set it to false.
 mongoose.set("useFindAndModify", false);
 
+//
+// COMENTARIO DE PRUEBA
+// let c = new Comentario({
+//   nombre: "Pepito",
+//  apellido: "Perez3",
+//  email: "pep2@gmail.com",
+//  fecha: "2019-10-12T18:00:00.000+00:00",
+//  texto: "asdasd",
+//  
+// });
+// c.save((err) => {
+//   console.log(err);
+// });
+
 // GET request al home/inicio de la pagina
 app.get("/home", (req, res) => {
   if (req.session.nombre) {
@@ -69,7 +83,15 @@ app.get("/home", (req, res) => {
         res.render("home-admin", {});
         break;
       default:
-        res.render("home", { data: req.session.rol });
+        Comentario.find({}, null,{sort:{"fecha":-1}}, (err, resultComentario) => {
+          if (err) {
+            console.log(err);
+          } else {
+            res.locals.comentarios = resultComentario;
+            res.locals.miEmail = req.session.email;
+            res.render("home", { data: req.session.rol });
+          }
+        });
         break;
     }
   } else {

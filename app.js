@@ -1834,8 +1834,21 @@ app.get("/pasajes", (req, res) => {
 });
 
 // Crear pasaje
-app.get("/confirmar-compra", (req, res) => {
-  res.render("confirmar-compra", {});
+app.get("/comprar-pasaje/:id", (req, res) => {
+  Insumo.find({ borrado: false }, (err, resultInsumos) => {
+    if (err) {
+      console.log(err);
+    } else {
+      Viaje.findOne({ _id: req.params.id }, (err, resultViaje) => {
+        if (err) {
+          console.log(err);
+          res.send(err);
+        } else {
+          res.render("comprar-pasaje", { viaje: resultViaje, insumos: resultInsumos });
+        }
+      });
+    }
+  });
 });
 
 app.post("/comprar-pasaje", (req, res) => {

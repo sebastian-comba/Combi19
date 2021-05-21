@@ -73,29 +73,5 @@
     }
   }
 
- /* function eliminar(comp) {
-    if (window.confirm("Esta seguro de eliminar el pasaje?")) {
-      document.getElementById("error").innerHTML = "";
-      let id = comp.id;
-      fetch("/pasaje/" + id, {
-        method: "DELETE",
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          switch (data.response) {
-            case "bien":
-              location.reload();
-              break;
-            default:
-              document.getElementById("error").innerHTML =
-                '<small  style="color:red"><p class="er">' +
-                data.response +
-                " </p></small>";
-              break;
-              break;
-          }
-        });
-    }
-  } */
 </script>
 <% } %> <%- include("partials/footer"); -%>

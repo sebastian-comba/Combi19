@@ -1793,7 +1793,7 @@ app.delete("/viaje/:id", (req, res) => {
 //
 // PASAJE DE PRUEBA
 // let p = new Pasaje({
-//   emailPasajero: "juan@gmail.com",
+//   emailPasajero: "lala@gmail.com",
 //   insumos: [
 //     {
 //       nombre: "Papas Fritas",
@@ -1801,9 +1801,20 @@ app.delete("/viaje/:id", (req, res) => {
 //       cantidad: 5,
 //     },
 //   ],
-//   idViaje: "60988670173c235a2073d5ed",
-//   fecha: "2021-05-12T18:00:00.000+00:00",
-//   precio: "1300",
+//  cantidad: 2,
+//  origen: {
+//    nombre:"Santa Rosa",
+//    provincia: "La Pampa",
+//  },
+//  destino: {
+//    nombre:  "Junin",
+//    provincia: "Buenos Aires",
+//  },
+//  tipoServicio: "Comoda",
+//  fecha: "2021-05-12T18:00:00.000+00:00",
+//  precio:"1300",
+//  estadoPasaje: "Pendiente",
+//  idViaje: "60a69ae901baf838903eea32",
 // });
 // p.save((err) => {
 //   console.log(err);
@@ -1815,7 +1826,7 @@ app.get("/pasajes", (req, res) => {
     Pasaje.find({
       emailPasajero: req.session.email,
       //verificar por qué no funciona la comparacion de fecha
-     //fecha: { $gte: hoy },
+     fecha: { $gte: hoy },
     }, (err, resultPasaje) => {
       if (err) {
         console.log(err);
@@ -1834,27 +1845,18 @@ app.put("/pasaje/:id", (req, res) => {
         if (err) {
           console.log(err);
         } else {
-        //falta calcular cuanto tiempo queda para el viaje  
-         //if(resultPasaje.fecha - hoy){
-         //   res.json({ response: "bien48hsAntes" });
-         //} else {
+          var d = resultPasaje.fecha;
+          d.setDate(d.getDate()-2);  
+          if(d > hoy){
+            res.json({ response: "bien48hsAntes" });
+           } else {
             res.json({ response: "bien" });
-         //}
+         }
         }
       });
     }
   });
 });
-
-/*app.delete("/pasaje/:id", (req, res) => {
-  Pasaje.deleteOne({ _id: req.params.id }, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.json({ response: "bien" })
-    }
-  });
-});*/
 
 // NO TOCAR
 app.listen(3000, function () {

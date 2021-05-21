@@ -99,6 +99,45 @@ app.get("/home", (req, res) => {
   }
 });
 
+// CRUD Comentario
+//
+// CREATE Comentario
+app.get("/crear-comentario", (req, res) => {
+  if (req.session.rol !== "Cliente") {
+    res.redirect("/");
+  } else {
+    res.render("crear-comentario", {data: req.session});
+  }
+});
+
+app.post("/crear-comentario", (req, res) => {
+  Pasaje.findOne({ emailPasajero: req.body.email }, (err, found) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (!found.length) {
+        var c = new Comentario({
+          nombre: req.body.nombre,
+          apellido: req.body.apellido,
+          email: req.body.email,
+          fecha: hoy,
+          texto:req.body.texto,
+        });
+        c.save((err) => {
+          if (err) {
+            res.json({ response: "error al guardar el comentario" });
+          } else {
+            res.json({ response: "bien" });
+          }
+        });
+      } else {
+        res.json({ response: "Debe tener pasajes comprados para realizar un comentario" });
+      }
+    }
+  });
+});
+
+
 // CRUD Lugar
 //
 // READ todos los lugares

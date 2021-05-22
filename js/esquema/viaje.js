@@ -16,6 +16,7 @@ const viajeSchema = new mongoose.Schema({
     patente: { type: String, required: true },
     marca: { type: String, required: true },
     modelo: { type: String, required: true },
+    tipo: { type: String, required: true },
   },
   chofer: {
     nombre: { type: String, required: true },

@@ -15,6 +15,7 @@ const rutaSchema = new mongoose.Schema({
     patente: { type: String, required: true },
     marca: { type: String, required: true },
     modelo: { type: String, required: true },
+    tipo: { type: String, required: true },
     idCombi: { type: String, required: true },
   },
   distancia: { type: Number, required: true },

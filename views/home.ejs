@@ -5,35 +5,31 @@
 
 <h1>Bienvenido <%= data%></h1>
 <%}%>
-
+<hr>
+<div class="row">
+<div class="col-3"> 
 <form  id="buscar" action="/buscar-viajes" method="post">
-<table>
-    <thead>
-        <tr>
-            <th>Origen:</th>
-            <th>Destino:</th>
-            <th>Fecha:</th>
-        </tr>
-    </thead>
-    <body>
-        <tr>
-            <td><select class="busqueda" name="origen" id="origen" required>
+<label for="origen">Origen:</label> <br>
+
+   
+<select class="busqueda" name="origen" id="origen" required>
                 
                 <% lugares.forEach(function(lugar) { %>
-                    <option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
-                <% }) %>
-</select></td>
-<td><select name="destino" class="busqueda" id="destino" required>
-        <% lugares.forEach(function(lugar) { %>
-        <option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
-        <% }) %>
-    </select></td>
-<td><input type="date" class="busqueda" name="fecha" id="fecha" required></td>
-<td><button id="buscar">buscar</button></form>
-</td>
-</tr>
-</body>
-</table>
+<option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
+<% }) %>
+</select><br>
+<label for="destino">Destino:</label> <br>
+<select name="destino" class="busqueda" id="destino" required>
+    <% lugares.forEach(function(lugar) { %>
+    <option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
+    <% }) %>
+</select><br>
+<label for="fecha">Fecha:</label> <br>
+<input type="date" class="busqueda" name="fecha" id="fecha" required>
+<br>
+<br>
+<button id="buscarB">Buscar</button>
+
 <input type="hidden" name="ciudadO" id="ciudadO">
 <input type="hidden" name="provinciaO" id="provinciaO">
 <input type="hidden" name="ciudadD" id="ciudadD">
@@ -43,6 +39,15 @@
 <input type="hidden" value="<%=lugar.ciudad%>" name="ciudad" class="<%=lugar._id%>">
 <input type="hidden" value="<%=lugar.provincia%>" name="provincia" class="<%=lugar._id%>">
 <% }) %>
-<div id="hola">ajslkdjakls</div>
+</form>
+</div>
+<div class="col-6">
+    <h3>Viajes</h3>
+    <hr>
+    <div id="viajes">
+       
+    </div>
+</div>
+</div>
 <script src="./js/home.js"></script>
 <%- include("partials/footer"); -%>

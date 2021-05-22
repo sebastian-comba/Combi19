@@ -156,7 +156,6 @@ app.get("/modificar-comentario/:id", (req, res) => {
   }
 });
 app.put("/modificar-comentario", (req, res) => {
-  console.log(req.body.id);
   Comentario.findOneAndUpdate(
     { _id: req.body.id, },
     {
@@ -1925,8 +1924,7 @@ app.get("/pasajes", (req, res) => {
   } else {
     Pasaje.find({
       emailPasajero: req.session.email,
-      //verificar por qué no funciona la comparacion de fecha
-     fecha: { $gte: hoy },
+      fecha: { $gte: hoy },
     }, (err, resultPasaje) => {
       if (err) {
         console.log(err);
@@ -1956,6 +1954,23 @@ app.put("/pasaje/:id", (req, res) => {
       });
     }
   });
+});
+
+// PERFIL CLIENTE
+app.get("/perfil", (req, res) => {
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold" ) {
+    res.redirect("/");
+  } else {
+    Usuario.findOne({
+      email: req.session.email,
+    }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("perfil", { data: result });
+      }
+    });
+  }
 });
 
 // NO TOCAR

@@ -91,7 +91,14 @@ app.get("/home", (req, res) => {
             res.locals.miEmail = req.session.email;
             res.render("home", { data: req.session.rol });
           }
-        });
+        }); 
+        Lugar.find({ borrado: false }, (err, result) => {
+          if (result) {
+            res.locals.lugares = result;
+          }
+
+          res.render("home", { data: req.session.rol });
+        })
         break;
     }
   } else {
@@ -936,7 +943,7 @@ app.put("/modificar-chofer", (req, res) => {
                 });
               }
             })
-          }else{
+          } else {
 
             res.json({ response: "error" });
           }
@@ -1230,6 +1237,7 @@ app.put("/modificar-combi", (req, res) => {
                   patente: req.body.patente,
                   marca: req.body.marca,
                   modelo: req.body.modelo,
+                  tipo: req.body.tipo,
                 },
               },
               (err) => {
@@ -1333,6 +1341,7 @@ app.post("/cargar-rutas", (req, res) => {
                   "combi.patente": combiR.patente,
                   "combi.marca": combiR.marca,
                   "combi.modelo": combiR.modelo,
+                  "combi.tipo": combiR.tipo,
                   "combi.idCombi": combiR._id,
                   distancia: req.body.distancia,
                   hora: req.body.hora,
@@ -1360,6 +1369,7 @@ app.post("/cargar-rutas", (req, res) => {
                           patente: combiR.patente,
                           marca: combiR.marca,
                           modelo: combiR.modelo,
+                          tipo: combiR.tipo,
                           idCombi: combiR._id,
                         },
                         distancia: req.body.distancia,
@@ -1503,6 +1513,7 @@ app.put("/modificar-ruta", (req, res) => {
                           "combi.patente": combiR.patente,
                           "combi.marca": combiR.marca,
                           "combi.modelo": combiR.modelo,
+                          "combi.tipo": combiR.tipo,
                           "combi.idCombi": combiR._id,
                           distancia: req.body.distancia,
                           hora: req.body.hora,
@@ -1532,6 +1543,7 @@ app.put("/modificar-ruta", (req, res) => {
                                     patente: combiR.patente,
                                     marca: combiR.marca,
                                     modelo: combiR.modelo,
+                                    tipo: combiR.tipo,
                                     idCombi: combiR._id,
                                   },
                                   distancia: req.body.distancia,
@@ -1631,6 +1643,7 @@ app.post("/cargar-viaje", (req, res) => {
                         patente: resCombi.patente,
                         marca: resCombi.marca,
                         modelo: resCombi.modelo,
+                        tipo: resCombi.tipo,
                       },
                       chofer: {
                         nombre: resCombi.chofer.nombre,
@@ -1694,6 +1707,34 @@ app.get("/viajes-pasados", (req, res) => {
     });
   }
 });
+app.post("/buscar-viajes", (req, res) => {
+  let hoy=new Date;
+  let f = transformarFecha(req.body.fecha)
+  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate())+1;
+  let m = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 2);
+
+  if (f.getDate() + 1 == hoy.getDate() && f.getMonth() == hoy.getMonth() && f.getFullYear() == hoy.getFullYear()) {
+      h = hoy;
+     m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()+1);
+     console.log(h+' '+m)
+  }
+  Viaje.find({
+    "ruta.origen.nombre": req.body.ciudadO,
+    "ruta.origen.provincia":req.body.provinciaO, 
+    "ruta.destino.nombre": req.body.ciudadD,
+    "ruta.destino.provincia": req.body.provinciaD,
+    $and: [
+      { fecha: { $gte: h } },
+      { fecha: { $lt: m } }
+    ]
+  }, (err, result) => {
+   
+    res.json({ viajes: result });
+  })
+})
+
+
+
 
 // UPDATE VIAJE
 app.get("/modificar-viaje/:id", (req, res) => {
@@ -1810,6 +1851,7 @@ app.put("/viaje", (req, res) => {
                                             patente: resRuta.combi.patente,
                                             marca: resRuta.combi.marca,
                                             modelo: resRuta.combi.modelo,
+                                            tipo: resRuta.combi.tipo,
                                           },
                                           chofer: {
                                             nombre: resCombi.chofer.nombre,
@@ -1977,3 +2019,4 @@ app.get("/perfil", (req, res) => {
 app.listen(3000, function () {
   console.log("Server started on port " + port);
 });
+

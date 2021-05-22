@@ -5,27 +5,73 @@
 
 <h1>Bienvenido <%= data%></h1>
 <%}%>
+<hr>
+<div class="row">
+<div class="col-3"> 
+<form  id="buscar" action="/buscar-viajes" method="post">
+<label for="origen">Origen:</label> <br>
+
+   
+<select class="busqueda" name="origen" id="origen" required>
+                
+                <% lugares.forEach(function(lugar) { %>
+<option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
+<% }) %>
+</select><br>
+<label for="destino">Destino:</label> <br>
+<select name="destino" class="busqueda" id="destino" required>
+    <% lugares.forEach(function(lugar) { %>
+    <option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
+    <% }) %>
+</select><br>
+<label for="fecha">Fecha:</label> <br>
+<input type="date" class="busqueda" name="fecha" id="fecha" required>
+<br>
+<br>
+<button id="buscarB">Buscar</button>
+
+<input type="hidden" name="ciudadO" id="ciudadO">
+<input type="hidden" name="provinciaO" id="provinciaO">
+<input type="hidden" name="ciudadD" id="ciudadD">
+<input type="hidden" name="provinciaD" id="provinciaD">
+
+<% lugares.forEach(function(lugar) { %>
+<input type="hidden" value="<%=lugar.ciudad%>" name="ciudad" class="<%=lugar._id%>">
+<input type="hidden" value="<%=lugar.provincia%>" name="provincia" class="<%=lugar._id%>">
+<% }) %>
+</form>
+</div>
+<div class="col-6">
+    <h3>Viajes</h3>
+    <hr>
+    <div id="viajes">
+       
+    </div>
+</div>
+<div class="col-3">
 
 <% if (!comentarios.length) { %>
-    <h2>Todavía no hay comentarios</h2>
+<h2>Todavía no hay comentarios</h2>
 <% } else { %>
-    <h2>Comentarios:</h2>
-    <a href="/crear-comentario">
-        <button id="crear-comentario">Añadir comentario</button>
-    </a>
-    <% let c = comentarios.slice(0, 10);
+<h2>Comentarios:</h2>
+<a href="/crear-comentario">
+    <button id="crear-comentario">Añadir comentario</button>
+</a>
+<% let c = comentarios.slice(0, 10);
     c.forEach(function(comentario) { %>
-        <p><%= comentario.nombre%> - <%= comentario.apellido%> - <%= comentario.texto%> - <%= comentario.fecha%>
-            <% if (comentario.modificado) {%>
-                <i>(editado)</i>
-            <% } %>
-            <% if (comentario.email == miEmail ) {%>
-                <form action="modificar-comentario/<%= comentario._id %>" method="GET">
-                    <button type="submit">Modificar comentario</button>
-                </form>
-            <% } %>
-        </p>
-    <% }); %>
+<p><%= comentario.nombre%> - <%= comentario.apellido%> - <%= comentario.texto%> - <%= comentario.fecha%>
+    <% if (comentario.modificado) {%>
+    <i>(editado)</i>
+    <% } %>
+    <% if (comentario.email == miEmail ) {%>
+<form action="modificar-comentario/<%= comentario._id %>" method="GET">
+    <button type="submit">Modificar comentario</button>
+</form>
 <% } %>
-
+</p>
+<% }); %>
+<% } %>
+    </div>
+</div>
+<script src="./js/home.js"></script>
 <%- include("partials/footer"); -%>

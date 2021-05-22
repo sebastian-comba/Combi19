@@ -1,0 +1,30 @@
+<%- include("partials/header-pasajero"); -%>
+<h1>Modificar Comentario </h1>
+<div class="row">
+    <div class="col-6">
+        <div id="err"></div>
+        <label for="nombre" required>Nombre:</label><br>
+        <input type="text" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre"
+            name="nombre" disabled/><br>
+        <label for="apellido" required>Apellido:</label><br>
+        <input type="text"  placeholder="<%= data.apellido %>" value="<%= data.apellido %>" id="apellido"
+            name="apellido" disabled/><br>
+        <br>
+        
+        <label for="texto" required>Modifique su comentario:</label><br>
+        <textarea rows="4" cols="50" class="micomentario" 
+        value="<%= data.texto %>" id="texto" name="texto"><%= data.texto %>
+        </textarea>
+        <br>
+        <input type="hidden" value="<%= data._id %>" id="id" name="id" />
+        <input type="hidden" value="<%= data.email %>" id="email" name="email" />
+        <button id="modificar">Modificar</button>
+    </div>
+</div>
+
+<a href="http://localhost:3000/">
+    <button id="cancelar">Cancelar</button>
+</a>
+<script src="/js/modificar-comentario.js"></script>
+
+<%- include("partials/footer"); -%>

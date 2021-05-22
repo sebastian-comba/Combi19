@@ -1,18 +1,37 @@
 <%- include("partials/header-pasajero"); -%>
+<% function pad(number) {
+    if (number < 10) {
+        return '0' + number;
+    }
+    return number;
+}
+
+
+Date.prototype.mediaFecha = function () {
+    return this.getFullYear() +
+        '-' + pad(this.getMonth() + 1) +
+        '-' + pad(this.getDate())
+};
+Date.prototype.yearMonth = function () {
+    return this.getFullYear() +
+        '-' + pad(this.getMonth() + 1) 
+};
+console.log((new Date(Date.parse(data.tarjeta.vencimiento))).yearMonth())
+%> 
 <h1>Modificar Perfil</h1>
 <div class="row" >
     <div class="col-6" style="padding: 2%;">
         <form action="/modificar-perfil" method="post">
             <label for="nombre">Nombre:</label>
-            <input type="text" name="nombre" id="nombre" class="form-control" required>
+            <input type="text" name="nombre" id="nombre" class="form-control" value="<%= data.nombre %> " required>
             <label for="apellido">Apellido:</label>
-            <input type="text" name="apellido" id="apellido" class="form-control" required>
+            <input type="text" name="apellido" id="apellido" value="<%= data.apellido %> " class="form-control" required>
             <label for="dni">DNI:</label>
-            <input type="number" name="dni" id="dni" class="form-control" required>
+            <input type="number" name="dni" id="dni" class="form-control" value="<%= data.dni %>"  required>
             <label for="fechaN"> Fecha de nacimineto</label>
-            <input type="Date" name="fechaN" id="fechaN" class="form-control" required>
+            <input type="Date" name="fechaN" id="fechaN" class="form-control" value="<%= (new Date(Date.parse(data.fechaN))).mediaFecha() %>"  required>
             <label for="email">Email:</label>
-            <input type="email" name="email" id="email" class="form-control" required>
+            <input type="email" name="email" id="email" value="<%= data.email %> " class="form-control" required>
             <label for="clave">Contraseña</label>
             <input type="password" class="form-control" name="clave" id="clave"
                 placeholder="Debe ser mayor de 5 digitos" required>
@@ -21,48 +40,80 @@
             <h4>Tipo de suscripción</h4>
             <div class="row">
                 <div class="col-6">
-                    <div class="form-check">
-                        <input type="radio" id="comun" name="suscripcion" value="comun" checked>
+                        <input type="radio" id="comun" name="suscripcion" value="comun" <% if(data.categoria ==="comun"){ %><%= "checked" %> <%}%>>
                         <label for="comun">Común</label><br>
-                        </label>
-                    </div>
                     <p>Usted tendra que pagar la totalidad de los pasajes</p>
                 </div>
                 <div class="col-6">
-                    <div class="form-check">
-                        <input type="radio" id="gold" name="suscripcion" value="gold">
+                        <input type="radio" id="gold" name="suscripcion" value="gold" <% if(data.categoria ==="gold"){ %><%= "checked" %> <%}%> >
                         <label for="gold">Gold</label><br>
-                        </label>
-                    </div>
                     <p>Usted debera abonar $250 por mes y tendra un descuento del 10% en todos sus pasajes</p>
                 </div>
             </div>
 
-            <input type="hidden" class="form-control" name="cat" id="cat" value="comun">
+            <input type="hidden" class="form-control" name="cat" id="cat" value="<%= data.categoria %> ">
             <div id="tarjeta" style="display:none">
 
                 <label for="cod">Codigo de la Tarjeta:</label>
-                <input type="text" name="cod" id="cod" class="form-control" autocomplete="off">
+                <input type="text" name="cod" id="cod" class="form-control"  value="<%= data.tarjeta.codigo %> " autocomplete="off">
 
                 <label for="vencimiento"> Fecha de Vencimiento: </label>
-                <input type="month" name="vencimiento" id="vencimiento" class="form-control" autocomplete="off">
+                <input type="month" name="vencimiento" id="vencimiento" class="form-control" value="<%= (new Date(Date.parse(data.tarjeta.vencimiento))).yearMonth() %> " autocomplete="off">
 
                 <label for="nombreT">Nombre como figura en la tarjeta:</label>
-                <input type="text" class="form-control" name="nombreT" id="nombreT" autocomplete="off" placeholder="">
+                <input type="text" class="form-control" name="nombreT" value="<%= data.tarjeta.nombreCompleto %> " id="nombreT" autocomplete="off" placeholder="">
 
                 <label for="dniT">DNI del titular:</label>
-                <input type="number" name="dniT" id="dniT" autocomplete="off" class="form-control">
+                <input type="number" value="<%= data.tarjeta.dni %> " name="dniT" id="dniT" autocomplete="off" class="form-control">
 
                 <label for="seg">Codigo de Seguridad</label>
                 <input type="text" size="3" name="seg" id="seg" autocomplete="off" class="form-control" maxlength="3">
             </div>
             <button>Modificar</button>
-
-
-
         </form>
        
 
+    </div>
+    <div class="col-6" style="padding: 2%;">
+        <form action="/modificar-perfil" method="post">
+            <label for="nombre">Nombre:</label>
+            <input type="text"  disabled class="form-control" value="<%= data.nombre %> " >
+            <label for="apellido">Apellido:</label>
+            <input type="text"  disabled value="<%= data.apellido %> " class="form-control" >
+            <label for="dni">DNI:</label>
+            <input type="number"  disabled class="form-control" value="<%= data.dni %>" required>
+            <label for="fechaN"> Fecha de nacimineto</label>
+            <input type="Date"  disabled  class="form-control"
+                value="<%= (new Date(Date.parse(data.fechaN))).mediaFecha() %>" required>
+            <label for="email">Email:</label>
+            <input type="email" disabled value="<%= data.email %> " class="form-control" required>
+   
+            <label for="cat">Tipo de supcripcion:</label> <br>
+            <input type="text" disabled class="form-control" value="<%= data.categoria %> ">
+            <%if (data.categoria==="gold"){%>
+                <div id=" tarjeta" style="padding: 3%;">
+    
+                    <label for="cod">Codigo de la Tarjeta:</label>
+                    <input type="text" disabled class="form-control" value="<%= data.tarjeta.codigo %> "
+                        autocomplete="off">
+    
+                    <label for="vencimiento"> Fecha de Vencimiento: </label>
+                    <input type="month" disabled class="form-control"
+                        value="<%= (new Date(Date.parse(data.tarjeta.vencimiento))).yearMonth() %>" autocomplete="off">
+    
+                    <label for="nombreT">Nombre como figura en la tarjeta:</label>
+                    <input type="text" class="form-control"  value="<%= data.tarjeta.nombreCompleto %> "
+                        disabled autocomplete="off" placeholder="">
+    
+                    <label for="dniT">DNI del titular:</label>
+                    <input type="number" value="<%= data.tarjeta.dni %>" disabled autocomplete="off"
+                        class="form-control">
+    
+                </div>
+            <%}%>
+        </form>
+    
+    
     </div>
 </div>
 <script src="/js/modificar-perfil.js"></script>

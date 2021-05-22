@@ -103,7 +103,7 @@ app.get("/home", (req, res) => {
 //
 // CREATE Comentario
 app.get("/crear-comentario", (req, res) => {
-  if (req.session.rol !== "Cliente") {
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold"  ) {
     res.redirect("/");
   } else {
     res.render("crear-comentario", {data: req.session});
@@ -115,13 +115,14 @@ app.post("/crear-comentario", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      if (!found.length) {
+      if (found) {
         var c = new Comentario({
           nombre: req.body.nombre,
           apellido: req.body.apellido,
           email: req.body.email,
           fecha: hoy,
           texto:req.body.texto,
+          modificado: false,
         });
         c.save((err) => {
           if (err) {
@@ -137,6 +138,44 @@ app.post("/crear-comentario", (req, res) => {
   });
 });
 
+// UPDATE Comentario
+app.get("/modificar-comentario/:id", (req, res) => {
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold") {
+    res.redirect("/");
+  } else {
+    Comentario.findOne(
+      { _id: req.params.id},
+      (err, resultComentario) => {
+        if (err) {
+          res.redirect("/");
+        } else {
+          res.render("modificar-comentario", { data: resultComentario });
+        }
+      }
+    );
+  }
+});
+app.put("/modificar-comentario", (req, res) => {
+  console.log(req.body.id);
+  Comentario.findOneAndUpdate(
+    { _id: req.body.id, },
+    {
+      fecha: hoy,
+      texto: req.body.texto,
+      modificado: true,
+    },
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.json({
+          response:
+            "Lo sentimos ocurrio un error intentelo en un momento",
+        });
+      } else {
+        res.json({ response: "bien" });
+      }
+    });
+  });
 
 // CRUD Lugar
 //
@@ -1881,7 +1920,7 @@ app.delete("/viaje/:id", (req, res) => {
 //   console.log(err);
 // });
 app.get("/pasajes", (req, res) => {
-  if (req.session.rol !== "Cliente") {
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold" ) {
     res.redirect("/");
   } else {
     Pasaje.find({

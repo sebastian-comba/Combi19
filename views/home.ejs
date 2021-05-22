@@ -17,6 +17,9 @@
     <% let c = comentarios.slice(0, 10);
     c.forEach(function(comentario) { %>
         <p><%= comentario.nombre%> - <%= comentario.apellido%> - <%= comentario.texto%> - <%= comentario.fecha%>
+            <% if (comentario.modificado) {%>
+                <i>(editado)</i>
+            <% } %>
             <% if (comentario.email == miEmail ) {%>
                 <form action="modificar-comentario/<%= comentario._id %>" method="GET">
                     <button type="submit">Modificar comentario</button>

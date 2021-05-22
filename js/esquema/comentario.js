@@ -6,6 +6,7 @@ const comentarioSchema = new mongoose.Schema({
   email: { type: String, required: true },
   fecha: { type: Date, required: true },
   texto: { type: String, required: true },
+  modificado: { type: Boolean, required: true },
 });
 
 comentarioSchema.index({ email: 1, fecha: 1 }, { unique: true });

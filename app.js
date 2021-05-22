@@ -879,6 +879,22 @@ app.get("/modificar-chofer/:email", (req, res) => {
     );
   }
 });
+app.get("/modificar-perfil", (req, res) => {
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold"){
+    res.redirect("/");
+  }else {
+    Usuario.findOne(
+      { email: req.session.email, borrado: false },
+      (err, usuario) => {
+        if (err) {
+          res.redirect("/");
+        } else {
+            res.render("modificar-perfil", { data: usuario });
+        }
+      }
+    );
+  }
+});
 app.put("/modificar-chofer", (req, res) => {
   Usuario.findOne({ _id: req.body.id }, (err, result) => {
     if (err) {

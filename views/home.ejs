@@ -12,9 +12,8 @@
 <label for="origen">Origen:</label> <br>
 
    
-<select class="busqueda" name="origen" id="origen" required>
-                
-                <% lugares.forEach(function(lugar) { %>
+<select class="busqueda" name="origen" id="origen" required>       
+          <% lugares.forEach(function(lugar) { %>
 <option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
 <% }) %>
 </select><br>
@@ -49,7 +48,6 @@
     </div>
 </div>
 <div class="col-3">
-
 <% if (!comentarios.length) { %>
 <h2>Todavía no hay comentarios</h2>
 <% } else { %>

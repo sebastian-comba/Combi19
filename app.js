@@ -17,6 +17,7 @@ const Pasaje = require("./js/esquema/pasaje");
 const Comentario = require("./js/esquema/comentario");
 const Tarjeta = require("./js/esquema/tarjeta");
 
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -89,7 +90,6 @@ app.get("/home", (req, res) => {
           } else {
             res.locals.comentarios = resultComentario;
             res.locals.miEmail = req.session.email;
-            res.render("home", { data: req.session.rol });
           }
         }); 
         Lugar.find({ borrado: false }, (err, result) => {

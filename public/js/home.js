@@ -86,7 +86,6 @@ $(document).ready(() => {
                 
                 $(form).ajaxSubmit((data) => {
 
-                    console.log(data)
                     if (data.viajes.length) {
                         
                         viajes.innerHTML = ""

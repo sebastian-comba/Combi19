@@ -44,6 +44,7 @@ app.use(
   })
 );
 app.use(express.json());
+ 
 
 // variable que devuelve la fecha de hoy
 // falta implementar un cron job para que se actualice automaticamente a las 00:00hs
@@ -895,6 +896,22 @@ app.get("/modificar-perfil", (req, res) => {
     );
   }
 });
+app.post("/modificar-perfil", (req, res) => {
+  Usuario.findOne({email:req.session.email},(err,result)=>{
+    if (err) {
+      console.log(err);
+    }else{
+      Usuario.findOne({email:req.body.email,_id:{$ne:result._id}},(err,resultC)=>{
+        if(resultC){
+          res.json({ response:{lugar:"email",error: "El email introducido esta siendo usado por otro usuario"}});
+        }else{
+
+        }
+      })
+    }
+  })
+});
+
 app.put("/modificar-chofer", (req, res) => {
   Usuario.findOne({ _id: req.body.id }, (err, result) => {
     if (err) {

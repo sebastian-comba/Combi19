@@ -17,7 +17,6 @@ const Pasaje = require("./js/esquema/pasaje");
 const Comentario = require("./js/esquema/comentario");
 const Tarjeta = require("./js/esquema/tarjeta");
 
-
 const app = express();
 
 app.set("view engine", "ejs");
@@ -67,7 +66,7 @@ mongoose.set("useFindAndModify", false);
 //  email: "pep2@gmail.com",
 //  fecha: "2019-10-12T18:00:00.000+00:00",
 //  texto: "asdasd",
-//  
+//
 // });
 // c.save((err) => {
 //   console.log(err);
@@ -84,21 +83,26 @@ app.get("/home", (req, res) => {
         res.render("home-admin", {});
         break;
       default:
-        Comentario.find({}, null,{sort:{"fecha":-1}}, (err, resultComentario) => {
-          if (err) {
-            console.log(err);
-          } else {
-            res.locals.comentarios = resultComentario;
-            res.locals.miEmail = req.session.email;
+        Comentario.find(
+          {},
+          null,
+          { sort: { fecha: -1 } },
+          (err, resultComentario) => {
+            if (err) {
+              console.log(err);
+            } else {
+              res.locals.comentarios = resultComentario;
+              res.locals.miEmail = req.session.email;
+            }
           }
-        }); 
+        );
         Lugar.find({ borrado: false }, (err, result) => {
           if (result) {
             res.locals.lugares = result;
           }
 
           res.render("home", { data: req.session.rol });
-        })
+        });
         break;
     }
   } else {
@@ -110,10 +114,13 @@ app.get("/home", (req, res) => {
 //
 // CREATE Comentario
 app.get("/crear-comentario", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold"  ) {
+  if (
+    req.session.rol !== "Cliente comun" &&
+    req.session.rol !== "Cliente gold"
+  ) {
     res.redirect("/");
   } else {
-    res.render("crear-comentario", {data: req.session});
+    res.render("crear-comentario", { data: req.session });
   }
 });
 
@@ -128,7 +135,7 @@ app.post("/crear-comentario", (req, res) => {
           apellido: req.body.apellido,
           email: req.body.email,
           fecha: hoy,
-          texto:req.body.texto,
+          texto: req.body.texto,
           modificado: false,
         });
         c.save((err) => {
@@ -139,7 +146,9 @@ app.post("/crear-comentario", (req, res) => {
           }
         });
       } else {
-        res.json({ response: "Debe tener pasajes comprados para realizar un comentario" });
+        res.json({
+          response: "Debe tener pasajes comprados para realizar un comentario",
+        });
       }
     }
   });
@@ -147,24 +156,24 @@ app.post("/crear-comentario", (req, res) => {
 
 // UPDATE Comentario
 app.get("/modificar-comentario/:id", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold") {
+  if (
+    req.session.rol !== "Cliente comun" &&
+    req.session.rol !== "Cliente gold"
+  ) {
     res.redirect("/");
   } else {
-    Comentario.findOne(
-      { _id: req.params.id},
-      (err, resultComentario) => {
-        if (err) {
-          res.redirect("/");
-        } else {
-          res.render("modificar-comentario", { data: resultComentario });
-        }
+    Comentario.findOne({ _id: req.params.id }, (err, resultComentario) => {
+      if (err) {
+        res.redirect("/");
+      } else {
+        res.render("modificar-comentario", { data: resultComentario });
       }
-    );
+    });
   }
 });
 app.put("/modificar-comentario", (req, res) => {
   Comentario.findOneAndUpdate(
-    { _id: req.body.id, },
+    { _id: req.body.id },
     {
       fecha: hoy,
       texto: req.body.texto,
@@ -174,14 +183,14 @@ app.put("/modificar-comentario", (req, res) => {
       if (err) {
         console.log(err);
         res.json({
-          response:
-            "Lo sentimos ocurrio un error intentelo en un momento",
+          response: "Lo sentimos ocurrio un error intentelo en un momento",
         });
       } else {
         res.json({ response: "bien" });
       }
-    });
-  });
+    }
+  );
+});
 
 // CRUD Lugar
 //
@@ -212,7 +221,6 @@ app.get("/listar-lugares", (req, res) => {
 });
 
 // CREATE lugar
-// falta agregar un mensaje de alerta para el usuario cuando se intenta agregar un lugar ya existente
 // falta normalizar los datos de entrada para que se guarden siempre capitalizados y no en minuscula o mayuscula
 app.get("/cargar-lugar", (req, res) => {
   if (req.session.rol !== "Admin") {
@@ -344,7 +352,6 @@ app.put("/modificar-lugar", (req, res) => {
           if (err) {
             console.log(err);
           } else {
-
             Lugar.findOne(
               {
                 ciudad: req.body.ciudad,
@@ -372,89 +379,99 @@ app.put("/modificar-lugar", (req, res) => {
                       },
                       (err) => {
                         if (err) {
-                          console.log(err)
+                          console.log(err);
                         } else {
-                          Ruta.updateMany({
-                            "origen.idLugar": req.body.id,
-                          }, {
-                            origen: {
-                              nombre: req.body.ciudad,
-                              provincia: req.body.provincia,
-                              idLugar: resLugar._id,
-                            }
-                          }, (err) => {
-                            if (err) {
-                              console.log(err);
-
-                            }
-
-                          })
-                          Ruta.updateMany({
-                            "destino.idLugar": req.body.id,
-                          }, {
-                            destino: {
-                              nombre: req.body.ciudad,
-                              provincia: req.body.provincia,
-                              idLugar: resLugar._id,
-                            }
-                          }, (err, result) => {
-                            if (err) {
-                              console.log(err);
-                            }
-                          })
-                          Ruta.find({
-                            $or: [
-                              {
-                                "origen.nombre": req.body.ciudad,
-                                "origen.provincia": req.body.provincia,
+                          Ruta.updateMany(
+                            {
+                              "origen.idLugar": req.body.id,
+                            },
+                            {
+                              origen: {
+                                nombre: req.body.ciudad,
+                                provincia: req.body.provincia,
+                                idLugar: resLugar._id,
                               },
-                              {
-                                "destino.nombre": req.body.ciudad,
-                                "destino.provincia": req.body.provincia,
-                              },
-                            ],
-                            borrado: false,
-                          }, (err, result) => {
-                            if (err) {
-                              console.log(err);
-                            } else {
-                              result.forEach(e => {
-                                Viaje.updateMany({ "ruta.idRuta": e._id }, {
-                                  ruta: {
-                                    origen: {
-                                      nombre: e.origen.nombre,
-                                      provincia: e.origen.provincia
-                                    },
-                                    destino: {
-                                      nombre: e.destino.nombre,
-                                      provincia: e.destino.provincia
-                                    },
-                                    idRuta: e._id
-
-                                  }
-                                }, (err) => {
-                                  if (err) {
-                                    console.log(err);
-                                  }
-                                })
-                              });
+                            },
+                            (err) => {
+                              if (err) {
+                                console.log(err);
+                              }
                             }
-                          })
+                          );
+                          Ruta.updateMany(
+                            {
+                              "destino.idLugar": req.body.id,
+                            },
+                            {
+                              destino: {
+                                nombre: req.body.ciudad,
+                                provincia: req.body.provincia,
+                                idLugar: resLugar._id,
+                              },
+                            },
+                            (err, result) => {
+                              if (err) {
+                                console.log(err);
+                              }
+                            }
+                          );
+                          Ruta.find(
+                            {
+                              $or: [
+                                {
+                                  "origen.nombre": req.body.ciudad,
+                                  "origen.provincia": req.body.provincia,
+                                },
+                                {
+                                  "destino.nombre": req.body.ciudad,
+                                  "destino.provincia": req.body.provincia,
+                                },
+                              ],
+                              borrado: false,
+                            },
+                            (err, result) => {
+                              if (err) {
+                                console.log(err);
+                              } else {
+                                result.forEach((e) => {
+                                  Viaje.updateMany(
+                                    { "ruta.idRuta": e._id },
+                                    {
+                                      ruta: {
+                                        origen: {
+                                          nombre: e.origen.nombre,
+                                          provincia: e.origen.provincia,
+                                        },
+                                        destino: {
+                                          nombre: e.destino.nombre,
+                                          provincia: e.destino.provincia,
+                                        },
+                                        idRuta: e._id,
+                                      },
+                                    },
+                                    (err) => {
+                                      if (err) {
+                                        console.log(err);
+                                      }
+                                    }
+                                  );
+                                });
+                              }
+                            }
+                          );
                           res.json({ response: "bien" });
                         }
                       }
-
-
-                    )
+                    );
                   }
                 }
               }
             );
           }
-        })
+        }
+      );
     }
-  }
-  );
+  });
 });
 
 //CRUD Insumo
@@ -740,7 +757,7 @@ app.post("/registro", (req, res) => {
           if (
             result.dni === req.body.dniT &&
             Date.parse(result.vencimiento) ==
-            Date.parse(req.body.vencimiento + "-01") &&
+              Date.parse(req.body.vencimiento + "-01") &&
             result.nombreCompleto === req.body.nombreT &&
             result.codSeguridad === req.body.codS
           ) {
@@ -885,7 +902,8 @@ app.put("/modificar-chofer", (req, res) => {
       console.log(err);
     } else {
       let email = result.email;
-      Usuario.findOne({ email: req.body.email, _id: { $ne: req.body.id } },
+      Usuario.findOne(
+        { email: req.body.email, _id: { $ne: req.body.id } },
         (err, result) => {
           if (!result) {
             Usuario.deleteOne({ _id: req.body.id }, (err) => {
@@ -942,12 +960,12 @@ app.put("/modificar-chofer", (req, res) => {
                   }
                 });
               }
-            })
+            });
           } else {
-
             res.json({ response: "error" });
           }
-        });
+        }
+      );
     }
   });
 });
@@ -1500,7 +1518,10 @@ app.put("/modificar-ruta", (req, res) => {
                 } else {
                   Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
                     if (err) {
-                      res.json({ response: "La combi no existe por favor selecione uno de la lista" });
+                      res.json({
+                        response:
+                          "La combi no existe por favor selecione uno de la lista",
+                      });
                     } else {
                       Ruta.findOne(
                         {
@@ -1620,7 +1641,7 @@ app.post("/cargar-viaje", (req, res) => {
                   resultV.forEach((viaje) => {
                     if (
                       transformarFecha(req.body.fecha + "T" + resRuta.hora) >
-                      viaje.llegada ||
+                        viaje.llegada ||
                       transformarFecha(req.body.llegada) < viaje.fecha
                     ) {
                       bool = true;
@@ -1685,56 +1706,62 @@ app.get("/viajes", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ borrado: false, fecha: { $gte: (new Date) } }, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("listar-viajes", { viajes: result });
+    Viaje.find(
+      { borrado: false, fecha: { $gte: new Date() } },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("listar-viajes", { viajes: result });
+        }
       }
-    });
+    );
   }
 });
 app.get("/viajes-pasados", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ borrado: false, fecha: { $lt: (new Date) }, }, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("listar-viajes-pasados", { viajes: result });
+    Viaje.find(
+      { borrado: false, fecha: { $lt: new Date() } },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("listar-viajes-pasados", { viajes: result });
+        }
       }
-    });
+    );
   }
 });
 app.post("/buscar-viajes", (req, res) => {
-  let hoy=new Date;
-  let f = transformarFecha(req.body.fecha)
-  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate())+1;
+  let hoy = new Date();
+  let f = transformarFecha(req.body.fecha);
+  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate()) + 1;
   let m = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 2);
 
-  if (f.getDate() + 1 == hoy.getDate() && f.getMonth() == hoy.getMonth() && f.getFullYear() == hoy.getFullYear()) {
-      h = hoy;
-     m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()+1);
-     console.log(h+' '+m)
+  if (
+    f.getDate() + 1 == hoy.getDate() &&
+    f.getMonth() == hoy.getMonth() &&
+    f.getFullYear() == hoy.getFullYear()
+  ) {
+    h = hoy;
+    m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
+    console.log(h + " " + m);
   }
-  Viaje.find({
-    "ruta.origen.nombre": req.body.ciudadO,
-    "ruta.origen.provincia":req.body.provinciaO, 
-    "ruta.destino.nombre": req.body.ciudadD,
-    "ruta.destino.provincia": req.body.provinciaD,
-    $and: [
-      { fecha: { $gte: h } },
-      { fecha: { $lt: m } }
-    ]
-  }, (err, result) => {
-   
-    res.json({ viajes: result });
-  })
-})
-
-
-
+  Viaje.find(
+    {
+      "ruta.origen.nombre": req.body.ciudadO,
+      "ruta.origen.provincia": req.body.provinciaO,
+      "ruta.destino.nombre": req.body.ciudadD,
+      "ruta.destino.provincia": req.body.provinciaD,
+      $and: [{ fecha: { $gte: h } }, { fecha: { $lt: m } }],
+    },
+    (err, result) => {
+      res.json({ viajes: result });
+    }
+  );
+});
 
 // UPDATE VIAJE
 app.get("/modificar-viaje/:id", (req, res) => {
@@ -1772,7 +1799,8 @@ app.put("/viaje", (req, res) => {
       } else {
         if (resPasaje && viajeR.ruta.idRuta !== req.body.ruta) {
           res.json({
-            response: "No se puede modificar la ruta del viaje, tiene pasajes comprados.",
+            response:
+              "No se puede modificar la ruta del viaje, tiene pasajes comprados.",
           });
         } else {
           Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
@@ -1825,7 +1853,7 @@ app.put("/viaje", (req, res) => {
                                           req.body.fecha + "T" + resRuta.hora
                                         ) > viaje.llegada ||
                                         transformarFecha(req.body.llegada) <
-                                        viaje.fecha ||
+                                          viaje.fecha ||
                                         "" + resViaje._id === "" + viaje._id
                                       ) {
                                         bool = true;
@@ -1838,7 +1866,8 @@ app.put("/viaje", (req, res) => {
                                           ruta: {
                                             origen: {
                                               nombre: resRuta.origen.nombre,
-                                              provincia: resRuta.origen.provincia,
+                                              provincia:
+                                                resRuta.origen.provincia,
                                             },
                                             destino: {
                                               nombre: resRuta.destino.nombre,
@@ -1862,7 +1891,8 @@ app.put("/viaje", (req, res) => {
                                             req.body.fecha + "T" + resRuta.hora,
                                           llegada: req.body.llegada,
                                           precio: req.body.precio,
-                                          asientosDisponibles: req.body.asientos,
+                                          asientosDisponibles:
+                                            req.body.asientos,
                                           estado: "En espera",
                                           borrado: false,
                                         },
@@ -1901,8 +1931,7 @@ app.put("/viaje", (req, res) => {
         }
       }
     });
-  })
-
+  });
 });
 
 // DELETE VIAJE
@@ -1930,88 +1959,176 @@ app.delete("/viaje/:id", (req, res) => {
   });
 });
 
-// COMPRA DE PASAJES
+// CRUD PASAJES
 //
-// PASAJE DE PRUEBA
-// let p = new Pasaje({
-//   emailPasajero: "lala@gmail.com",
-//   insumos: [
-//     {
-//       nombre: "Papas Fritas",
-//       precio: "50",
-//       cantidad: 5,
-//     },
-//   ],
-//  cantidad: 2,
-//  origen: {
-//    nombre:"Santa Rosa",
-//    provincia: "La Pampa",
-//  },
-//  destino: {
-//    nombre:  "Junin",
-//    provincia: "Buenos Aires",
-//  },
-//  tipoServicio: "Comoda",
-//  fecha: "2021-05-12T18:00:00.000+00:00",
-//  precio:"1300",
-//  estadoPasaje: "Pendiente",
-//  idViaje: "60a69ae901baf838903eea32",
-// });
-// p.save((err) => {
-//   console.log(err);
-// });
+
+// Obtener todos los pasajes
 app.get("/pasajes", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold" ) {
+  if (
+    req.session.rol !== "Cliente comun" &&
+    req.session.rol !== "Cliente gold"
+  ) {
     res.redirect("/");
   } else {
-    Pasaje.find({
-      emailPasajero: req.session.email,
-      fecha: { $gte: hoy },
-    }, (err, resultPasaje) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("listar-pasajes", { data: resultPasaje });
-      }
-    });
-  }
-});
-app.put("/pasaje/:id", (req, res) => {
-  Pasaje.findOneAndUpdate({ _id: req.params.id, },{estadoPasaje: "Cancelado"}, (err,resultPasaje) => {
-    if (err) {
-      console.log(err);
-    } else {
-      Viaje.updateOne({_id: resultPasaje.idViaje},{$inc: {asientosDisponibles: resultPasaje.cantidad}},(err) => {
+    Pasaje.find(
+      {
+        emailPasajero: req.session.email,
+        fecha: { $gte: hoy },
+      },
+      (err, result) => {
         if (err) {
           console.log(err);
         } else {
-          var d = resultPasaje.fecha;
-          d.setDate(d.getDate()-2);  
-          if(d > hoy){
-            res.json({ response: "bien48hsAntes" });
-           } else {
-            res.json({ response: "bien" });
-         }
+          res.render("listar-pasajes", { data: result });
+        }
+      }
+    );
+  }
+});
+
+// Crear pasaje
+app.get("/comprar-pasaje/:id", (req, res) => {
+  Insumo.find({ borrado: false }, (err, resultInsumos) => {
+    if (err) {
+      console.log(err);
+    } else {
+      Viaje.findOne({ _id: req.params.id }, (err, resultViaje) => {
+        if (err) {
+          console.log(err);
+          res.send(err);
+        } else {
+          res.render("comprar-pasaje", {
+            viaje: resultViaje,
+            insumos: resultInsumos,
+          });
         }
       });
     }
   });
 });
 
-// PERFIL CLIENTE
-app.get("/perfil", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold" ) {
+app.post("/comprar-pasaje", (req, res) => {
+  if (req.session.rol !== "Cliente") {
     res.redirect("/");
   } else {
-    Usuario.findOne({
-      email: req.session.email,
-    }, (err, result) => {
+    Tarjeta.findOne({ codigo: req.body.codigo }, (err, resultTarjeta) => {
       if (err) {
         console.log(err);
       } else {
-        res.render("perfil", { data: result });
+        if (resultTarjeta.monto > req.body.total) {
+          // insumos es un diccionario que va a tener el nombre de cada insumo con su cantidad comprada,
+          // falta implementar la carga cuando este el front end listo
+          const insumos = {};
+
+          // obtengo todos los nombres de los insumos
+          const nombresInsumos = Object.keys(insumos);
+
+          // busco todos los insumos que esten dentro de la coleccion de nombresInsumos
+          Insumo.find(
+            { title: { $in: nombresInsumos } },
+            (err, resultInsumos) => {
+              if (err) {
+                console.log(err);
+              } else {
+                // creo un arreglo donde van a ir todos los insumos correspondientes al pasaje
+                const insumosPasaje = [];
+                resultInsumos.forEach((insumo) => {
+                  insumosPasaje.push({
+                    nombre: insumo.nombre,
+                    precio: insumo.precio,
+                    cantidad: insumos[insumo.nombre],
+                  });
+                });
+                p = new Pasaje({
+                  emailPasajero: req.session.email,
+                  insumos: insumosPasaje,
+                  cantidad: req.body.cantidad,
+                  idViaje: req.body.viaje,
+                  fecha: req.body.fecha,
+                  precio: req.body.precio,
+                });
+                p.save((err) => {
+                  console.log(err);
+                });
+                Tarjeta.findOneAndUpdate(
+                  { codigo: req.body.codigo },
+                  // le resto el total al monto de la tarjeta
+                  { $inc: { monto: -req.body.total } },
+                  (err) => {
+                    console.log(err);
+                  }
+                );
+                res.redirect("/pasajes");
+              }
+            }
+          );
+        } else {
+          res.send("No hay saldo suficiente en la tarjeta");
+        }
       }
     });
+  }
+});
+app.put("/pasaje/:id", (req, res) => {
+  Pasaje.findOneAndUpdate(
+    { _id: req.params.id },
+    { estadoPasaje: "Cancelado" },
+    (err, resultPasaje) => {
+      if (err) {
+        console.log(err);
+      } else {
+        Viaje.updateOne(
+          { _id: resultPasaje.idViaje },
+          { $inc: { asientosDisponibles: resultPasaje.cantidad } },
+          (err) => {
+            if (err) {
+              console.log(err);
+            } else {
+              var d = resultPasaje.fecha;
+              d.setDate(d.getDate() - 2);
+              if (d > hoy) {
+                res.json({ response: "bien48hsAntes" });
+              } else {
+                res.json({ response: "bien" });
+              }
+            }
+          }
+        );
+      }
+    }
+  );
+});
+// Borrar pasaje
+app.delete("/pasaje/:id", (req, res) => {
+  Pasaje.deleteOne({ _id: req.params.id }, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json({ response: "bien" });
+    }
+  });
+});
+
+// PERFIL CLIENTE
+app.get("/perfil", (req, res) => {
+  if (
+    req.session.rol !== "Cliente comun" &&
+    req.session.rol !== "Cliente gold"
+  ) {
+    res.redirect("/");
+  } else {
+    Usuario.findOne(
+      {
+        email: req.session.email,
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("perfil", { data: result });
+        }
+      }
+    );
   }
 });
 
@@ -2019,4 +2136,3 @@ app.get("/perfil", (req, res) => {
 app.listen(3000, function () {
   console.log("Server started on port " + port);
 });
-

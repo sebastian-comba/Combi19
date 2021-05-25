@@ -54,7 +54,7 @@ let mayor= hoy.setFullYear(hoy.getFullYear()-18)
 fechaN.max = (new Date(mayor)).mediaFecha();
 $(document).ready(() => {
     $("#modificarB").click(function (event) {
-        $("#modificar").validate({
+       let v= $("#modificar").validate({
             rules: {
                 clave1: {
                     required: true,
@@ -69,11 +69,17 @@ $(document).ready(() => {
                     max:"Debe ser mayor de edad"
                 }
             },
-
             submitHandler: function (form) {
 
                 $(form).ajaxSubmit((data) => {
-                    console.log(data);
+                    let lugar = data.response.lugar;
+                    let error = data.response.error;
+                    let mostrar={}
+                    mostrar[lugar]=error;
+                    console.log(mostrar);
+                    v.showErrors(
+                        mostrar
+                    )
                 });
             }
         });

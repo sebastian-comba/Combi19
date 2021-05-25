@@ -897,6 +897,8 @@ app.get("/modificar-perfil", (req, res) => {
   }
 });
 app.post("/modificar-perfil", (req, res) => {
+
+  console.log("asdas");
   Usuario.findOne({email:req.session.email},(err,result)=>{
     if (err) {
       console.log(err);
@@ -905,6 +907,7 @@ app.post("/modificar-perfil", (req, res) => {
         if(resultC){
           res.json({ response:{lugar:"email",error: "El email introducido esta siendo usado por otro usuario"}});
         }else{
+          res.json({ response: { lugar: "email", error: "El email " } });
 
         }
       })

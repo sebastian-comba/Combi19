@@ -34,7 +34,7 @@ Date.prototype.yearMonth = function () {
         <br> <label for="email">Email:</label><br>
             <input type="email" name="email" id="email" value="<%= data.email %> " class="form-control" required>
             <br><label for="clave">Contraseña</label><br>
-            <input type="password" class="form-control" name="clave" id="clave"
+            <input type="password" minlength="6" class="form-control" name="clave" id="clave"
                 placeholder="Debe ser mayor de 5 digitos" required>
             <br><label for="clave1">Repita la Contraseña</label><br>
             <input type="password" class="form-control" name="clave1" id="clave1" required>

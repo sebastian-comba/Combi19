@@ -72,14 +72,19 @@ $(document).ready(() => {
             submitHandler: function (form) {
 
                 $(form).ajaxSubmit((data) => {
-                    let lugar = data.response.lugar;
-                    let error = data.response.error;
-                    let mostrar={}
-                    mostrar[lugar]=error;
-                    console.log(mostrar);
-                    v.showErrors(
-                        mostrar
-                    )
+                    if(data.response!=="bien"){
+
+                        let lugar = data.response.lugar;
+                        let error = data.response.error;
+                        let mostrar = {}
+                        mostrar[lugar] = error;
+                        console.log(mostrar);
+                        v.showErrors(
+                            mostrar
+                        )
+                    }else{
+                        location.replace("/perfil");
+                    }
                 });
             }
         });

@@ -54,7 +54,7 @@ Date.prototype.yearMonth = function () {
                 </div>
             </div>
 
-            <input type="hidden" class="form-control" name="cat" id="cat" value="<%= data.categoria %> ">
+            <input type="hidden" class="form-control" name="cat" id="cat" value="<%= data.categoria %>">
             <% if(data.categoria ==="gold") { %>
             <div id="tarjeta" style="display:inline">
 
@@ -100,6 +100,7 @@ Date.prototype.yearMonth = function () {
                 </div>
                 <%} %>
                 <br>
+                <div id="err" name="err"></div> <br>
                 <button id="modificarB">Modificar</button>
         </form>
 

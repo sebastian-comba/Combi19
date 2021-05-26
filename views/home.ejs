@@ -52,9 +52,6 @@
 <h2>Todavía no hay comentarios</h2>
 <% }else { %>
 <h2>Comentarios:</h2>
-<a href="/crear-comentario">
-    <button id="crear-comentario">Añadir comentario</button>
-</a>
 <% let c = comentarios.slice(0, 10);
     c.forEach(function(comentario) { %>
 <p><%= comentario.nombre%> - <%= comentario.apellido%> - <%= comentario.texto%> - <%= comentario.fecha%>
@@ -69,6 +66,9 @@
 </p>
 <% }); %>
 <% } %>
+<a href="/crear-comentario">
+    <button id="crear-comentario">Añadir comentario</button>
+</a>
     </div>
 </div>
 <script src="./js/home.js"></script>

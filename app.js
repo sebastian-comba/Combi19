@@ -91,15 +91,16 @@ app.get("/home", (req, res) => {
           } else {
             res.locals.comentarios = resultComentario;
             res.locals.miEmail = req.session.email;
+            Lugar.find({ borrado: false }, (err, result) => {
+              if (result) {
+                res.locals.lugares = result;
+              }
+
+              res.render("home", { data: req.session.rol });
+            })
           }
         }); 
-        Lugar.find({ borrado: false }, (err, result) => {
-          if (result) {
-            res.locals.lugares = result;
-          }
-
-          res.render("home", { data: req.session.rol });
-        })
+        
         break;
     }
   } else {
@@ -782,6 +783,7 @@ app.post("/registro", (req, res) => {
                         req.session.apellido = us.apellido;
                         req.session.rol = us.rol;
                         req.session.email = us.email;
+                        req.session.categoria = us.categoria;
                         res.json({ response: "bien" });
                       }
                     }
@@ -824,6 +826,7 @@ app.post("/registro", (req, res) => {
         req.session.apellido = us.apellido;
         req.session.rol = us.rol;
         req.session.email = us.email;
+        req.session.categoria = us.categoria;
         res.json({ response: "bien" });
       }
     });
@@ -898,7 +901,6 @@ app.get("/modificar-perfil", (req, res) => {
 });
 app.post("/modificar-perfil", (req, res) => {
 
-  console.log("asdas");
   Usuario.findOne({email:req.session.email},(err,result)=>{
     if (err) {
       console.log(err);
@@ -907,8 +909,115 @@ app.post("/modificar-perfil", (req, res) => {
         if(resultC){
           res.json({ response:{lugar:"email",error: "El email introducido esta siendo usado por otro usuario"}});
         }else{
-          res.json({ response: { lugar: "email", error: "El email " } });
+          let email= req.session.email;
+          if (req.body.cat === "gold") {
+            Tarjeta.findOne({ codigo: req.body.cod }, (err, result) => {
+              if (err) {
+                res.json({ response: { lugar: "err", error: "Error en la conexion con el banco" } });
+              } else {
+                if (!result) {
+                  res.json({ response: { lugar: "err", error: "Tarjeta inexistente" } });
+                } else {
+                  if (
+                    result.dni === req.body.dniT &&
+                    Date.parse(result.vencimiento) ==
+                    Date.parse(req.body.vencimiento + "-01") &&
+                    result.nombreCompleto === req.body.nombreT &&
+                    result.codSeguridad === req.body.seg
+                  ) {
+                    if (result.monto >= 250 ) {
+                      us = new Usuario({
+                        nombre: req.body.nombre,
+                        apellido: req.body.apellido,
+                        email: req.body.email,
+                        clave: req.body.clave,
+                        dni: req.body.dni,
+                        fechaN: req.body.fechaN,
+                        rol: "Cliente " + req.body.cat,
+                        borrado: false,
+                        suspendido: false,
+                        categoria: req.body.cat,
+                        tarjeta: {
+                          codigo: req.body.cod,
+                          vencimiento: req.body.vencimiento,
+                          nombreCompleto: req.body.nombreT,
+                          dni: req.body.dniT,
+                        },
+                      });
+                      Tarjeta.updateOne(
+                        { codigo: result.codigo },
+                        { monto: result.monto - 250 },
+                        (err) => {
+                          if (err) {
+                            res.json({ response: { lugar: "err", error: "Problemas en la conexion con el banco. Intentelo en unos minutos " } });
+                          } else {
+                            Usuario.deleteOne({ email: email }, (error) => {
+                              if (!error) {
+                                us.save((err) => {
+                                  if (err) {
+                                    res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } });
+                                  } else {
 
+                                    req.session.nombre = us.nombre;
+                                    req.session.apellido = us.apellido;
+                                    req.session.rol = us.rol;
+                                    req.session.email = us.email;
+                                    req.session.categoria = us.categoria;
+                                    res.json({ response: "bien" });
+                                  }
+                                });
+                              } else { 
+                                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } }) 
+                              }
+                        });
+                      }})
+                      
+                    } else {
+                      res.json({ response: { lugar: "err", error: "Tarjeta sin fondos suficientes para realizar el pago" } });
+                    }
+                  } else {
+                    res.json({ response: { lugar: "err", error: "Datos de la tarjeta incorrectos" } });
+                  }
+                }
+              }
+            });
+          } else {
+            let nombre = req.body.nombre;
+            let apellido = req.body.apellido;
+            let email = req.body.email;
+            us = new Usuario({
+              nombre: nombre,
+              apellido: apellido,
+              email: email,
+              clave: req.body.clave,
+              dni: req.body.dni,
+              fechaN: req.body.fechaN,
+              rol: "Cliente " + req.body.cat,
+              borrado: false,
+              suspendido: false,
+              categoria: req.body.cat,
+            });
+             Usuario.deleteOne({ email: email }, (error) => {
+              if (!error) {
+                us.save((err) => {
+                  if (err) {
+                    res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } });
+                  } else {
+                    req.session.nombre = us.nombre;
+                    req.session.apellido = us.apellido;
+                    req.session.rol = us.rol;
+                    req.session.email = us.email;
+                    req.session.categoria = us.categoria;
+                    res.json({ response: "bien" });
+                  }
+                });
+              } else { 
+                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } }) 
+            }
+            })
+          }
+
+         
         }
       })
     }

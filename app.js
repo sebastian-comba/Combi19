@@ -91,18 +91,18 @@ app.get("/home", (req, res) => {
             if (err) {
               console.log(err);
             } else {
-              res.locals.comentarios = resultComentario;
               res.locals.miEmail = req.session.email;
+              Lugar.find({ borrado: false }, (err, result) => {
+                if (result) {
+                  res.locals.lugares = result;
+                }
+      
+                res.render("home", { data: req.session.rol, comentarios:resultComentario });
+              });
             }
           }
         );
-        Lugar.find({ borrado: false }, (err, result) => {
-          if (result) {
-            res.locals.lugares = result;
-          }
-
-          res.render("home", { data: req.session.rol });
-        });
+        
         break;
     }
   } else {
@@ -140,6 +140,7 @@ app.post("/crear-comentario", (req, res) => {
         });
         c.save((err) => {
           if (err) {
+            console.log(err);
             res.json({ response: "error al guardar el comentario" });
           } else {
             res.json({ response: "bien" });
@@ -175,7 +176,7 @@ app.put("/modificar-comentario", (req, res) => {
   Comentario.findOneAndUpdate(
     { _id: req.body.id },
     {
-      fecha: now,
+      // cambia la fecha en la modificacion? fecha: now,
       texto: req.body.texto,
       modificado: true,
     },

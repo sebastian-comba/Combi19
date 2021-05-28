@@ -40,7 +40,6 @@ function modificar() {
 }
 
 document.getElementById("modificar").onclick = function () {
-  console.log(1);
   limpiar();
   camposVacios();
   let errores = document.getElementsByClassName("er").length;
@@ -49,46 +48,9 @@ document.getElementById("modificar").onclick = function () {
   }
 };
 
-function obtenerLugar(id) {
-  let lugar = document.getElementsByClassName(id);
-  let l = [{ ciudad: 1, provincia: 1 }];
-
-  for (let i = 0; i < lugar.length; i++) {
-    const e = lugar[i];
-    if (e.name === "ciudad") {
-      l.push(e.value);
-    } else {
-      l.push(e.value);
-    }
-  }
-  return l;
-}
-let l = obtenerLugar(origen.value);
-ciudadO.value = l[1];
-provinciaO.value = l[2];
-
-let d = obtenerLugar(destino.value);
-ciudadD.value = d[1];
-provinciaD.value = d[2];
-
 let p = combi.value;
 chofer.value = document.getElementById(p).value;
 
-document.getElementById("origen").onchange = function () {
-  let l = obtenerLugar(origen.value);
-
-  ciudadO.value = "";
-  provinciaO.value = "";
-  ciudadO.value = l[1];
-  provinciaO.value = l[2];
-};
-document.getElementById("destino").onchange = function () {
-  let l = obtenerLugar(destino.value);
-  ciudadD.value = "";
-  provinciaD.value = "";
-  ciudadD.value = l[1];
-  provinciaD.value = l[2];
-};
 document.getElementById("combi").onchange = function () {
   let p = combi.value;
   chofer.value = document.getElementById(p).value;

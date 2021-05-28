@@ -1,64 +1,112 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Ruta </h1>
-<datalist id="lugares">
- 
-</datalist>
-
-<datalist id="combis">
-  <% combis.forEach(function(combi) { %>
-  <option value="<%= combi.patente %>"><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %> </small></option>
-  <% }); %>
-</datalist>
+<div class="row">
+  <div class="col-6">
 
 <div id="err"></div>
-  <label for="origen">Origen:</label>
-  <select name="origen" id="origen"  class="mR">
-    <% lugares.forEach(function(lugar) {
+<label for="origen">Origen:</label>
+<select name="origen" id="origen" class="mR">
+  <% lugares.forEach(function(lugar) {
       if(ruta.origen.idLugar==lugar._id){%>
-        <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
-          <%= lugar.provincia %> </option>
-     <% } else{%>
-      <option value="<%= lugar._id %>" ><%= lugar.ciudad%> ,
-        <%= lugar.provincia %> </option>
-      <%} %>
-    <% }); %>
-  </select>
-  <hr>
-  <label for="destino">Destino:</label>
+  <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <% } else{%>
+  <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <%} %>
+  <% }); %>
+</select>
+<hr>
+<label for="destino">Destino:</label>
+<select name="destino" id="destino" class="mR">
+  <% lugares.forEach(function(lugar) {
+      if(ruta.destino.idLugar==lugar._id){%>
+  <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <% } else{%>
+  <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <%} %>
+  <% }); %>
+</select>
+<hr>
+<label for="combi">Combi:</label>
+<select name="combi" id="combi" class="mR">
+  <% combis.forEach(function(combi) { %>
+  <option value="<%= combi.patente %>"
+    <%if(ruta.combi.patente== combi.patente){%><%="selected"%><%}%> ><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
+    </small></option>
+  <% }); %></select>
+<label for="chofer">Chofer:</label>
+<input type="text" class="ruta" name="chofer" id="chofer" class="mR" disabled>
+<hr>
+<label for="distancia">Distancia:</label><br>
+<input type="text" placeholder="<%= ruta.distancia %>" class="mR" value="<%= ruta.distancia %>" id="distancia"
+  name="distancia" required /><br>
+<label for="hora">Hora:</label><br>
+<input type="time" placeholder="<%= ruta.hora %>" class="mR" value="<%= ruta.hora %>" id="hora" name="hora"
+  required /><br>
 
-  <input type="search" name="destino" id="destino" list="lugares" class="mR"
-    value="<%= ruta.destino.idLugar %>" />
-    <label for="ciudadD">Ciudad:</label>
-    <input type="text" name="ciudadD" id="ciudadD" class="mR" disabled>
-    <label for="provinciaD">Provincia:</label>
-    <input type="text" name="provinciaD" id="provinciaD" class="mR" disabled>
-    <hr>   
-  <label for="combi">Combi:</label> 
-  <input type="search" name="combi" id="combi" list="combis" class="mR"
-    value="<%= ruta.combi.patente %>" />
-    <label for="chofer">Chofer:</label>
-    <input type="text" class="ruta" name="chofer" id="chofer" class="mR" disabled>
-    <hr>
-  <label for="distancia">Distancia:</label><br>
-  <input type="text" placeholder="<%= ruta.distancia %>" class="mR" value="<%= ruta.distancia %>" id="distancia"
-    name="distancia" required /><br>
-  <label for="hora">Hora:</label><br>
-  <input type="time" placeholder="<%= ruta.hora %>" class="mR" value="<%= ruta.hora %>" id="hora" name="hora"
-    required /><br>
+<input type="hidden" value="<%= ruta._id %>" id="id" name="id" />
+<button id="modificar">Modificar</button>
 
-  <input type="hidden" value="<%= ruta._id %>" id="id" name="id" />
-  <button id="modificar">Modificar</button>
+<a href="http://localhost:3000/listar-rutas">
+  <button id="cancelar">Cancelar</button>
+</a>
 
-  <a href="http://localhost:3000/listar-rutas">
-    <button id="cancelar">Cancelar</button>
-  </a>
 
-<% lugares.forEach(function(lugar) { %>
-<input type="hidden" class="<%= lugar._id %>" name="ciudad" value="<%= lugar.ciudad %>">
-<input type="hidden" class="<%= lugar._id %>" name="provincia" value="<%= lugar.provincia %>">
-<% }); %>
 <% combis.forEach(function(c) { %>
 <input type="hidden" id="<%=c.patente%>" value="<%= c.chofer.nombre %> <%= c.chofer.apellido %>">
 <% }); %>
+  </div>
+  <div class="col-6">
+  <div id="err"></div>
+  <label >Origen:</label>
+  <select  disabled class="mR">
+    <% lugares.forEach(function(lugar) {
+        if(ruta.origen.idLugar==lugar._id){%>
+    <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
+      <%= lugar.provincia %> </option>
+    <% } else{%>
+    <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
+      <%= lugar.provincia %> </option>
+    <%} %>
+    <% }); %>
+  </select>
+  <hr>
+  <label >Destino:</label>
+  <select disabled >
+    <% lugares.forEach(function(lugar) {
+        if(ruta.destino.idLugar==lugar._id){%>
+    <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
+      <%= lugar.provincia %> </option>
+    <% } else{%>
+    <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
+      <%= lugar.provincia %> </option>
+    <%} %>
+    <% }); %>
+  </select>
+  <hr>
+  <label>Combi:</label>
+  <select  disabled>
+    <% combis.forEach(function(combi) { %>
+    <option value="<%= combi.patente %>"
+      <%if(ruta.combi.patente== combi.patente){%><%="selected"%><%}%> ><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
+      </small></option>
+    <% }); %></select>
+  <label >Chofer:</label>
+<% combis.forEach(function(c) { if( c.patente== ruta.combi.patente){ %>
+  <input type="text" class="ruta" value="<%= c.chofer.nombre %> <%= c.chofer.apellido %>" class="mR" disabled>
+  <%}})%>
+  <hr>
+  <label >Distancia:</label><br>
+  <input type="text" placeholder="<%= ruta.distancia %>" class="mR" value="<%= ruta.distancia %>" disabled /><br>
+  <label >Hora:</label><br>
+  <input type="time" disabled placeholder="<%= ruta.hora %>" class="mR" value="<%= ruta.hora %>" 
+    required /><br>
+  
+  </div>
+</div>
+
   <script src="/js/modificar-ruta.js"></script>
   <%- include("partials/footer"); -%>

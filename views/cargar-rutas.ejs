@@ -1,16 +1,8 @@
 <%- include("partials/header"); -%>
 <h2>Alta de rutas</h2>
-<datalist id="lugares">
-  <% lugares.forEach(function(lugar) { %>
-  <option value="<%= lugar._id %>"><%= lugar.ciudad%> - <%=lugar.provincia %></option>
-  <% }); %>
-</datalist>
-<datalist id="combis">
-  <% combis.forEach(function(combi) { %>
-  <option value="<%= combi.patente %>"><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %> </small></option>
-  <% }); %>
-</datalist>
-<div><% if(!combis.length){ %>
+
+<div>
+  <% if(!combis.length){ %>
   <p class="er">No hay Combis cargadas, pulse <a href="/alta-combi">aqui</a> para cargar un combi</p>
   <% }%></div>
   <div><% if(!lugares.length){ %>
@@ -18,21 +10,28 @@
     <% }%></div>
 <div id="err"></div>
 <label for="origen">Origen:</label>
-<input type="search" class="ruta" name="origen" id="origen" list="lugares" class="form-control alta">
-<label for="ciudadO">Ciudad:</label>
-<input type="text" class="ruta" name="ciudadO" id="ciudadO" class="form-control alta" disabled>
-<label for="provinciaO">Provincia:</label>
-<input type="text" class="ruta" name="provinciaO" id="provinciaO" class="form-control alta" disabled>
+<select name="origen" id="origen" class="mR">
+  <% lugares.forEach(function(lugar) {%>
+  <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <% }); %>
+</select>
 <hr>
 <label for="destino">Destino:</label>
-<input type="search" class="ruta" name="destino" id="destino" list="lugares" class="form-control alta">
-<label for="ciudadD">Ciudad:</label>
-<input type="text" class="ruta" name="ciudadD" id="ciudadD" class="form-control alta" disabled>
-<label for="provinciaD">Provincia:</label>
-<input type="text" class="ruta" name="provinciaD" id="provinciaD" class="form-control alta" disabled>
+<select name="destino" id="destino" class="mR">
+  <% lugares.forEach(function(lugar) {%>
+  <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <% }); %>
+</select>
 <hr>
 <label for="combi">Combi:</label>
-<input type="search" class="ruta" name="combi" id="combi" list="combis" class="form-control alta">
+<select name="combi" id="combi" class="mR">
+  <% combis.forEach(function(combi) { %>
+  <option value="<%= combi.patente %>"
+     ><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
+    </small></option>
+  <% }); %></select>
 <label for="chofer">Chofer:</label>
 <input type="text" class="ruta" name="chofer" id="chofer" class="form-control alta" disabled>
 

@@ -44,6 +44,7 @@ app.use(
 );
 app.use(express.json());
 
+
 // variable que devuelve la fecha de hoy
 // falta implementar un cron job para que se actualice automaticamente a las 00:00hs
 const now = new Date();
@@ -801,6 +802,7 @@ app.post("/registro", (req, res) => {
                         req.session.apellido = us.apellido;
                         req.session.rol = us.rol;
                         req.session.email = us.email;
+                        req.session.categoria = us.categoria;
                         res.json({ response: "bien" });
                       }
                     }
@@ -843,6 +845,7 @@ app.post("/registro", (req, res) => {
         req.session.apellido = us.apellido;
         req.session.rol = us.rol;
         req.session.email = us.email;
+        req.session.categoria = us.categoria;
         res.json({ response: "bien" });
       }
     });
@@ -900,21 +903,150 @@ app.get("/modificar-chofer/:email", (req, res) => {
   }
 });
 app.get("/modificar-perfil", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold"){
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold") {
     res.redirect("/");
-  }else {
+  } else {
     Usuario.findOne(
       { email: req.session.email, borrado: false },
       (err, usuario) => {
         if (err) {
           res.redirect("/");
         } else {
-            res.render("modificar-perfil", { data: usuario });
+          res.render("modificar-perfil", { data: usuario });
         }
       }
     );
   }
 });
+
+app.post("/modificar-perfil", (req, res) => {
+
+  Usuario.findOne({ email: req.session.email }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      Usuario.findOne({ email: req.body.email, _id: { $ne: result._id } }, (err, resultC) => {
+        if (resultC) {
+          res.json({ response: { lugar: "email", error: "El email introducido esta siendo usado por otro usuario" } });
+        } else {
+          let email = req.session.email;
+          if (req.body.cat === "gold") {
+            Tarjeta.findOne({ codigo: req.body.cod }, (err, result) => {
+              if (err) {
+                res.json({ response: { lugar: "err", error: "Error en la conexion con el banco" } });
+              } else {
+                if (!result) {
+                  res.json({ response: { lugar: "err", error: "Tarjeta inexistente" } });
+                } else {
+                  if (
+                    result.dni === req.body.dniT &&
+                    Date.parse(result.vencimiento) ==
+                    Date.parse(req.body.vencimiento + "-01") &&
+                    result.nombreCompleto === req.body.nombreT &&
+                    result.codSeguridad === req.body.seg
+                  ) {
+                    if (result.monto >= 250) {
+                      us = new Usuario({
+                        nombre: req.body.nombre,
+                        apellido: req.body.apellido,
+                        email: req.body.email,
+                        clave: req.body.clave,
+                        dni: req.body.dni,
+                        fechaN: req.body.fechaN,
+                        rol: "Cliente " + req.body.cat,
+                        borrado: false,
+                        suspendido: false,
+                        categoria: req.body.cat,
+                        tarjeta: {
+                          codigo: req.body.cod,
+                          vencimiento: req.body.vencimiento,
+                          nombreCompleto: req.body.nombreT,
+                          dni: req.body.dniT,
+                        },
+                      });
+                      Tarjeta.updateOne(
+                        { codigo: result.codigo },
+                        { monto: result.monto - 250 },
+                        (err) => {
+                          if (err) {
+                            res.json({ response: { lugar: "err", error: "Problemas en la conexion con el banco. Intentelo en unos minutos " } });
+                          } else {
+                            Usuario.deleteOne({ email: email }, (error) => {
+                              if (!error) {
+                                us.save((err) => {
+                                  if (err) {
+                                    res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } });
+                                  } else {
+                                    Comentario.updateMany({email:email},{nombre: req.body.nombre, apellido: req.body.apellido, email:req.body.email});
+                                    Pasaje.updateMany({ emailPajajero: email }, {  emailPasajero: req.body.email });
+                                    req.session.nombre = us.nombre;
+                                    req.session.apellido = us.apellido;
+                                    req.session.rol = us.rol;
+                                    req.session.email = us.email;
+                                    req.session.categoria = us.categoria;
+                                    res.json({ response: "bien" });
+                                  }
+                                });
+                              } else {
+                                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } })
+                              }
+                            });
+                          }
+                        })
+
+                    } else {
+                      res.json({ response: { lugar: "err", error: "Tarjeta sin fondos suficientes para realizar el pago" } });
+                    }
+                  } else {
+                    res.json({ response: { lugar: "err", error: "Datos de la tarjeta incorrectos" } });
+                  }
+                }
+              }
+            });
+          } else {
+            let nombre = req.body.nombre;
+            let apellido = req.body.apellido;
+            us = new Usuario({
+              nombre: nombre,
+              apellido: apellido,
+              email: req.body.email,
+              clave: req.body.clave,
+              dni: req.body.dni,
+              fechaN: req.body.fechaN,
+              rol: "Cliente " + req.body.cat,
+              borrado: false,
+              suspendido: false,
+              categoria: req.body.cat,
+            });
+            Usuario.deleteOne({ email: email }, (error) => {
+              if (!error) {
+                us.save((err) => {
+                  if (err) {
+                    res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } });
+                  } else {
+                    Comentario.updateMany({ email: email }, { nombre: req.body.nombre, apellido: req.body.apellido, email: req.body.email });
+                    Pasaje.updateMany({ emailPajajero: email }, { emailPasajero: req.body.email });
+                    req.session.nombre = us.nombre;
+                    req.session.apellido = us.apellido;
+                    req.session.rol = us.rol;
+                    req.session.email = us.email;
+                    req.session.categoria = us.categoria;
+                    res.json({ response: "bien" });
+                  }
+                });
+              } else {
+                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } })
+              }
+            })
+          }
+
+
+        }
+      })
+    }
+  })
+});
+
 app.put("/modificar-chofer", (req, res) => {
   Usuario.findOne({ _id: req.body.id }, (err, result) => {
     if (err) {

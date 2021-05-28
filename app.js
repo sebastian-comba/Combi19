@@ -44,7 +44,7 @@ app.use(
   })
 );
 app.use(express.json());
- 
+
 
 // variable que devuelve la fecha de hoy
 // falta implementar un cron job para que se actualice automaticamente a las 00:00hs
@@ -85,7 +85,7 @@ app.get("/home", (req, res) => {
         res.render("home-admin", {});
         break;
       default:
-        Comentario.find({}, null,{sort:{"fecha":-1}}, (err, resultComentario) => {
+        Comentario.find({}, null, { sort: { "fecha": -1 } }, (err, resultComentario) => {
           if (err) {
             console.log(err);
           } else {
@@ -99,8 +99,8 @@ app.get("/home", (req, res) => {
               res.render("home", { data: req.session.rol });
             })
           }
-        }); 
-        
+        });
+
         break;
     }
   } else {
@@ -112,10 +112,10 @@ app.get("/home", (req, res) => {
 //
 // CREATE Comentario
 app.get("/crear-comentario", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold"  ) {
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold") {
     res.redirect("/");
   } else {
-    res.render("crear-comentario", {data: req.session});
+    res.render("crear-comentario", { data: req.session });
   }
 });
 
@@ -130,7 +130,7 @@ app.post("/crear-comentario", (req, res) => {
           apellido: req.body.apellido,
           email: req.body.email,
           fecha: hoy,
-          texto:req.body.texto,
+          texto: req.body.texto,
           modificado: false,
         });
         c.save((err) => {
@@ -153,7 +153,7 @@ app.get("/modificar-comentario/:id", (req, res) => {
     res.redirect("/");
   } else {
     Comentario.findOne(
-      { _id: req.params.id},
+      { _id: req.params.id },
       (err, resultComentario) => {
         if (err) {
           res.redirect("/");
@@ -183,7 +183,7 @@ app.put("/modificar-comentario", (req, res) => {
         res.json({ response: "bien" });
       }
     });
-  });
+});
 
 // CRUD Lugar
 //
@@ -884,32 +884,33 @@ app.get("/modificar-chofer/:email", (req, res) => {
   }
 });
 app.get("/modificar-perfil", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold"){
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold") {
     res.redirect("/");
-  }else {
+  } else {
     Usuario.findOne(
       { email: req.session.email, borrado: false },
       (err, usuario) => {
         if (err) {
           res.redirect("/");
         } else {
-            res.render("modificar-perfil", { data: usuario });
+          res.render("modificar-perfil", { data: usuario });
         }
       }
     );
   }
 });
+
 app.post("/modificar-perfil", (req, res) => {
 
-  Usuario.findOne({email:req.session.email},(err,result)=>{
+  Usuario.findOne({ email: req.session.email }, (err, result) => {
     if (err) {
       console.log(err);
-    }else{
-      Usuario.findOne({email:req.body.email,_id:{$ne:result._id}},(err,resultC)=>{
-        if(resultC){
-          res.json({ response:{lugar:"email",error: "El email introducido esta siendo usado por otro usuario"}});
-        }else{
-          let email= req.session.email;
+    } else {
+      Usuario.findOne({ email: req.body.email, _id: { $ne: result._id } }, (err, resultC) => {
+        if (resultC) {
+          res.json({ response: { lugar: "email", error: "El email introducido esta siendo usado por otro usuario" } });
+        } else {
+          let email = req.session.email;
           if (req.body.cat === "gold") {
             Tarjeta.findOne({ codigo: req.body.cod }, (err, result) => {
               if (err) {
@@ -925,7 +926,7 @@ app.post("/modificar-perfil", (req, res) => {
                     result.nombreCompleto === req.body.nombreT &&
                     result.codSeguridad === req.body.seg
                   ) {
-                    if (result.monto >= 250 ) {
+                    if (result.monto >= 250) {
                       us = new Usuario({
                         nombre: req.body.nombre,
                         apellido: req.body.apellido,
@@ -957,7 +958,8 @@ app.post("/modificar-perfil", (req, res) => {
                                   if (err) {
                                     res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } });
                                   } else {
-
+                                    Comentario.updateMany({email:email},{nombre: req.body.nombre, apellido: req.body.apellido, email:req.body.email});
+                                    Pasaje.updateMany({ emailPajajero: email }, {  emailPasajero: req.body.email });
                                     req.session.nombre = us.nombre;
                                     req.session.apellido = us.apellido;
                                     req.session.rol = us.rol;
@@ -966,12 +968,13 @@ app.post("/modificar-perfil", (req, res) => {
                                     res.json({ response: "bien" });
                                   }
                                 });
-                              } else { 
-                                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } }) 
+                              } else {
+                                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } })
                               }
-                        });
-                      }})
-                      
+                            });
+                          }
+                        })
+
                     } else {
                       res.json({ response: { lugar: "err", error: "Tarjeta sin fondos suficientes para realizar el pago" } });
                     }
@@ -984,11 +987,10 @@ app.post("/modificar-perfil", (req, res) => {
           } else {
             let nombre = req.body.nombre;
             let apellido = req.body.apellido;
-            let email = req.body.email;
             us = new Usuario({
               nombre: nombre,
               apellido: apellido,
-              email: email,
+              email: req.body.email,
               clave: req.body.clave,
               dni: req.body.dni,
               fechaN: req.body.fechaN,
@@ -997,12 +999,14 @@ app.post("/modificar-perfil", (req, res) => {
               suspendido: false,
               categoria: req.body.cat,
             });
-             Usuario.deleteOne({ email: email }, (error) => {
+            Usuario.deleteOne({ email: email }, (error) => {
               if (!error) {
                 us.save((err) => {
                   if (err) {
                     res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } });
                   } else {
+                    Comentario.updateMany({ email: email }, { nombre: req.body.nombre, apellido: req.body.apellido, email: req.body.email });
+                    Pasaje.updateMany({ emailPajajero: email }, { emailPasajero: req.body.email });
                     req.session.nombre = us.nombre;
                     req.session.apellido = us.apellido;
                     req.session.rol = us.rol;
@@ -1011,13 +1015,13 @@ app.post("/modificar-perfil", (req, res) => {
                     res.json({ response: "bien" });
                   }
                 });
-              } else { 
-                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } }) 
-            }
+              } else {
+                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } })
+              }
             })
           }
 
-         
+
         }
       })
     }
@@ -1853,19 +1857,19 @@ app.get("/viajes-pasados", (req, res) => {
   }
 });
 app.post("/buscar-viajes", (req, res) => {
-  let hoy=new Date;
+  let hoy = new Date;
   let f = transformarFecha(req.body.fecha)
-  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate())+1;
+  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate()) + 1;
   let m = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 2);
 
   if (f.getDate() + 1 == hoy.getDate() && f.getMonth() == hoy.getMonth() && f.getFullYear() == hoy.getFullYear()) {
-      h = hoy;
-     m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()+1);
-     console.log(h+' '+m)
+    h = hoy;
+    m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
+    console.log(h + ' ' + m)
   }
   Viaje.find({
     "ruta.origen.nombre": req.body.ciudadO,
-    "ruta.origen.provincia":req.body.provinciaO, 
+    "ruta.origen.provincia": req.body.provinciaO,
     "ruta.destino.nombre": req.body.ciudadD,
     "ruta.destino.provincia": req.body.provinciaD,
     $and: [
@@ -1873,7 +1877,7 @@ app.post("/buscar-viajes", (req, res) => {
       { fecha: { $lt: m } }
     ]
   }, (err, result) => {
-   
+
     res.json({ viajes: result });
   })
 })
@@ -2106,7 +2110,7 @@ app.delete("/viaje/:id", (req, res) => {
 //   console.log(err);
 // });
 app.get("/pasajes", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold" ) {
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold") {
     res.redirect("/");
   } else {
     Pasaje.find({
@@ -2122,21 +2126,21 @@ app.get("/pasajes", (req, res) => {
   }
 });
 app.put("/pasaje/:id", (req, res) => {
-  Pasaje.findOneAndUpdate({ _id: req.params.id, },{estadoPasaje: "Cancelado"}, (err,resultPasaje) => {
+  Pasaje.findOneAndUpdate({ _id: req.params.id, }, { estadoPasaje: "Cancelado" }, (err, resultPasaje) => {
     if (err) {
       console.log(err);
     } else {
-      Viaje.updateOne({_id: resultPasaje.idViaje},{$inc: {asientosDisponibles: resultPasaje.cantidad}},(err) => {
+      Viaje.updateOne({ _id: resultPasaje.idViaje }, { $inc: { asientosDisponibles: resultPasaje.cantidad } }, (err) => {
         if (err) {
           console.log(err);
         } else {
           var d = resultPasaje.fecha;
-          d.setDate(d.getDate()-2);  
-          if(d > hoy){
+          d.setDate(d.getDate() - 2);
+          if (d > hoy) {
             res.json({ response: "bien48hsAntes" });
-           } else {
+          } else {
             res.json({ response: "bien" });
-         }
+          }
         }
       });
     }
@@ -2145,7 +2149,7 @@ app.put("/pasaje/:id", (req, res) => {
 
 // PERFIL CLIENTE
 app.get("/perfil", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold" ) {
+  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold") {
     res.redirect("/");
   } else {
     Usuario.findOne({

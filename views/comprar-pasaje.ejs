@@ -1,0 +1,129 @@
+<%- include("partials/header-pasajero"); -%>
+
+<div>
+  <form action="/comprar-pasaje" method="POST">
+    <div class="form-group">
+      <label for="origen">Origen:</label>
+      <input
+        type="text"
+        name="origen"
+        id="origen"
+        class="form-control"
+        value="<%= viaje.ruta.origen.nombre %>"
+        disabled
+      />
+      
+    </div>
+    <div class="form-group">
+      <label for="destino">Destino:</label>
+      <input
+        type="text"
+        name="destino"
+        id="destino"
+        class="form-control"
+        value="<%= viaje.ruta.destino.nombre %>"
+        disabled
+      />
+      <input type="text" name="id-ruta" value="<%= viaje.ruta.destino.idRuta %>" hidden />
+    </div>
+    <div class="form-group">
+      <label for="fecha">Fecha:</label>
+      <input
+        type="text"
+        name="fecha"
+        id="fecha"
+        class="form-control"
+        value="<%= viaje.fecha %>"
+        disabled
+      />
+    </div>
+    <div class="form-group">
+      <label for="precio">Precio:</label>
+      <input
+        type="text"
+        name="precio"
+        id="precio"
+        class="form-control"
+        value="<%= viaje.precio %>"
+        disabled
+      />
+    </div>
+    <div class="form-group">
+      <label for="cantidad">Cantidad de pasajes:</label>
+      <input
+        type="number"
+        name="cantidad"
+        id="cantidad"
+        class="form-control"
+        value="1"
+        min="1"
+      />
+    </div>
+    <div class="form-group">
+      <label for="tipo">Tipo:</label>
+      <input
+        type="text"
+        name="tipo"
+        id="tipo"
+        class="form-control"
+        value="tipo"
+        disabled
+      />
+    </div>
+    <div class="form-group">
+      <label for="insumos">Insumos:</label>
+      <% insumos.forEach( (insumo) => { %>
+      <input
+        type="text"
+        name="insumos"
+        id="insumos"
+        class="form-control"
+        value="<%= insumo.nombre %>"
+        disabled
+      />
+      <button>Agregar</button>
+      <label for="cantidad-insumos" hidden>Cantidad de insumos:</label>
+      <input type="number" name="cantidad-insumos" value="1" min="1" hidden/>
+      <% }); %>
+    </div>
+    <div class="form-group">
+        <label for="subtotal">Subtotal:</label>
+        <input
+          type="text"
+          name="subtotal"
+          id="subtotal"
+          class="form-control"
+          value="<%= ((viaje.precio)) %>"
+          disabled
+        />
+        <input type="text" name="id-subtotal" value="valor del subtotal" hidden />
+      </div>
+      <div class="form-group">
+        <label for="descuento Gold">Descuento Gold:</label>
+        <input
+          type="text"
+          name="descuento Gold"
+          id="descuento Gold"
+          class="form-control"
+          value="descuento Gold"
+          disabled
+        />
+        <input type="text" name="id-descuento-gold" value="valor del descuento Gold" hidden />
+    <div class="form-group">
+      <label for="total">Total:</label>
+      <input
+        type="text"
+        name="total"
+        id="total"
+        class="form-control"
+        value="total"
+        disabled
+      />
+      <input type="text" name="id-total" value="valor del total" hidden />
+    </div>
+    <button type="submit">Confirmar</button>
+    <a href="http://localhost:3000/home">Cancelar</a>
+  </form>
+</div>
+
+<%- include("partials/footer"); -%>

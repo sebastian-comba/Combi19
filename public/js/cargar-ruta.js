@@ -9,8 +9,12 @@ function camposVacios() {
   }
 }
 function limpiar() {
-  document.getElementById("err").innerHTML = "";
-}
+ let err =document.getElementsByClassName("err");
+ for (let i = 0; i < err.length; i++) {
+   const e = err[i];
+   e.innerHTML = "";
+ }
+} 
 
 function modificar() {
   fetch("/cargar-rutas", {
@@ -31,9 +35,9 @@ function modificar() {
           location.replace("/listar-rutas");
           break;
         default:
-          document.getElementById("err").innerHTML =
+          document.getElementById(data.response.lugar).innerHTML =
             '<small  style="color:red"><p class="er">' +
-            data.response +
+            data.response.mensaje +
             "</p></small>";
           break;
       }

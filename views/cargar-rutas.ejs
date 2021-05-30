@@ -8,10 +8,9 @@
   <div><% if(!lugares.length){ %>
     <p class="er">No hay Lugares cargar, pulse <a href="/cargar-lugar">aqui</a> para cargar un lugar</p>
     <% }%></div>
-<div id="err"></div>
 <label for="origen">Origen:</label>
 <select name="origen" id="origen" class="mR">
-  <% lugares.forEach(function(lugar) {%>
+  <% lugares.forEach(function(lugar) {%> 
   <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
     <%= lugar.provincia %> </option>
   <% }); %>
@@ -40,13 +39,12 @@
 <input class="ruta" type="text" id="distancia" name="distancia" required /><br>
 <label for="hora">Hora:</label><br>
 <input class="ruta" type="time" id="hora" name="hora" required /><br>
+<br>
+<div id="err" class="err"></div>
+<br>
 <button type="submit" id="guardar">Agregar</button>
 
 
-<% lugares.forEach(function(lugar) { %>
-<input type="hidden" class="<%= lugar._id %>" name="ciudad" value="<%= lugar.ciudad %>">
-<input type="hidden" class="<%= lugar._id %>" name="provincia" value="<%= lugar.provincia %>">
-<% }); %>
 <% combis.forEach(function(c) { %>
 <input type="hidden" id="<%=c.patente%>"  value="<%= c.chofer.nombre %> <%= c.chofer.apellido %>">
 <% }); %>

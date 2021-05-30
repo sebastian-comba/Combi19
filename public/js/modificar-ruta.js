@@ -12,7 +12,6 @@ function limpiar() {
   let err = document.getElementsByClassName("err")
   for (let i = 0; i < err.length; i++) {
     const e = err[i];
-
     e.innerHTML = "";
   }
 }

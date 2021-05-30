@@ -1481,22 +1481,20 @@ app.post("/cargar-rutas", (req, res) => {
   Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
     if (err) {
       res.json({
-        response:
-          "El lugar de Origen no existe por favor selecione uno de la lista",
+        response: { lugar: "errO", mensaje: "El lugar de Origen no existe por favor selecione uno de la lista",}
       });
     } else {
       Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
         if (err) {
           res.json({
-            response:
-              "El lugar de Destino no existe por favor selecione uno de la lista",
+            response: { lugar: "errD", mensaje: "El lugar de Destino no existe por favor selecione uno de la lista"}
           });
         } else {
           Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
             if (err) {
               res.json({
-                response:
-                  "La combi no existe por favor selecione uno de la lista",
+                response: { lugar: "errC", mensaje: "La combi no existe por favor selecione uno de la lista"}
+                  
               });
             } else {
               Ruta.findOne(
@@ -1521,7 +1519,7 @@ app.post("/cargar-rutas", (req, res) => {
                     console.log(err);
                   } else {
                     if (resultRuta !== null) {
-                      res.json({ response: "La ruta ya existe" });
+                      res.json({ response: { lugar: "err", mensaje: "La ruta ya existe" } });
                     } else {
                       var ruta = new Ruta({
                         origen: {
@@ -1549,8 +1547,7 @@ app.post("/cargar-rutas", (req, res) => {
                         if (err) {
                           console.log(err);
                           res.json({
-                            response:
-                              "Lo sentimos no se pudo guardar la ruta.Intentelo en unos minutos",
+                            response: { lugar: "err", mensaje: "Lo sentimos no se pudo guardar la ruta. Intentelo en unos minutos"}
                           });
                         } else {
                           res.json({ response: "bien" });

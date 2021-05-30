@@ -3,7 +3,6 @@
 <div class="row">
   <div class="col-6">
 
-<div id="err"></div>
 <label for="origen">Origen:</label>
 <select name="origen" id="origen" class="mR">
   <% lugares.forEach(function(lugar) {
@@ -14,8 +13,9 @@
   <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
     <%= lugar.provincia %> </option>
   <%} %>
-  <% }); %>
+  <% }); %> 
 </select>
+<div id="errO" class="err"></div>
 <hr>
 <label for="destino">Destino:</label>
 <select name="destino" id="destino" class="mR">
@@ -29,6 +29,7 @@
   <%} %>
   <% }); %>
 </select>
+<div id="errD" class="err"></div>
 <hr>
 <label for="combi">Combi:</label>
 <select name="combi" id="combi" class="mR">
@@ -39,6 +40,7 @@
   <% }); %></select>
 <label for="chofer">Chofer:</label>
 <input type="text" class="ruta" name="chofer" id="chofer" class="mR" disabled>
+<div id="errC" class="err"></div>
 <hr>
 <label for="distancia">Distancia:</label><br>
 <input type="text" placeholder="<%= ruta.distancia %>" class="mR" value="<%= ruta.distancia %>" id="distancia"
@@ -48,6 +50,9 @@
   required /><br>
 
 <input type="hidden" value="<%= ruta._id %>" id="id" name="id" />
+<br>
+<div id="err" class="err"></div>
+<br>
 <button id="modificar">Modificar</button>
 
 <a href="http://localhost:3000/listar-rutas">

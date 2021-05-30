@@ -761,7 +761,7 @@ app.post("/registro", (req, res) => {
           if (
             result.dni === req.body.dniT &&
             Date.parse(result.vencimiento) ==
-              Date.parse(req.body.vencimiento + "-01") &&
+            Date.parse(req.body.vencimiento + "-01") &&
             result.nombreCompleto === req.body.nombreT &&
             result.codSeguridad === req.body.codS
           ) {
@@ -977,8 +977,8 @@ app.post("/modificar-perfil", (req, res) => {
                                   if (err) {
                                     res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } });
                                   } else {
-                                    Comentario.updateMany({email:email},{nombre: req.body.nombre, apellido: req.body.apellido, email:req.body.email});
-                                    Pasaje.updateMany({ emailPajajero: email }, {  emailPasajero: req.body.email });
+                                    Comentario.updateMany({ email: email }, { nombre: req.body.nombre, apellido: req.body.apellido, email: req.body.email });
+                                    Pasaje.updateMany({ emailPajajero: email }, { emailPasajero: req.body.email });
                                     req.session.nombre = us.nombre;
                                     req.session.apellido = us.apellido;
                                     req.session.rol = us.rol;
@@ -1649,29 +1649,28 @@ app.put("/modificar-ruta", (req, res) => {
       } else {
         if (viajes !== null) {
           res.json({
-            response:
-              "No se puede modificar la ruta porque tiene viajes a futuro",
+            response: {
+              lugar: "err",
+              mensaje: "No se puede modificar la ruta porque tiene viajes a futuro",
+            }
           });
         } else {
           Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
             if (err) {
               res.json({
-                response:
-                  "El lugar de Origen no existe por favor selecione uno de la lista",
+                response: { lugar: "errO", mensaje: "El lugar de Origen no existe por favor selecione uno de la lista" }
               });
             } else {
               Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
                 if (err) {
                   res.json({
-                    response:
-                      "El lugar de Destino no existe por favor selecione uno de la lista",
+                    response: { lugar: "errD", mensaje: "El lugar de Destino no existe por favor selecione uno de la lista", }
                   });
                 } else {
                   Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
                     if (err) {
                       res.json({
-                        response:
-                          "La combi no existe por favor selecione uno de la lista",
+                        response: { lugar: "errC", mensaje: "La combi no existe por favor selecione uno de la lista" }
                       });
                     } else {
                       Ruta.findOne(
@@ -1690,13 +1689,14 @@ app.put("/modificar-ruta", (req, res) => {
                           distancia: req.body.distancia,
                           hora: req.body.hora,
                           borrado: false,
+                          _id:{$ne: req.body.id}
                         },
                         (err, resultRuta) => {
                           if (err) {
                             console.log(err);
                           } else {
                             if (resultRuta !== null) {
-                              res.json({ response: "La ruta ya existe" });
+                              res.json({ response:{lugar:"err",mensaje: "La ruta ya existe" }});
                             } else {
                               Ruta.updateOne(
                                 { _id: req.body.id },
@@ -1792,7 +1792,7 @@ app.post("/cargar-viaje", (req, res) => {
                   resultV.forEach((viaje) => {
                     if (
                       transformarFecha(req.body.fecha + "T" + resRuta.hora) >
-                        viaje.llegada ||
+                      viaje.llegada ||
                       transformarFecha(req.body.llegada) < viaje.fecha
                     ) {
                       bool = true;
@@ -2004,7 +2004,7 @@ app.put("/viaje", (req, res) => {
                                           req.body.fecha + "T" + resRuta.hora
                                         ) > viaje.llegada ||
                                         transformarFecha(req.body.llegada) <
-                                          viaje.fecha ||
+                                        viaje.fecha ||
                                         "" + resViaje._id === "" + viaje._id
                                       ) {
                                         bool = true;

@@ -1481,20 +1481,20 @@ app.post("/cargar-rutas", (req, res) => {
   Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
     if (err) {
       res.json({
-        response: { lugar: "errO", mensaje: "El lugar de Origen no existe por favor selecione uno de la lista",}
+        response: { lugar: "errO", mensaje: "El lugar de Origen no existe por favor selecione uno de la lista", }
       });
     } else {
       Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
         if (err) {
           res.json({
-            response: { lugar: "errD", mensaje: "El lugar de Destino no existe por favor selecione uno de la lista"}
+            response: { lugar: "errD", mensaje: "El lugar de Destino no existe por favor selecione uno de la lista" }
           });
         } else {
           Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
             if (err) {
               res.json({
-                response: { lugar: "errC", mensaje: "La combi no existe por favor selecione uno de la lista"}
-                  
+                response: { lugar: "errC", mensaje: "La combi no existe por favor selecione uno de la lista" }
+
               });
             } else {
               Ruta.findOne(
@@ -1547,7 +1547,7 @@ app.post("/cargar-rutas", (req, res) => {
                         if (err) {
                           console.log(err);
                           res.json({
-                            response: { lugar: "err", mensaje: "Lo sentimos no se pudo guardar la ruta. Intentelo en unos minutos"}
+                            response: { lugar: "err", mensaje: "Lo sentimos no se pudo guardar la ruta. Intentelo en unos minutos" }
                           });
                         } else {
                           res.json({ response: "bien" });
@@ -1686,14 +1686,14 @@ app.put("/modificar-ruta", (req, res) => {
                           distancia: req.body.distancia,
                           hora: req.body.hora,
                           borrado: false,
-                          _id:{$ne: req.body.id}
+                          _id: { $ne: req.body.id }
                         },
                         (err, resultRuta) => {
                           if (err) {
                             console.log(err);
                           } else {
                             if (resultRuta !== null) {
-                              res.json({ response:{lugar:"err",mensaje: "La ruta ya existe" }});
+                              res.json({ response: { lugar: "err", mensaje: "La ruta ya existe" } });
                             } else {
                               Ruta.updateOne(
                                 { _id: req.body.id },
@@ -1776,26 +1776,24 @@ app.post("/cargar-viaje", (req, res) => {
             });
           } else {
             Viaje.find(
-              { "ruta.idRuta": resRuta._id, borrado: false },
+              { "combi.patente": resCombi.patente,  $or: [
+                {$and:[
+                  { llegada: { $gte: transformarFecha(req.body.llegada)}},
+                  { fecha: { $lte: transformarFecha(req.body.llegada) }}
+                ]
+                }, {
+                  $and: [
+                    { llegada: { $gte: transformarFecha(req.body.fecha + "T" + resRuta.hora) } },
+                    { fecha: { $lte: transformarFecha(req.body.fecha + "T" + resRuta.hora) } }
+                  ]
+                },
+                
+              ] , borrado: false },
               (err, resultV) => {
                 if (err) {
                   console.log(err);
                 } else {
-                  let bool = false;
-
                   if (!resultV.length) {
-                    bool = true;
-                  }
-                  resultV.forEach((viaje) => {
-                    if (
-                      transformarFecha(req.body.fecha + "T" + resRuta.hora) >
-                      viaje.llegada ||
-                      transformarFecha(req.body.llegada) < viaje.fecha
-                    ) {
-                      bool = true;
-                    }
-                  });
-                  if (bool) {
                     let v = new Viaje({
                       ruta: {
                         origen: {

@@ -2,12 +2,9 @@
 <h2>Alta viaje</h2>
 
 <datalist id="rutas">
-<% 
-        data.forEach( (ruta) => { %>
-<option value="<%= ruta._id %>">
-  <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %> -<%= ruta.hora %>
-</option>
-<% }); %>
+
+
+ 
 
 </datalist>
 
@@ -15,23 +12,18 @@
   <div><% if(!data.length){ %>
     <p class="er">No hay Lugares cargar, pulse <a href="/cargar-lugar">aqui</a> para cargar un lugar</p>
     <% }%></div>
-    <div id="err"></div>
 
 
     <label for="ruta"> Ruta:</label>
-    <input type="search" name=" ruta" id="ruta" class="mV"  list="rutas">
-    <label for="ciudadO">Cuidad Origen:</label>
-    <input type="text" name="ciudadO" id="ciudadO" disabled>
-    
-    <label for="ciudadD">Cuidad Destino:</label>
-    <input type="text" name="ciudadD" id="ciudadD" disabled>
-    
-    <label for="ciudadD">Combi:</label>
-    <input type="text" name="combi" id="combi" disabled>
-    
-    
-    <label for="hora">Hora:</label>
-    <input type="time" class="mV" id="hora" name="hora"  disabled />
+    <select name="ruta" id="ruta">
+      <% 
+              data.forEach( (ruta) => { %>
+      <option value="<%= ruta._id %>">
+        <%= ruta.origen.nombre+" "+ruta.origen.provincia %>-<%= ruta.destino.nombre+" "+ruta.destino.provincia %>-<%= ruta.hora %>-<%=ruta.combi.patente%>
+      </option>
+      <% }); %>
+      </select>
+      <small>*formato: origen, destino, hora , patente de la combi asignada a la ruta</small>
     <hr>
   
     <label for="fecha">Fecha:</label>
@@ -57,7 +49,10 @@
 
     <label for="asientos">Cantidad de asientos:</label>
     <input type="text" class="viaje" id="asientos" name="asientos" />
-    <br />
+    <br>
+    <br>
+    <div id="err" class="err"></div>
+    <br>
     <button id="guardar">Cargar</button>
 </div>
 

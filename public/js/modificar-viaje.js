@@ -28,13 +28,15 @@ function modificar() {
     })
         .then((res) => res.json())
         .then((data) => {
+            console.log(data);
             switch (data.response) {
                 case "bien":
                     location.replace("/viajes")
                     break;
                 default:
-                    document.getElementById("err").innerHTML =
-                        '<small  style="color:red"><p class="er">' + data.response + '</p></small>';
+                    document.getElementById(data.response.lugar).innerHTML =
+                        '<small  style="color:red"><p class="er">' + data.response.mensaje + '</p></small>';
+                        
                     break;
             }
         });

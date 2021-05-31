@@ -1860,7 +1860,7 @@ app.get("/viajes", (req, res) => {
           res.render("listar-viajes", { viajes: result });
         }
       }
-    ).sort({fecha:1});
+    ).sort({fecha:1,llegada:1});
   }
 });
 app.get("/viajes-pasados", (req, res) => {
@@ -1876,7 +1876,7 @@ app.get("/viajes-pasados", (req, res) => {
           res.render("listar-viajes-pasados", { viajes: result });
         }
       }
-    ).sort({ fecha: -1 });;
+    ).sort({ fecha: -1, llegada:-1 });;
   }
 });
 app.post("/buscar-viajes", (req, res) => {
@@ -1904,7 +1904,7 @@ app.post("/buscar-viajes", (req, res) => {
     (err, result) => {
       res.json({ viajes: result });
     }
-  ).sort({ fecha: 1 });;
+  ).sort({ fecha: 1, llegada: 1 });;
 });
 
 // UPDATE VIAJE
@@ -1943,25 +1943,26 @@ app.put("/viaje", (req, res) => {
       } else {
         if (resPasaje && viajeR.ruta.idRuta !== req.body.ruta) {
           res.json({
-            response:
-              "No se puede modificar la ruta del viaje, tiene pasajes comprados.",
+            response: { lugar: "err", mensaje: "No se puede modificar la ruta del viaje, tiene pasajes comprados."}
+              ,
           });
         } else {
           Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
             if (err) {
-              res.json({ response: "la Ruta selecionada no existe" });
+              res.json({ response: { lugar: "errR", mensaje: "la Ruta selecionada no existe"}  });
             } else {
               Combi.findOne(
                 { patente: resRuta.combi.patente },
                 (err, resCombi) => {
                   if (err) {
-                    res.json({ response: "la Combi selecionada no existe" });
+                    res.json({ response: { lugar: "errR", mensaje: "la Combi selecionada no existe" } });
                   } else {
                     if (req.body.asientos > resCombi.asientos) {
                       res.json({
-                        response:
-                          "No se puede modificar el viaje, la cantidad de asientos es mayor o igual a " +
-                          resCombi.asientos,
+                        response: {
+                          lugar: "err", mensaje: "No se puede modificar el viaje, la cantidad de asientos es mayor o igual a " +
+                            resCombi.asientos}
+                          
                       });
                     } else {
                       Viaje.findOne(
@@ -1976,34 +1977,33 @@ app.put("/viaje", (req, res) => {
                               ) < resViaje.fecha
                             ) {
                               res.json({
-                                response:
-                                  "No se puede modificar el viaje, la fecha no puede ser posterior a la establecida previamente.",
+                                response: { lugar: "errF", mensaje: "la fecha no puede ser posterior a la establecida previamente.",}
+                                  
                               });
                             } else {
                               Viaje.find(
-                                { "ruta.idRuta": resRuta._id, borrado: false },
+
+                                {
+                                  "combi.patente": resCombi.patente, $or: [
+                                    {
+                                      $and: [
+                                        { llegada: { $gte: transformarFecha(req.body.llegada) } },
+                                        { fecha: { $lte: transformarFecha(req.body.llegada) } }
+                                      ]
+                                    }, {
+                                      $and: [
+                                        { llegada: { $gte: transformarFecha(req.body.fecha + "T" + resRuta.hora) } },
+                                        { fecha: { $lte: transformarFecha(req.body.fecha + "T" + resRuta.hora) } }
+                                      ]
+                                    },
+
+                                  ], borrado: false, _id:{$ne: req.body.idViaje}
+                                },
                                 (err, resultV) => {
                                   if (err) {
                                     console.log(err);
                                   } else {
-                                    let bool = false;
                                     if (!resultV.length) {
-                                      bool = true;
-                                    }
-
-                                    resultV.forEach((viaje) => {
-                                      if (
-                                        transformarFecha(
-                                          req.body.fecha + "T" + resRuta.hora
-                                        ) > viaje.llegada ||
-                                        transformarFecha(req.body.llegada) <
-                                        viaje.fecha ||
-                                        "" + resViaje._id === "" + viaje._id
-                                      ) {
-                                        bool = true;
-                                      }
-                                    });
-                                    if (bool) {
                                       Viaje.updateOne(
                                         { _id: req.body.idViaje },
                                         {
@@ -2043,8 +2043,8 @@ app.put("/viaje", (req, res) => {
                                         (err) => {
                                           if (err) {
                                             res.json({
-                                              response:
-                                                "Lo sentimos ocurrio un error al momento de modificar. Por favor intentelo de nuevo en unos minutos",
+                                              response: { lugar: "err", mensaje: "Lo sentimos ocurrio un error al momento de modificar. Por favor intentelo de nuevo en unos minutos",}
+                                                
                                             });
                                           } else {
                                             res.json({
@@ -2055,13 +2055,12 @@ app.put("/viaje", (req, res) => {
                                       );
                                     } else {
                                       res.json({
-                                        response:
-                                          "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
+                                        response: { lugar: "err", mensaje: "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ", }
                                       });
                                     }
                                   }
                                 }
-                              );
+                             );
                             }
                           }
                         }

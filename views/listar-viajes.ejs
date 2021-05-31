@@ -26,7 +26,30 @@
     </tr>
   </thead>
   <tbody>
-    <% viajes.forEach( (viaje) => { %>
+    <%function pad(number) {
+  if (number < 10) {
+    return "0" + number;
+  }
+  return number;
+}
+    
+    Date.prototype.completa = function () {
+  return (
+    pad(this.getDate()) +
+    "/" +
+    pad(this.getMonth() + 1) +
+    "/" +
+    pad(this.getFullYear()) +
+    " " +
+    pad(this.getHours()) +
+    ":" +
+    pad(this.getMinutes()) +
+    "hs"
+  );
+};
+        
+      
+      viajes.forEach( (viaje) => { %>
     <tr>
       <td>
         <%= viaje.ruta.origen.nombre %>, <%= viaje.ruta.origen.provincia %>
@@ -41,8 +64,8 @@
       <td>
         <%= viaje.chofer.nombre %>, <%= viaje.chofer.apellido %>, <%= viaje.chofer.mail %>
       </td>
-      <td><%= viaje.fecha %></td>
-      <td><%= viaje.llegada %></td>
+      <td><%= (new Date(Date.parse(viaje.fecha))).completa()%></td>
+      <td><%= (new Date(Date.parse(viaje.llegada))).completa() %></td>
       <td><%= viaje.precio %></td>
       <td>
         <form action="/modificar-viaje/<%= viaje._id %>" method="GET">

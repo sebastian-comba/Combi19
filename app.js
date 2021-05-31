@@ -1878,7 +1878,7 @@ app.get("/viajes", (req, res) => {
           res.render("listar-viajes", { viajes: result });
         }
       }
-    );
+    ).sort({fecha:1});
   }
 });
 app.get("/viajes-pasados", (req, res) => {
@@ -1894,7 +1894,7 @@ app.get("/viajes-pasados", (req, res) => {
           res.render("listar-viajes-pasados", { viajes: result });
         }
       }
-    );
+    ).sort({ fecha: -1 });;
   }
 });
 app.post("/buscar-viajes", (req, res) => {
@@ -1910,7 +1910,6 @@ app.post("/buscar-viajes", (req, res) => {
   ) {
     h = hoy;
     m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
-    console.log(h + " " + m);
   }
   Viaje.find(
     {
@@ -1923,7 +1922,7 @@ app.post("/buscar-viajes", (req, res) => {
     (err, result) => {
       res.json({ viajes: result });
     }
-  );
+  ).sort({ fecha: 1 });;
 });
 
 // UPDATE VIAJE

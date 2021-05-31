@@ -4,7 +4,30 @@
 <%}else{%>
 
 <h1>Bienvenido <%= data%></h1>
-<%}%>
+<%}
+function pad(number) {
+  if (number < 10) {
+    return "0" + number;
+  }
+  return number;
+}
+    
+    Date.prototype.completa = function () {
+  return (
+    pad(this.getDate()) +
+    "/" +
+    pad(this.getMonth() + 1) +
+    "/" +
+    pad(this.getFullYear()) +
+    " " +
+    pad(this.getHours()) +
+    ":" +
+    pad(this.getMinutes()) +
+    "hs"
+  );
+};
+
+%>
 <hr>
 <div class="row">
 <div class="col-3"> 
@@ -60,7 +83,7 @@
 </a>
 <% let c = comentarios.slice(0, 10);
     c.forEach(function(comentario) { %>
-<p><%= comentario.nombre%> - <%= comentario.apellido%> - <%= comentario.texto%> - <%= comentario.fecha%>
+<p><%= comentario.nombre%> - <%= comentario.apellido%> - <%= comentario.texto%> - <%= (new Date(Date.parse(comentario.fecha))).completa()%>
     <% if (comentario.modificado) {%>
     <i>(editado)</i>
     <% } %>

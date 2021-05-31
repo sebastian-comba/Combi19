@@ -1906,7 +1906,7 @@ app.get("/viajes-pasados", (req, res) => {
 app.post("/buscar-viajes", (req, res) => {
   let hoy = new Date();
   let f = transformarFecha(req.body.fecha);
-  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate()) + 1;
+  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 1);
   let m = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 2);
 
   if (

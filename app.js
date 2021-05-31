@@ -1883,7 +1883,7 @@ app.get("/viajes-pasados", (req, res) => {
 app.post("/buscar-viajes", (req, res) => {
   let hoy = new Date();
   let f = transformarFecha(req.body.fecha);
-  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate()) + 1;
+  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 1);
   let m = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 2);
 
   if (
@@ -2154,7 +2154,7 @@ app.get("/comprar-pasaje/:id", (req, res) => {
 });
 
 app.post("/comprar-pasaje", (req, res) => {
-  if (req.session.rol !== "Cliente") {
+  if (req.session.rol !== "Cliente gold" && req.session.rol !== "Cliente comun") {
     res.redirect("/");
   } else {
     Tarjeta.findOne({ codigo: req.body.codigo }, (err, resultTarjeta) => {

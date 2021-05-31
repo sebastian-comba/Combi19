@@ -19,10 +19,10 @@
       <% 
               data.forEach( (ruta) => { %>
       <option value="<%= ruta._id %>">
-        <%= ruta.origen.nombre+" "+ruta.origen.provincia %>-<%= ruta.destino.nombre+" "+ruta.destino.provincia %>-<%= ruta.hora %>-<%=ruta.combi.patente%>
+        <%= ruta.origen.nombre+" "+ruta.origen.provincia %> - <%= ruta.destino.nombre+" "+ruta.destino.provincia %> - <%= ruta.hora %> - <%=ruta.combi.patente%>
       </option>
       <% }); %>
-      </select>
+      </select><br>
       <small>*formato: origen, destino, hora , patente de la combi asignada a la ruta</small>
     <hr>
   

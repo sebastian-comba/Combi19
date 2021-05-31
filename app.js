@@ -2131,8 +2131,8 @@ app.delete("/viaje/:id", (req, res) => {
 // CRUD PASAJES
 //
 
-// Obtener todos los pasajes
-app.get("/pasajes", (req, res) => {
+// Obtener todos los pasajes pendientes
+app.get("/pasajes-pendientes", (req, res) => {
   if (
     req.session.rol !== "Cliente comun" &&
     req.session.rol !== "Cliente gold"
@@ -2143,12 +2143,36 @@ app.get("/pasajes", (req, res) => {
       {
         emailPasajero: req.session.email,
         fecha: { $gte: hoy },
+        estadoPasaje: "Pendiente",
       },
       (err, result) => {
         if (err) {
           console.log(err);
         } else {
-          res.render("listar-pasajes", { data: result });
+          res.render("listar-pasajes-pendientes", { data: result });
+        }
+      }
+    );
+  }
+});
+// Obtener todos los pasajes cancelados
+app.get("/pasajes-cancelados", (req, res) => {
+  if (
+    req.session.rol !== "Cliente comun" &&
+    req.session.rol !== "Cliente gold"
+  ) {
+    res.redirect("/");
+  } else {
+    Pasaje.find(
+      {
+        emailPasajero: req.session.email,
+        estadoPasaje: "Cancelado",
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("listar-pasajes-cancelados", { data: result });
         }
       }
     );

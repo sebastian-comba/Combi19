@@ -24,6 +24,16 @@
       <% }); %>
       </select><br>
       <small>*formato: origen, destino, hora , patente de la combi asignada a la ruta</small>
+      <div id="errR" class="err"></div>
+      <div style=" margin: 3px; padding: 1px; ">
+        <p>Datos de la combi:</p>
+        <label for="marca">Marca:</label>
+        <input id="marca" disable>
+        <label for="modelo">Modelo:</label>
+        <input id="modelo" disable>
+        <label for="tipo">Tipo:</label>
+        <input id="tipo" disable>
+        </div>
     <hr>
   
     <label for="fecha">Fecha:</label>
@@ -40,7 +50,7 @@
       value=""
       min=""
       max=""
-    />
+    /><div id="errL" class="err"></div>
     <br>
     <br>
 
@@ -48,7 +58,8 @@
     <input type="text" class="viaje" id="precio" name="precio" />
 
     <label for="asientos">Cantidad de asientos:</label>
-    <input type="text" class="viaje" id="asientos" name="asientos" />
+    <input type="number" class="viaje" id="asientos" name="asientos" />
+    <div id="errA" class="err"></div>
     <br>
     <br>
     <div id="err" class="err"></div>
@@ -58,11 +69,11 @@
 
 <% 
       data.forEach( (ruta) => { %>
-<input type="hidden" id="<%=ruta._id%>" value="<%=ruta.hora%>">
-<input type="hidden" class="<%=ruta._id%>" name="origen" value="<%=ruta.origen.nombre%>-<%=ruta.origen.provincia%>">
-<input type="hidden" class="<%=ruta._id%>" name="destino" value="<%=ruta.destino.nombre%>-<%=ruta.destino.provincia%>">
+<input type="hidden"  name="hora" id="<%=ruta._id%>" value="<%=ruta.hora%>">
+<input type="hidden" class="<%=ruta._id%>" name="marca" value="<%=ruta.combi.marca%>">
+<input type="hidden" class="<%=ruta._id%>" name="modelo" value="<%=ruta.combi.modelo%>">
 
-<input type="hidden" class="<%=ruta._id%>" name="combi" value="<%=ruta.combi.patente%>">
+<input type="hidden" class="<%=ruta._id%>" name="tipo" value="<%=ruta.combi.tipo%>">
       
       <% }); %>
 <script src="/js/cargar-viaje.js"></script>

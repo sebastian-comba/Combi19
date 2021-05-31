@@ -1762,17 +1762,17 @@ app.get("/cargar-viaje", (req, res) => {
 app.post("/cargar-viaje", (req, res) => {
   Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
     if (err) {
-      res.json({ response: "la Ruta selecionada no existe" });
+      res.json({ response: { lugar: "errR", mensaje: "la Ruta selecionada no existe"}  });
     } else {
       Combi.findOne({ patente: resRuta.combi.patente }, (err, resCombi) => {
         if (err) {
-          res.json({ response: "la Combi selecionada no existe" });
+          res.json({ response: { lugar: "err", mensaje: "la Combi selecionada no existe"}});
         } else {
           if (req.body.asientos > resCombi.asientos) {
             res.json({
-              response:
-                "No se puede guardar el viaje, la cantidad de asientos es mayor o igual a " +
-                resCombi.asientos,
+              response: {
+                lugar: "errA", mensaje: "No se puede guardar el viaje, la cantidad de asientos es mayor o igual a " +
+                  resCombi.asientos,}   
             });
           } else {
             Viaje.find(
@@ -1833,8 +1833,7 @@ app.post("/cargar-viaje", (req, res) => {
                     });
                   } else {
                     res.json({
-                      response:
-                        "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
+                      response: { lugar: "err", mensaje: "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",}                    
                     });
                   }
                 }

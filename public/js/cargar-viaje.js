@@ -9,14 +9,18 @@ function camposVacios() {
     }
 }
 function validarLLegada() {
-    let f = fecha.value + "T" + document.getElementById("hora").value
-    if (llegada.value <= f) {
-        document.getElementById("err").innerHTML =
+    let f = fecha.value + "T" + document.getElementById(ruta.value).value
+    if (llegada.value <= f && fecha.value&& llegada.value) {
+        document.getElementById("errL").innerHTML =
             '<small  style="color:red"><p class="er">La fecha de llegada no puede ser menor o igual a la fecha de salida </p></small>';
     }
 }
 function limpiar() {
-    document.getElementById("err").innerHTML = "";
+    let err= document.getElementsByClassName("err");
+    for (let i = 0; i < err.length; i++) {
+        const e = err[i];
+        e.innerHTML = ""
+    }
 }
 
 function guardar() {
@@ -38,8 +42,8 @@ function guardar() {
                     location.replace("/viajes")
                     break;
                 default:
-                    document.getElementById("err").innerHTML =
-                        '<small  style="color:red"><p class="er">' + data.response + '</p></small>';
+                    document.getElementById(data.response.lugar).innerHTML =
+                        '<small  style="color:red"><p class="er">' + data.response.mensaje + '</p></small>';
                     break;
             }
         });
@@ -81,7 +85,7 @@ let hoy = new Date;
 let mañana = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1)
 
 function minFecha() {
-    if (document.getElementById("hora").value <= hoy.hora()) {
+    if (document.getElementById(ruta.value).value <= hoy.hora()) {
         fecha.min = mañana.mediaFecha()
         llegada.min = mañana.fullFecha()
     } else {
@@ -95,47 +99,31 @@ function minFecha() {
 minFecha();
 
 document.getElementById("fecha").onchange = function () {
-    llegada.min = (fecha.value + "T" + document.getElementById("hora").value);
+    llegada.min = (fecha.value + "T" + document.getElementById(ruta.value).value);
 }
-function obtenerLugar(id) {
-    let lugar = document.getElementsByClassName(id);
-    let l = [{ ciudad: 1, provincia: 1 }]
-
-    for (let i = 0; i < lugar.length; i++) {
-        const e = lugar[i];
-        switch (e.name) {
-            case "origen":
-
-                l.push(e.value);
-                break;
-            case "destino":
-
-                l.push(e.value);
-                break;
-            default:
-
-                l.push(e.value);
-                break;
-        }
+function datosC(id){
+    let Rid= document.getElementsByClassName(id)
+    let list=[]
+    for (let i = 0; i < Rid.length; i++) {
+        const e = Rid[i];
+        list[e.name]=e.value
+        
     }
-    return (l);
+    return list;
 }
 
 document.getElementById("ruta").onchange = function () {
-    let id = ruta.value;
-    let l = obtenerLugar(id);
-
-    ciudadO.value = "";
-    ciudadD.value = "";
-    combi.value = "";
-    ciudadO.value = l[1];
-    ciudadD.value = l[2];
-    combi.value = l[3];
-
     let r = document.getElementById("ruta").value;
     let hora = document.getElementById(r).value;
-    document.getElementById("hora").value = hora;
     minFecha();
-
-    llegada.min = (fecha.min + "T" + document.getElementById("hora").value)
+    llegada.min = (fecha.min + "T" + hora)
+    let datos = datosC(r);
+    modelo.value = datos.modelo;
+    marca.value = datos.marca;
+    tipo.value = datos.tipo;
 }
+let r = document.getElementById("ruta").value;
+let datos = datosC(r);
+modelo.value = datos.modelo;
+marca.value = datos.marca;
+tipo.value = datos.tipo;

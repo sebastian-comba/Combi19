@@ -195,6 +195,24 @@ app.put("/modificar-comentario", (req, res) => {
     }
   );
 });
+// DELETE comentario
+app.delete("/comentario/:id", (req, res) => {
+  if (
+    req.session.rol !== "Cliente comun" &&
+    req.session.rol !== "Cliente gold"
+  ) {
+    res.redirect("/");
+  } else {
+    Comentario.deleteOne({ _id: req.params.id }, (err) => {
+      if (err) {
+        console.log(err);
+        res.json({ response: "Hubo un error, no se pudo eliminar el comentario" });
+      } else {
+        res.json({ response: "bien" });
+      }
+    });
+  }
+});
 
 // CRUD Lugar
 //

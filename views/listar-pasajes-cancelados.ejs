@@ -1,0 +1,35 @@
+<%- include("partials/header-pasajero"); -%>
+<h1>Lista de Pasajes</h1>
+
+<% if (!data.length) { %>
+<h2>No posee pasajes cancelados</h2>
+<% } else { %>
+<div id="error"></div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Estado</th>
+      <th scope="col">Cantidad de pasajes comprados</th>
+      <th scope="col">Precio</th>
+      <th scope="col">Origen</th>
+      <th scope="col">Destino</th>
+      <th scope="col">Fecha y hora</th>
+      <th scope="col">Tipo de servicio</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% data.forEach(function(pasaje) { %>
+    <tr>
+      <td><%= pasaje.estadoPasaje %></td>
+      <td><%= pasaje.cantidad %></td>
+      <td><%= pasaje.precio %></td>
+      <td><%= pasaje.origen.nombre %> - <%= pasaje.origen.provincia %></td>
+      <td><%= pasaje.destino.nombre %> - <%= pasaje.destino.provincia %></td>
+      <td><%= pasaje.fecha %></td>
+      <td><%= pasaje.tipoServicio %></td>
+    </tr>
+    <%  }); %>
+  </tbody>
+</table>
+
+<% } %> <%- include("partials/footer"); -%>

@@ -3,16 +3,13 @@
 <div class="row">
     <div class="col-6">
         <div id="err"></div>
-        <label for="nombre" required>Nombre:</label><br>
         <input type="text" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre"
-            name="nombre" disabled/><br>
-        <label for="apellido" required>Apellido:</label><br>
+            name="nombre" hidden/>
         <input type="text"  placeholder="<%= data.apellido %>" value="<%= data.apellido %>" id="apellido"
-            name="apellido" disabled/><br>
-        <br>
+            name="apellido" hidden/>
         
         <label for="texto" required>Modifique su comentario:</label><br>
-        <textarea rows="4" cols="50" class="micomentario" 
+        <textarea rows="5" cols="70" class="micomentario" 
         value="<%= data.texto %>" id="texto" name="texto"><%= data.texto %>
         </textarea>
         <br>

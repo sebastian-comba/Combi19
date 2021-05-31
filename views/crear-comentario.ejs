@@ -2,12 +2,10 @@
 <h2>Crear comentario</h2>
 
 <div id="err"></div>
-<label for="usuario">Apellido, Nombre:</label>
-<input type="text" id= "nombre" name="nombre" value =  "<%= data.nombre %>" disabled>
-<input type="text" id="apellido" name="apellido" value =  "<%= data.apellido %>" disabled>
-<br><br>
+<input type="text" id= "nombre" name="nombre" value =  "<%= data.nombre %>" hidden>
+<input type="text" id="apellido" name="apellido" value =  "<%= data.apellido %>" hidden>
 <label for="texto">Escriba su comentario:</label><br>
-<textarea rows="4" cols="50" id="texto" class="comentario" name="texto" ></textarea>
+<textarea rows="5" cols="70" id="texto" class="comentario" name="texto" ></textarea>
 <input type="hidden" id="email" name="email" value="<%= data.email %>"><br>
 <button id="guardar">Añadir comentario</button>
 <form action="/" method="GET">

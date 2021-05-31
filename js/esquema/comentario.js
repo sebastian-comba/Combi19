@@ -9,8 +9,6 @@ const comentarioSchema = new mongoose.Schema({
   modificado: { type: Boolean, required: true },
 });
 
-comentarioSchema.index({ email: 1, fecha: 1 }, { unique: true });
-
 const Comentario = mongoose.model("Comentario", comentarioSchema);
 
 module.exports = Comentario;

@@ -78,7 +78,6 @@ $(document).ready(() => {
                         let error = data.response.error;
                         let mostrar = {}
                         mostrar[lugar] = error;
-                        console.log(mostrar);
                         v.showErrors(
                             mostrar
                         )

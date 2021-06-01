@@ -34,7 +34,6 @@ function modificar() {
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log(data);
             switch (data.response) {
                 case "bien":
                     location.replace("/viajes")

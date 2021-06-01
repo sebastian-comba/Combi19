@@ -3,7 +3,6 @@ function camposVacios(){
     for (let i = 0; i < form.length; i++) {
         let e = form[i];
         if(e.value===""){
-            console.log(e);
             document.getElementById("err").innerHTML =
                 '<small  style="color:red"><p class="er">Todos los campos deben estar Completos </p></small>';
         }   

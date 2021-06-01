@@ -1322,7 +1322,6 @@ app.delete("/eliminar-combi/:patente", (req, res) => {
                       { borrado: true },
                       (err) => {
                         if (err) {
-                          console.log(2);
                           res.json({ response: "error" });
                         } else {
                           res.json({ response: "bien" });

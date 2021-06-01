@@ -1,19 +1,35 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Lugar </h1>
 
+<div class="row" style="margin: 3em;">
+<div class="col-3" style="border-right: solid 1px #aaa;">
+    <h4>Datos Actuales</h4>
     <label for="Ciudad" required>Ciudad:</label><br>
-    <input type="text" class="mlugar"placeholder="<%= data.ciudad %>" value="<%= data.ciudad %>" id="ciudad" name="ciudad"/><br>
+    <input type="text" class="mlugar" disabled placeholder="<%= data.ciudad %>" value="<%= data.ciudad %>" 
+         /><br><br>
     <label for="Provincia" required>Provincia:</label><br>
-    <input type="text" class="mlugar"placeholder="<%= data.provincia %>" value="<%= data.provincia %>" id="provincia" name="provincia"/><br>
-    <input type="hidden" value="<%= data._id %>" id="id" name="id"/>
-    <input type="hidden" value="<%= data.ciudad %>" id="cv" name="cv"/>
-    <input type="hidden" value="<%= data.provincia %>" id="pv" name="pv"/>
-   <div id="err"></div>
+    <input type="text" class="mlugar" disabled placeholder="<%= data.provincia %>" value="<%= data.provincia %>"  /><br><br>
+</div>
+<div class="col-6">
+    <h4>Nuevos datos</h4>
+    <label for="Ciudad" required>Ciudad:</label><br>
+    <input type="text" class="mlugar" placeholder="<%= data.ciudad %>" value="<%= data.ciudad %>" id="ciudad"
+        name="ciudad" /><br><br>
+    <label for="Provincia" required>Provincia:</label><br>
+    <input type="text" class="mlugar" placeholder="<%= data.provincia %>" value="<%= data.provincia %>" id="provincia"
+        name="provincia" /><br><br>
+    <input type="hidden" value="<%= data._id %>" id="id" name="id" />
+    <input type="hidden" value="<%= data.ciudad %>" id="cv" name="cv" />
+    <input type="hidden" value="<%= data.provincia %>" id="pv" name="pv" />
+    <div id="err"></div>
     <button id="modificar">Modificar</button>
-
-<a href="http://localhost:3000/listar-lugares">
-    <button id="cancelar">Cancelar</button>
-</a>
+    
+    <a href="http://localhost:3000/listar-lugares">
+        <button id="cancelar">Cancelar</button>
+    </a>
+</div>
+</div>
+    
 <script src="/js/modificar-lugar.js"></script>
 
 <%- include("partials/footer"); -%>

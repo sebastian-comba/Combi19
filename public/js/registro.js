@@ -73,7 +73,6 @@ function registrar() {
     })
         .then((res) => res.json())
         .then((data) => {
-            console.log(data.response);
             switch (data.response) {
                 case "error":
                     document.getElementById("errE").innerHTML =
@@ -252,7 +251,6 @@ document.getElementById("enviar").onclick = function () {
 
     validarFechaV();
     let errores = document.getElementsByClassName("er").length;
-    console.log(errores);
     if (errores === 0) {
         registrar();
     }

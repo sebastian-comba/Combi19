@@ -102,7 +102,7 @@ app.get("/home", (req, res) => {
                   data: req.session.rol,
                   comentarios: resultComentario,
                 });
-              });
+              }).sort({ ciudad: 1, provincia: 1 });
             }
           }
         );
@@ -205,7 +205,7 @@ app.get("/lugares", (req, res) => {
   } else {
     Lugar.find({}, (err, result) => {
       res.json(result);
-    });
+    }).sort({ ciudad: 1, provincia: 1 });
   }
 });
 
@@ -220,7 +220,7 @@ app.get("/listar-lugares", (req, res) => {
       } else {
         res.render("listar-lugares", { data: result });
       }
-    });
+    }).sort({ ciudad: 1, provincia: 1 });
   }
 });
 
@@ -502,7 +502,7 @@ app.get("/listar-insumos", (req, res) => {
       } else {
         res.render("listar-insumos", { data: insumos });
       }
-    });
+    }).sort({ nombre: 1, tipo: 1, precio:1 });
   }
 });
 
@@ -701,7 +701,7 @@ app.get("/listar-chofer", (req, res) => {
           data: dat,
         });
       }
-    });
+    }).sort({ nombre: 1, apellido: 1, email: 1 });
   }
 });
 //detalle Chofer
@@ -731,7 +731,7 @@ app.get("/detalle-chofer/:email", (req, res) => {
                 data: { chofer: result, combi: c },
               });
             }
-          });
+          }).sort({ patente: 1 });
         }
       }
     );
@@ -1203,7 +1203,7 @@ app.get("/listar-combi", (req, res) => {
           data: dat,
         });
       }
-    });
+    }).sort({ patente: 1});
   }
 });
 app.get("/detalles-combi/:patente", (req, res) => {
@@ -1245,7 +1245,7 @@ app.get("/alta-combi", (req, res) => {
           data: dat,
         });
       }
-    });
+    }).sort({ nombre: 1, apelido: 1, email: 1 });
   }
 });
 //guardar combi
@@ -1368,7 +1368,7 @@ app.get("/modificar-combi/:patente", (req, res) => {
                 },
               });
             }
-          });
+          }).sort({ nombre: 1, apellido: 1, email: 1 });
         }
       }
     );
@@ -1450,7 +1450,7 @@ app.get("/listar-rutas", (req, res) => {
       } else {
         res.render("listar-rutas", { data: rutas });
       }
-    });
+    }).sort({ "origen.nombre": 1, "origen.provincia": 1, "destino.nombre": 1, "destino.provincia": 1, hora: -1, "combi.patente": 1});
   }
 });
 
@@ -1471,9 +1471,9 @@ app.get("/cargar-rutas", (req, res) => {
             res.locals.combis = combis;
             res.render("cargar-rutas", {});
           }
-        });
+        }).sort({ patente:1});
       }
-    });
+    }).sort({ ciudad:1,provincia:1 });
   }
 });
 app.post("/cargar-rutas", (req, res) => {
@@ -1625,9 +1625,9 @@ app.get("/modificar-ruta/:id", (req, res) => {
                 res.locals.combis = combis;
                 res.render("modificar-ruta", {});
               }
-            });
+            }).sort({patente:1});
           }
-        });
+        }).sort({ ciudad:1, provincia:1});
       }
     });
   }
@@ -1755,7 +1755,7 @@ app.get("/cargar-viaje", (req, res) => {
       } else {
         res.render("cargar-viaje", { data: result });
       }
-    });
+    }).sort({ "origen.nombre": 1, "origen.provincia": 1, "destino.nombre": 1, "destino.provincia": 1, hora: -1, "combi.patente": 1 });
   }
 });
 app.post("/cargar-viaje", (req, res) => {
@@ -1930,7 +1930,7 @@ app.get("/modificar-viaje/:id", (req, res) => {
           res.send("No hay rutas disponibles");
         }
       }
-    });
+    }).sort({ "origen.nombre": 1, "origen.provincia": 1, "destino.nombre": 1, "destino.provincia": 1, hora: -1, "combi.patente": 1 });
   }
 });
 
@@ -2124,7 +2124,7 @@ app.get("/pasajes", (req, res) => {
           res.render("listar-pasajes", { data: result });
         }
       }
-    );
+    ).sort({ fecha:1 });
   }
 });
 
@@ -2146,7 +2146,7 @@ app.get("/comprar-pasaje/:id", (req, res) => {
         }
       });
     }
-  });
+  }).sort({nombre:1});
 });
 
 app.post("/comprar-pasaje", (req, res) => {

@@ -1,8 +1,55 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Ruta </h1>
 <div class="row">
+  <div class="col-6" style="border-right: solid 1px #aaa;">
+
+      <h4>Datos Actuales</h4>
+<label>Origen:</label>
+<select disabled class="mR">
+  <% lugares.forEach(function(lugar) {
+        if(ruta.origen.idLugar==lugar._id){%>
+  <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <% } else{%>
+  <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <%} %>
+  <% }); %>
+</select>
+<hr>
+<label>Destino:</label>
+<select disabled>
+  <% lugares.forEach(function(lugar) {
+        if(ruta.destino.idLugar==lugar._id){%>
+  <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <% } else{%>
+  <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
+    <%= lugar.provincia %> </option>
+  <%} %>
+  <% }); %>
+</select>
+<hr>
+<label>Combi:</label>
+<select disabled>
+  <% combis.forEach(function(combi) { %>
+  <option value="<%= combi.patente %>"
+    <%if(ruta.combi.patente== combi.patente){%><%="selected"%><%}%> ><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
+    </small></option>
+  <% }); %></select>
+<label>Chofer:</label>
+<% combis.forEach(function(c) { if( c.patente== ruta.combi.patente){ %>
+<input type="text" class="ruta" value="<%= c.chofer.nombre %> <%= c.chofer.apellido %>" class="mR" disabled>
+<%}})%>
+<hr>
+<label>Distancia:</label><br>
+<input type="text" placeholder="<%= ruta.distancia %>" class="mR" value="<%= ruta.distancia %>" disabled /><br>
+<label>Hora:</label><br>
+<input type="time" disabled placeholder="<%= ruta.hora %>" class="mR" value="<%= ruta.hora %>" required /><br>
+  </div>
   <div class="col-6">
 
+      <h4>Nuevos datos</h4>
 <label for="origen">Origen:</label>
 <select name="origen" id="origen" class="mR">
   <% lugares.forEach(function(lugar) {
@@ -13,7 +60,7 @@
   <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
     <%= lugar.provincia %> </option>
   <%} %>
-  <% }); %> 
+  <% }); %>
 </select>
 <div id="errO" class="err"></div>
 <hr>
@@ -63,53 +110,6 @@
 <% combis.forEach(function(c) { %>
 <input type="hidden" id="<%=c.patente%>" value="<%= c.chofer.nombre %> <%= c.chofer.apellido %>">
 <% }); %>
-  </div>
-  <div class="col-6">
-  <div id="err"></div>
-  <label >Origen:</label>
-  <select  disabled class="mR">
-    <% lugares.forEach(function(lugar) {
-        if(ruta.origen.idLugar==lugar._id){%>
-    <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
-      <%= lugar.provincia %> </option>
-    <% } else{%>
-    <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
-      <%= lugar.provincia %> </option>
-    <%} %>
-    <% }); %>
-  </select>
-  <hr>
-  <label >Destino:</label>
-  <select disabled >
-    <% lugares.forEach(function(lugar) {
-        if(ruta.destino.idLugar==lugar._id){%>
-    <option value="<%= lugar._id %>" selected><%= lugar.ciudad%> ,
-      <%= lugar.provincia %> </option>
-    <% } else{%>
-    <option value="<%= lugar._id %>"><%= lugar.ciudad%> ,
-      <%= lugar.provincia %> </option>
-    <%} %>
-    <% }); %>
-  </select>
-  <hr>
-  <label>Combi:</label>
-  <select  disabled>
-    <% combis.forEach(function(combi) { %>
-    <option value="<%= combi.patente %>"
-      <%if(ruta.combi.patente== combi.patente){%><%="selected"%><%}%> ><%= combi.marca %>-<%= combi.modelo %>-<%= combi.patente %>
-      </small></option>
-    <% }); %></select>
-  <label >Chofer:</label>
-<% combis.forEach(function(c) { if( c.patente== ruta.combi.patente){ %>
-  <input type="text" class="ruta" value="<%= c.chofer.nombre %> <%= c.chofer.apellido %>" class="mR" disabled>
-  <%}})%>
-  <hr>
-  <label >Distancia:</label><br>
-  <input type="text" placeholder="<%= ruta.distancia %>" class="mR" value="<%= ruta.distancia %>" disabled /><br>
-  <label >Hora:</label><br>
-  <input type="time" disabled placeholder="<%= ruta.hora %>" class="mR" value="<%= ruta.hora %>" 
-    required /><br>
-  
   </div>
 </div>
 

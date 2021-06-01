@@ -1,43 +1,77 @@
 <%- include("partials/header"); -%>
-<div class="container">
-        <div class="form-group">
-            <label for="nombre">Nombre:</label>
-            <input type="text" name="nombre" id="nombre" class="form-control" value="<%=data.nombre%>">
-        </div>
-        <div class="form-group">
-            <label for="apellido">Apellido:</label>
-            <input type="text" name="apellido" id="apellido" class="form-control" value="<%=data.apellido%>" required>
-        </div>
-        <div class="form-group">
-            <label for="dni">DNI:</label>
-            <input type="number" name="dni" id="dni" class="form-control" value="<%=data.dni%>">
-        </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" name="email" id="email" class="form-control" value="<%=data.email%>">
-            <div id="errE"></div>
-        </div>
-        <div class="form-group">
-            <label for="email">Telefono:</label>
-            <input type="number" name="telefono" id="telefono" class="form-control" value="<%=data.telefono%>">
-            <div id="errE"></div>
-        </div>
-        <input type="hidden" id="idChofer" value="<%=data._id%>">
-        <div class="form-group">
-            <label for="clave">Contraseña</label>
-            <input type="password" class="form-control" name="clave" id="clave"
-                placeholder="Debe ser mayor de 5 digitos" required>
-            <div id="errC1"></div>
+<h1>Modificar Chofer</h1>
+<div class="row">
+    <div class="col-6" style="border-right: solid 1px #aaa;">
+        <h4>Datos Actuales</h4>
+        <div class="container">
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text"  disabled class="form-control" value="<%=data.nombre%>">
             </div>
-        <div class="form-group">
-            <label for="clave1">Repita la Contraseña</label>
-            <input type="password" class="form-control" name="clave1" id="clave1" required>
-            <div id="errC2"></div>
+            <div class="form-group">
+                <label for="apellido">Apellido:</label>
+                <input type="text" disabled class="form-control" value="<%=data.apellido%>" required>
+            </div>
+            <div class="form-group">
+                <label for="dni">DNI:</label>
+                <input type="number" disabled class="form-control" value="<%=data.dni%>">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" disabled class="form-control" value="<%=data.email%>">
+                
+            </div>
+            <div class="form-group">
+                <label for="email">Telefono:</label>
+                <input type="number" disabled class="form-control" value="<%=data.telefono%>">
+                
+            </div>
+        
         </div>
-        <br>
-        <div id="err" ></div>
-<button id="enviar">Modificar Chofer</button>
-
+    </div>
+    <div class="col-6">
+        <h4>Nuevos datos</h4>
+        <div class="container">
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" name="nombre" id="nombre" class="form-control" value="<%=data.nombre%>">
+            </div>
+            <div class="form-group">
+                <label for="apellido">Apellido:</label>
+                <input type="text" name="apellido" id="apellido" class="form-control" value="<%=data.apellido%>" required>
+            </div>
+            <div class="form-group">
+                <label for="dni">DNI:</label>
+                <input type="number" name="dni" id="dni" class="form-control" value="<%=data.dni%>">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" class="form-control" value="<%=data.email%>">
+                <div id="errE"></div>
+            </div>
+            <div class="form-group">
+                <label for="email">Telefono:</label>
+                <input type="number" name="telefono" id="telefono" class="form-control" value="<%=data.telefono%>">
+                <div id="errE"></div>
+            </div>
+            <input type="hidden" id="idChofer" value="<%=data._id%>">
+            <div class="form-group">
+                <label for="clave">Contraseña</label>
+                <input type="password" class="form-control" name="clave" id="clave" placeholder="Debe ser mayor de 5 digitos"
+                    required>
+                <div id="errC1"></div>
+            </div>
+            <div class="form-group">
+                <label for="clave1">Repita la Contraseña</label>
+                <input type="password" class="form-control" name="clave1" id="clave1" required>
+                <div id="errC2"></div>
+            </div>
+            <br>
+            <div id="err"></div>
+            <button id="enviar">Modificar Chofer</button>
+        
+        </div>
+    </div>
 </div>
             
 <br>

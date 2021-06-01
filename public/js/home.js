@@ -91,7 +91,6 @@ $(document).ready(() => {
 
       submitHandler: function (form) {
         $(form).ajaxSubmit((data) => {
-          console.log(data);
           if (data.viajes.length) {
             viajes.innerHTML = "";
             for (let i = 0; i < data.viajes.length; i++) {

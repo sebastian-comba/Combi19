@@ -1,49 +1,50 @@
 <%- include("partials/header"); -%>
 <h1>Modificar Insumo </h1>
-<div class="row">
+<div class="row" style="margin-left: 3em ;">
+    <div class="col-3" style="border-right: solid 1px #aaa;">
+        <h4>Datos Actuales</h4>
+        <label>Nombre:</label><br>
+        <input class="minsumo" disabled value="<%= data.nombre %>" /><br>
+        <label>Tipo:</label><br>
+        <input value="<%=data.tipo%>" disabled>
+        <br>
+        <label>Precio:</label><br>
+        <input value="<%= data.precio %>" disabled /><br>
+    </div>
     <div class="col-6">
-        <div id="err"></div>
+        <h4>Nuevos datos</h4>
+        
         <label for="nombre" required>Nombre:</label><br>
         <input type="text" class="minsumo" placeholder="<%= data.nombre %>" value="<%= data.nombre %>" id="nombre"
             name="nombre" /><br>
         <label for="tipo" required>Tipo:</label><br>
         <select name="tipo" id="tipo" class="minsumo">
             <% if(data.tipo==="dulce"){%>
-    
+        
             <option value="dulce" selected>Dulce</option>
             <option value="salado">Salado</option>
             <%}else{%>
-    
+        
             <option value="dulce">Dulce</option>
             <option value="salado" selected>Salado</option>
             <%}%>
-        </select>
-
-        <br>
+                </select>
         
-        <label for="precio" required>Precio:</label><br>
-        <input type="text" placeholder="<%= data.precio %>" class="minsumo" value="<%= data.precio %>" id="precio"
+                <br>
+                
+                <label for="precio" required>Precio:</label><br>
+                <input type="text" placeholder="<%= data.precio %>" class="minsumo" value="<%= data.precio %>" id="precio"
             name="precio"/><br>
-            <input type="hidden" value="<%= data._id %>" id="id" name="id" />
-            <button id="modificar">Modificar</button>
-    </div>
-    <div class="col-6">
-        <div id="err"></div>
-        <label  >Nombre anterior:</label><br>
-        <input class="minsumo" disabled value="<%= data.nombre %>" /><br>
-        <label  >Tipo anterior:</label><br>
-        <input value="<%=data.tipo%>" disabled>
+            <div id="err"></div>
+            <input type="hidden" value="<%= data._id %>" id="id" name="id" /><br>
             
-        <br>
-        
-        <label  >Precio anterior:</label><br>
-        <input   value="<%= data.precio %>" disabled/><br>
+            <button id="modificar">Modificar</button>
+            <a href="http://localhost:3000/listar-insumos">
+                <button id="cancelar">Cancelar</button>
+            </a>
     </div>
 </div>
 
-<a href="http://localhost:3000/listar-insumos">
-    <button id="cancelar">Cancelar</button>
-</a>
 <script src="/js/modificar-insumo.js"></script>
 
 <%- include("partials/footer"); -%>

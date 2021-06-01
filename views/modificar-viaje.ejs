@@ -28,88 +28,119 @@
 
   }());%>
 <div>
-<datalist id="rutas">
-  <% 
-        rutas.forEach( (ruta) => { %>
-  <option value="<%= ruta._id %>">
-    <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %> -<%= ruta.hora %>
-  </option>
-  <% }); %>
 
-  </datalist>
-  <!-- falta checkear los valores que ya estar cargados en la ruta a modificar -->
+  <!-- falta checkear los valores que ya estar cargados en la ruta a modificar -->  
   <h1>Modificar viaje</h1>
   <br>
-  <div id="err"></div>
-  <br>
-  <select >
-    <% 
-            rutas.forEach( (ruta) => { %>
-    <option value="<%= ruta._id %>">
-      <%= ruta.origen.nombre %>-<%= ruta.destino.nombre %>-<%= ruta.combi.patente %> -<%= ruta.hora %>
-    </option>
-    <% }); %>
-  </select> <small>formato: origen, destino, patente de la combi, hora</small> <br> <br>
-    <label for="ruta"> Ruta:</label>
-    <input type="search" name=" ruta" id="ruta" class="mV" value="<%=viaje.ruta.idRuta%>" list="rutas">
+  <div class="row">
+    <div class="col-6" style="border-right: solid 1px #555;">
+      <h4>Datos actuales</h4>
+      <label for="ruta"> Ruta:</label>
+      <select  disabled>
+        <% 
+                          rutas.forEach( (ruta) => { %>
+        <option value="<%= ruta._id %>" <%if(viaje.ruta.idRuta== ruta._id){%> <%="selected" %><%}%>  >
+                    <%= ruta.origen.nombre+" "+ruta.origen.provincia %> -
+          <%= ruta.destino.nombre+" "+ruta.destino.provincia %> - <%= ruta.hora %> - <%=ruta.combi.patente%> </option>
+          <% }); %>
+      </select><br>
+      <small>*formato: origen, destino, hora , patente de la combi asignada a la ruta</small>
+      <div style=" margin: 3px; padding: 1px; ">
+        <p>Datos de la combi:</p>
+        <label for="marca">Marca:</label>
+        <input value="<%=viaje.combi.marca%>" disabled><br><br>
+        <label for="modelo">Modelo:</label>
+        <input value="<%=viaje.combi.modelo%>" disabled><br><br>
+        <label for="tipo">Tipo:</label>
+        <input value="<%=viaje.combi.tipo%>" disabled>
+      </div>
+      <hr>
+      <label for="fecha">Fecha:</label>
+      <input type="date" disabled value="<%= fecha.mediaFecha() %>"
+        min="<%= fecha.mediaFecha() %>" />
+      <br>
+      <br>
+      <label for="llegada">Fecha de llegada:</label>
+      <input type="hidden" id="l" value="">
+      <input type="datetime-local" disabled  value="<%=llegada.fullFecha()%>" min="<%= fecha.fullFecha() %>"
+        max="" class="mV" />
+      <br>
+      <br>
+      <label for="precio">Precio:</label>
+      <input type="text" class="mV" disabled  value="<%= viaje.precio %>" />
+      <br><br>
+      
+      <label for="asientos">Cantidad de asientos:</label>
+      <input type="text" disabled class="mV" value="<%= viaje.asientosDisponibles %>" />
+      
+      <br />
+      <input type="hidden" name="idViaje" id="idViaje" value="<%= viaje._id %>">
+      <br>
+    </div>
+    <div class="col-6" style="">
+      <h4>Nuevos datos</h4>
+      <label for="ruta"> Ruta:</label>
+      <select name="ruta" id="ruta">
+        <% 
+                    rutas.forEach( (ruta) => { %>
+        <option value="<%= ruta._id %>" <%if(viaje.ruta.idRuta== ruta._id){%> <%="selected" %><%}%>  >
+              <%= ruta.origen.nombre+" "+ruta.origen.provincia %> - <%= ruta.destino.nombre+" "+ruta.destino.provincia %> -
+          <%= ruta.hora %> - <%=ruta.combi.patente%> </option>
+          <% }); %>
+      </select><br>
+      <small>*formato: origen, destino, hora , patente de la combi asignada a la ruta</small>
+      <div id="errR" class="err"></div>
+      <div style=" margin: 3px; padding: 1px; ">
+        <p>Datos de la combi:</p>
+        <label for="marca">Marca:</label>
+        <input id="marca" disable><br><br>
+        <label for="modelo">Modelo:</label>
+        <input id="modelo" disable><br><br>
+        <label for="tipo">Tipo:</label>
+        <input id="tipo" disable>
+      </div>
+      <hr>
+      <label for="fecha">Fecha:</label>
+      <input type="date" class="mV" id="fecha" name="fecha" value="<%= fecha.mediaFecha() %>"
+        min="<%= fecha.mediaFecha() %>" />
+      <div id="errF" class="err"></div>
+      <br>
+      
+      <label for="llegada">Fecha de llegada:</label>
+      <input type="hidden" id="l" value="">
+      <input type="datetime-local" id="llegada" name="llegada" value="<%=llegada.fullFecha()%>" min="<%= fecha.fullFecha() %>"
+        max="" class="mV" />
+      <div id="errL" class="err"></div>
+      <br>
+      
+      <label for="precio">Precio:</label>
+      <input type="text" class="mV" id="precio" name="precio" value="<%= viaje.precio %>" />
+      <br><br>
 
-    <label for="ciudadO">Cuidad Origen:</label>
-    <input type="text" name="ciudadO" id="ciudadO" disabled>
-
-    <label for="ciudadD">Cuidad Destino:</label>
-    <input type="text" name="ciudadD" id="ciudadD" disabled>
-
-    <label for="ciudadD">Combi:</label>
-    <input type="text" name="combi" id="combi" disabled>
- 
-    
-    <label for="hora">Hora:</label>
-    <input type="time" class="mV" id="hora" name="hora" value="<%= fecha.hora() %>" disabled />
-    <hr>
-    <label for="fecha">Fecha:</label>
-    <input type="date"class="mV" id="fecha" name="fecha" value="<%= fecha.mediaFecha() %>"  min="<%= fecha.mediaFecha() %>"/> 
-    <br>
-    <br>
-    <label for="llegada">Fecha de llegada:</label>
-    <input type="hidden" id="l" value="">
-    <input
-      type="datetime-local"
-      id="llegada"
-      name="llegada"
-      value="<%=llegada.fullFecha()%>"
-      min="<%= fecha.fullFecha() %>"
-      max=""class="mV"
-    />
-    <br>
-    <br>
-
-    <label for="precio">Precio:</label>
-    <input type="text" class="mV"id="precio" name="precio" value="<%= viaje.precio %>" />
-   
-    <label for="asientos">Cantidad de asientos:</label>
-    <input
-      type="text"
-      id="asientos"
-      name="asientos" class="mV"
-      value="<%= viaje.asientosDisponibles %>"
-    />
-    <br />
-<input type="hidden" name="idViaje" id="idViaje" value="<%= viaje._id %>">
-  <br>
-
+      <label for="asientos">Cantidad de asientos:</label>
+      <input type="text" id="asientos" name="asientos" class="mV" value="<%= viaje.asientosDisponibles %>" />
+      <div id="errA" class="err"></div>
+      <br />
+      <input type="hidden" name="idViaje" id="idViaje" value="<%= viaje._id %>">
+      <br>
+      <div id="err" class="err"></div>
       <button type="submit" id="modificar">Guardar cambios</button>
-
-
-    <a href="http://localhost:3000/home">Cancelar</a>
+      
+      
+      <a href="http://localhost:3000/home">Cancelar</a>
+    </div>
+    
+  </div>
+    
 
 </div>
 <% 
       rutas.forEach( (ruta) => { %>
 <input type="hidden" id="<%=ruta._id%>" value="<%=ruta.hora%>">
-      <input type="hidden" class="<%=ruta._id%>" name="origen" value="<%=ruta.origen.nombre%>-<%=ruta.origen.provincia%>">
-      <input type="hidden" class="<%=ruta._id%>" name="destino" value="<%=ruta.destino.nombre%>-<%=ruta.destino.provincia%>">
+      <input type="hidden" class="<%=ruta._id%>" name="marca" value="<%=ruta.combi.marca%>">
+      <input type="hidden" class="<%=ruta._id%>" name="modelo" value="<%=ruta.combi.modelo%>">
 
-      <input type="hidden" class="<%=ruta._id%>" name="combi" value="<%=ruta.combi.patente%>">
+      <input type="hidden" class="<%=ruta._id%>" name="tipo" value="<%=ruta.combi.tipo%>">
       <% }); %>
       
 <script src="/js/modificar-viaje.js">

@@ -1,5 +1,27 @@
 <%- include("partials/header-pasajero"); -%>
 
+<% function pad(number) {
+  if (number < 10) {
+    return "0" + number;
+  }
+  return number;
+}
+    
+    Date.prototype.completa = function () {
+  return (
+    pad(this.getDate()) +
+    "/" +
+    pad(this.getMonth() + 1) +
+    "/" +
+    pad(this.getFullYear()) +
+    " " +
+    pad(this.getHours()) +
+    ":" +
+    pad(this.getMinutes()) +
+    "hs"
+  );
+}; %>
+
 <div>
   <form action="/comprar-pasaje" method="POST">
     <div class="form-group">
@@ -78,8 +100,17 @@
         <option value="<%= insumo.nombre%>" > <%= insumo.nombre%> </option>
       <%})%>
     </select>
+    <% insumos.forEach( (insumo) => { %>
+      <input type="hidden" class="<%= insumo.nombre %>" name="Precio" value="<% insumo.precio %>">
+    <%} ) %>
     <br>
-    <button>Agregar Insumo</button>
+    <button type="button" id="agregar">Agregar Insumo</button>
+    <br>
+
+    <div id="listInsumo">
+
+    </div>
+    
     </div>
     <div class="form-group">
         <label for="subtotal">Subtotal:</label>
@@ -94,13 +125,13 @@
         <input type="text" name="id-subtotal" value="valor del subtotal" hidden />
       </div>
       <div class="form-group">
-        <label for="descuento Gold">Descuento Gold:</label>
+        <label for="descuento Gold">Descuento:</label>
         <input
           type="text"
-          name="descuento Gold"
-          id="descuento Gold"
+          name="descuento"
+          id="descuento"
           class="form-control"
-          value="descuento Gold"
+          value="0%"
           disabled
         />
         <input type="text" name="id-descuento-gold" value="valor del descuento Gold" hidden />

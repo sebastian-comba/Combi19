@@ -2195,7 +2195,7 @@ app.post("/comprar-pasaje", (req, res) => {
   if (req.session.rol !== "Cliente gold" && req.session.rol !== "Cliente comun") {
     res.redirect("/");
   } else {
-    Tarjeta.findOne({ codigo: req.body.codigo }, (err, resultTarjeta) => {
+    Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
       if (err) {
         console.log(err);
       } else {
@@ -2234,14 +2234,7 @@ app.post("/comprar-pasaje", (req, res) => {
                 p.save((err) => {
                   console.log(err);
                 });
-                Tarjeta.findOneAndUpdate(
-                  { codigo: req.body.codigo },
-                  // le resto el total al monto de la tarjeta
-                  { $inc: { monto: -req.body.total } },
-                  (err) => {
-                    console.log(err);
-                  }
-                );
+                console.log("Monto descontado de la tarjeta");
                 res.redirect("/pasajes");
               }
             }

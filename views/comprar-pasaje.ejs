@@ -1,5 +1,27 @@
 <%- include("partials/header-pasajero"); -%>
 
+<% function pad(number) {
+  if (number < 10) {
+    return "0" + number;
+  }
+  return number;
+}
+    
+    Date.prototype.completa = function () {
+  return (
+    pad(this.getDate()) +
+    "/" +
+    pad(this.getMonth() + 1) +
+    "/" +
+    pad(this.getFullYear()) +
+    " " +
+    pad(this.getHours()) +
+    ":" +
+    pad(this.getMinutes()) +
+    "hs"
+  );
+}; %>
+
 <div>
   <form action="/comprar-pasaje" method="POST">
     <div class="form-group">
@@ -33,7 +55,7 @@
         name="fecha"
         id="fecha"
         class="form-control"
-        value="<%= viaje.fecha %>"
+        value="<%= (new Date(Date.parse(viaje.fecha))).completa() %>"
         disabled
       />
     </div>
@@ -71,20 +93,24 @@
       />
     </div>
     <div class="form-group">
-      <label for="insumos">Insumos:</label>
+    <label for="insumos">Insumos:</label>
+    <br>
+    <select name="insumos" id="insumos">
       <% insumos.forEach( (insumo) => { %>
-      <input
-        type="text"
-        name="insumos"
-        id="insumos"
-        class="form-control"
-        value="<%= insumo.nombre %>"
-        disabled
-      />
-      <button>Agregar</button>
-      <label for="cantidad-insumos" hidden>Cantidad de insumos:</label>
-      <input type="number" name="cantidad-insumos" value="1" min="1" hidden/>
-      <% }); %>
+        <option value="<%= insumo.nombre%>" > <%= insumo.nombre%> </option>
+      <%})%>
+    </select>
+    <% insumos.forEach( (insumo) => { %>
+      <input type="hidden" class="<%= insumo.nombre %>" name="Precio" value="<% insumo.precio %>">
+    <%} ) %>
+    <br>
+    <button type="button" id="agregar">Agregar Insumo</button>
+    <br>
+
+    <div id="listInsumo">
+
+    </div>
+    
     </div>
     <div class="form-group">
         <label for="subtotal">Subtotal:</label>
@@ -99,13 +125,13 @@
         <input type="text" name="id-subtotal" value="valor del subtotal" hidden />
       </div>
       <div class="form-group">
-        <label for="descuento Gold">Descuento Gold:</label>
+        <label for="descuento Gold">Descuento:</label>
         <input
           type="text"
-          name="descuento Gold"
-          id="descuento Gold"
+          name="descuento"
+          id="descuento"
           class="form-control"
-          value="descuento Gold"
+          value="0%"
           disabled
         />
         <input type="text" name="id-descuento-gold" value="valor del descuento Gold" hidden />
@@ -116,14 +142,43 @@
         name="total"
         id="total"
         class="form-control"
-        value="total"
+        value=" <%= viaje.precio %>"
         disabled
       />
       <input type="text" name="id-total" value="valor del total" hidden />
+      <div id="tarjeta">
+        <div class="form-group">
+            <label for="cod">Numero de la Tarjeta:</label>
+            <input type="text" name="cod" id="cod" class="form-control" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label for="vencimiento"> Fecha de Vencimiento: </label>
+            <input type="month" name="vencimiento" id="vencimiento" class="form-control"autocomplete="off">
+            <div id="errFV"></div>
+        </div>
+        <div class="form-group">
+            <label for="nombreT">Nombre como figura en la tarjeta:</label>
+            <input type="text" class="form-control" name="nombreT" id="nombreT" autocomplete="off" placeholder="">
+        </div>
+        <div class="form-group">
+            <label for="dniT">DNI del titular:</label>
+            <input type="number" name="dniT" id="dniT" autocomplete="off" class="form-control">
+            
+        </div>
+        <div class="form-group">
+            <label for="seg">Codigo de Seguridad</label>
+            <input type="text" size="3" name="seg" id="seg"  autocomplete="off" class="form-control" maxlength="3">
+            <div id="errCS" ></div>
+        </div>  
+        <div id="errT"> </div>
+
+    </div>
     </div>
     <button type="submit">Confirmar</button>
     <a href="http://localhost:3000/home">Cancelar</a>
   </form>
 </div>
+
+<script src="/js/comprar-pasaje.js"></script>
 
 <%- include("partials/footer"); -%>

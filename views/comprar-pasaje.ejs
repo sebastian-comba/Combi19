@@ -97,11 +97,11 @@
     <br>
     <select name="insumos" id="insumos">
       <% insumos.forEach( (insumo) => { %>
-        <option value="<%= insumo.nombre%>" > <%= insumo.nombre%> </option>
+        <option  value="<%= insumo.nombre%>" > <%= insumo.nombre%> </option>
       <%})%>
     </select>
     <% insumos.forEach( (insumo) => { %>
-      <input type="hidden" class="<%= insumo.nombre %>" name="Precio" value="<% insumo.precio %>">
+      <input type="hidden" class="<%= insumo.nombre %>" name="precio" value="<%= insumo.precio %>">
     <%} ) %>
     <br>
     <button type="button" id="agregar">Agregar Insumo</button>
@@ -131,7 +131,7 @@
           name="descuento"
           id="descuento"
           class="form-control"
-          value="0%"
+      value="<% if(tipo=="Cliente gold") {%> <%= "10%" %>  <% }else{ %><%= "0%" %><% } %>"
           disabled
         />
         <input type="text" name="id-descuento-gold" value="valor del descuento Gold" hidden />
@@ -149,25 +149,25 @@
       <div id="tarjeta">
         <div class="form-group">
             <label for="cod">Numero de la Tarjeta:</label>
-            <input type="text" name="cod" id="cod" class="form-control" autocomplete="off">
+            <input type="text" required name="cod" id="cod" class="form-control" autocomplete="off">
         </div>
         <div class="form-group">
             <label for="vencimiento"> Fecha de Vencimiento: </label>
-            <input type="month" name="vencimiento" id="vencimiento" class="form-control"autocomplete="off">
+            <input type="month" required name="vencimiento" id="vencimiento" class="form-control"autocomplete="off">
             <div id="errFV"></div>
         </div>
         <div class="form-group">
             <label for="nombreT">Nombre como figura en la tarjeta:</label>
-            <input type="text" class="form-control" name="nombreT" id="nombreT" autocomplete="off" placeholder="">
+            <input type="text" required class="form-control" name="nombreT" id="nombreT" autocomplete="off" placeholder="">
         </div>
         <div class="form-group">
             <label for="dniT">DNI del titular:</label>
-            <input type="number" name="dniT" id="dniT" autocomplete="off" class="form-control">
+            <input type="number" required name="dniT" id="dniT" autocomplete="off" class="form-control">
             
         </div>
         <div class="form-group">
             <label for="seg">Codigo de Seguridad</label>
-            <input type="text" size="3" name="seg" id="seg"  autocomplete="off" class="form-control" maxlength="3">
+            <input type="text" required size="3" name="seg" id="seg"  autocomplete="off" class="form-control" maxlength="3">
             <div id="errCS" ></div>
         </div>  
         <div id="errT"> </div>

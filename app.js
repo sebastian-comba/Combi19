@@ -2184,6 +2184,7 @@ app.get("/comprar-pasaje/:id", (req, res) => {
           res.render("comprar-pasaje", {
             viaje: resultViaje,
             insumos: resultInsumos,
+            tipo:req.session.rol
           });
         }
       });

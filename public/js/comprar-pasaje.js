@@ -1,5 +1,6 @@
 $("#cantidad").change(function () {
   $("#subtotal").val(precio.value * cantidad.value);
+  $("#total").val(precio.value * cantidad.value);
 });
 
 $("#agregar").click(() => {
@@ -16,7 +17,9 @@ $("#agregar").click(() => {
       insumos.value +
       '"> <label name="' +
       insumos.value +
-      '">Cantidad:</label> <input type="number" class="cantidad" name="' +
+      '">Cantidad:</label> <input id="cantidad' +
+      insumos.value +
+      '" type="number" class="cantidad" name="' +
       insumos.value +
       '" value="1" min="1"> <button type="button" onclick="eliminarInsumo(this)" name="' +
       insumos.value +
@@ -28,4 +31,4 @@ eliminarInsumo = (insumo) => {
   var x = $("#" + insumo.name + "");
   console.log(x);
   x.remove();
-}; 
+};

@@ -2181,11 +2181,21 @@ app.get("/comprar-pasaje/:id", (req, res) => {
           console.log(err);
           res.send(err);
         } else {
-          res.render("comprar-pasaje", {
-            viaje: resultViaje,
-            insumos: resultInsumos,
-            tipo:req.session.rol
-          });
+          Usuario.findOne(
+            { email: req.session.email, borrado: false },
+            (err, usuario) => {
+              if (err) {
+                res.redirect("/");
+              } else {                
+                 res.render("comprar-pasaje", {
+                  viaje: resultViaje,
+                  insumos: resultInsumos,
+                  tipo:req.session.rol,
+                  usr:usuario,
+                });
+              }
+            }
+          );
         }
       });
     }
@@ -2193,13 +2203,16 @@ app.get("/comprar-pasaje/:id", (req, res) => {
 });
 
 app.post("/comprar-pasaje", (req, res) => {
+  console.log(req.body);
   if (req.session.rol !== "Cliente gold" && req.session.rol !== "Cliente comun") {
     res.redirect("/");
   } else {
+    console.log(req.body.cod);
     Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
       if (err) {
         console.log(err);
       } else {
+        console.log(resultTarjeta);
         if (resultTarjeta.monto > req.body.total) {
           // insumos es un diccionario que va a tener el nombre de cada insumo con su cantidad comprada,
           // falta implementar la carga cuando este el front end listo

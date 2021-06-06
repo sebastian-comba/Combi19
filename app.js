@@ -2207,12 +2207,10 @@ app.post("/comprar-pasaje", (req, res) => {
   if (req.session.rol !== "Cliente gold" && req.session.rol !== "Cliente comun") {
     res.redirect("/");
   } else {
-    console.log(req.body.cod);
     Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
       if (err) {
         console.log(err);
       } else {
-        console.log(resultTarjeta);
         if (resultTarjeta.monto > req.body.total) {
           // insumos es un diccionario que va a tener el nombre de cada insumo con su cantidad comprada,
           // falta implementar la carga cuando este el front end listo

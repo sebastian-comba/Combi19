@@ -37,13 +37,16 @@ function pad(number) {
    
 <select class="busqueda" name="origen" id="origen" required>       
           <% lugares.forEach(function(lugar) { %>
-<option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
+<option  value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
 <% }) %>
 </select><br>
 <label for="destino">Destino:</label> <br>
 <select name="destino" class="busqueda" id="destino" required>
-    <% lugares.forEach(function(lugar) { %>
-    <option value="<%= lugar._id %>"> <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
+    <% let cont=0; 
+      lugares.forEach(function(lugar) { %>
+    <option  value="<%= lugar._id %>" <%if (!cont) {%>
+      <%="selected"%>
+    <% cont= cont +1 ;}%> > <%= lugar.ciudad %>-<%= lugar.provincia %> </option>
     <% }) %>
 </select><br>
 <label for="fecha">Fecha:</label> <br>

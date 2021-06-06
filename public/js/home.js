@@ -44,12 +44,7 @@ document.getElementById("origen").onchange = () => {
   ciudadO.value = c;
   provinciaO.value = p;
 };
-let id = document.getElementById("origen").value;
-let c = document.getElementsByClassName(id).item(0).value;
 
-let p = document.getElementsByClassName(id).item(1).value;
-ciudadO.value = c;
-provinciaO.value = p;
 document.getElementById("destino").onchange = () => {
   let id = document.getElementById("destino").value;
   let c = document.getElementsByClassName(id).item(0).value;
@@ -58,12 +53,21 @@ document.getElementById("destino").onchange = () => {
   ciudadD.value = c;
   provinciaD.value = p;
 };
+let id = document.getElementById("origen").value;
+let c = document.getElementsByClassName(id).item(0).value;
+
+let p = document.getElementsByClassName(id).item(1).value;
+ciudadO.value = c;
+provinciaO.value = p;
+
 id = document.getElementById("destino").value;
 c = document.getElementsByClassName(id).item(0).value;
 
 p = document.getElementsByClassName(id).item(1).value;
 ciudadD.value = c;
 provinciaD.value = p;
+
+
 function origen_destino_distintos() {
   if (origen === destino) {
     return false;
@@ -94,7 +98,7 @@ $(document).ready(() => {
           if (data.viajes.length) {
             viajes.innerHTML = "";
             for (let i = 0; i < data.viajes.length; i++) {
-              const e = data.viajes[i];
+              const e = data.viajes[i]; 
               viajes.innerHTML =
                 viajes.innerHTML +
                 ' <div class="card"> <div div class="card-title" style = "background-color:#0a546b; color: azure; text-align: center;" > <strong>Tipo:</strong> ' +
@@ -113,7 +117,7 @@ $(document).ready(() => {
             }
           } else {
             viajes.innerHTML =
-              "<p>No hay viajes disponibles con esas especificaciones por favor vuelva a aintentarlo</p>";
+              "<p>No hay viajes disponibles con esas especificaciones por favor vuelva a intentarlo</p>";
           }
         });
       },

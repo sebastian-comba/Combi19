@@ -14,7 +14,7 @@ Date.prototype.mediaFecha = function () {
 };
 Date.prototype.yearMonth = function () {
     return this.getFullYear() +
-        '-' + pad(this.getMonth() + 1) 
+        '-' + pad(this.getMonth() + 2) 
 };
 %>
 <h1>Modificar Perfil</h1>
@@ -116,7 +116,7 @@ Date.prototype.yearMonth = function () {
                 <div id="tarjeta" style="display:inline">
     
                     <br><label for="cod">Codigo de la Tarjeta:</label><br>
-                    <input type="text" name="cod" id="cod" required class="form-control" value="<%= data.tarjeta.codigo %> "
+                    <input type="number" name="cod" id="cod" required class="form-control" value="<%= data.tarjeta.codigo %>"
                         autocomplete="off">
     
                     <br><label for="vencimiento"> Fecha de Vencimiento: </label><br>
@@ -125,7 +125,7 @@ Date.prototype.yearMonth = function () {
     
                     <br><label for="nombreT">Nombre como figura en la tarjeta:</label><br>
                     <input type="text" required class="form-control" name="nombreT"
-                        value="<%= data.tarjeta.nombreCompleto %> " id="nombreT" autocomplete="off" placeholder="">
+                        value="<%= data.tarjeta.nombreCompleto %>" id="nombreT" autocomplete="off" placeholder="">
     
                     <br><label for="dniT">DNI del titular:</label><br>
                     <input type="number" required value="<%= data.tarjeta.dni %>" name="dniT" id="dniT" autocomplete="off"

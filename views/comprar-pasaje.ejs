@@ -27,203 +27,138 @@ const monthNames = ["enero", "febrero", "Marzo", "abril", "mayo", "junio",
 ];
 
   Date.prototype.vence = function () {
-    return (
-      pad(monthNames[this.getMonth() + 1]) +
-      " de " +
-      pad(this.getFullYear())
-    );
-  
-}; 
-
+      return this.getFullYear() +'-'+pad(this.getMonth() + 2);
+};
 %>
 <script>
   function preCargado() {
-  document.getElementById("divCod").innerHTML ='<input type="text" required name="cod" id="cod" class="form-control" autocomplete="off" placeholder="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }else{ %><%= "" %><% } %>">';
-  document.getElementById("divVencimiento").innerHTML ='<input type="text" onfocus="(this.type="month")" required name="vencimiento" id="vencimiento" class="form-control" autocomplete="off" placeholder="<% if(tipo=="Cliente gold") {%> <%= (new Date(Date.parse(usr.tarjeta.vencimiento))).vence() %>  <% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%> <%= (new Date(Date.parse(usr.tarjeta.vencimiento))).vence() %>  <% }else{ %><%= "" %><% } %>">';
-  document.getElementById("divNombreT").innerHTML ='<input type="text" required class="form-control" name="nombreT" id="nombreT" autocomplete="off" placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %>  <% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %>  <% }else{ %><%= "" %><% } %>">';
-  document.getElementById("divDniT").innerHTML ='<input type="text" onfocus="(this.type="number")" required name="dniT" id="dniT" autocomplete="off" class="form-control" placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>">';
-}
+    document.getElementById("divCod").innerHTML = '<input type="text" required name="cod" id="cod" class="form-control"  placeholder="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }%>" value="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }%>">';
+    document.getElementById("divVencimiento").innerHTML = '<input type="text" onfocus="(this.type="month")" required name="vencimiento" id="vencimiento" class="form-control"   value="<% if(tipo=="Cliente gold") {%><%= (new Date(Date.parse(usr.tarjeta.vencimiento))).vence() %><% }%>">';
+    document.getElementById("divNombreT").innerHTML = '<input type="text" required class="form-control" name="nombreT" id="nombreT"  placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %>  <% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %>  <% }else{ %><%= "" %><% } %>">';
+    document.getElementById("divDniT").innerHTML = '<input type="text" onfocus="(this.type="number")" required name="dniT" id="dniT"  class="form-control" placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>">';
+  }
 </script>
 
 
 <div>
-  <form action="/comprar-pasaje" method="POST" id="myForm">
+  <form id="comprar" action="/comprar-pasaje" method="POST" id="myForm">
     <div class="form-group">
       <label for="origen">Origen:</label>
-      <input
-        type="text"
-        name="origen"
-        id="origen"
-        class="form-control"
-        value="<%= viaje.ruta.origen.nombre %>"
-        disabled
-      />
-      
+      <input required type="text" name="origen" id="origen" class="form-control" value="<%= viaje.ruta.origen.nombre %>"
+        disabled />
+
     </div>
     <div class="form-group">
       <label for="destino">Destino:</label>
-      <input
-        type="text"
-        name="destino"
-        id="destino"
-        class="form-control"
-        value="<%= viaje.ruta.destino.nombre %>"
-        disabled
-      />
-      <input type="text" name="id-ruta" value="<%= viaje.ruta.idRuta %>" hidden />
+      <input required type="text" name="destino" id="destino" class="form-control"
+        value="<%= viaje.ruta.destino.nombre %>" disabled />
+      <input type="text" id="idViaje" value="<%= viaje._id %>" hidden />
     </div>
     <div class="form-group">
       <label for="fecha">Fecha:</label>
-      <input
-        type="text"
-        name="fecha"
-        id="fecha"
-        class="form-control"
-        value="<%= (new Date(Date.parse(viaje.fecha))).completa() %>"
-        disabled
-      />
+      <input required type="text" name="fecha" id="fecha" class="form-control"
+        value="<%= (new Date(Date.parse(viaje.fecha))).completa() %>" disabled />
     </div>
     <div class="form-group">
       <label for="precio">Precio:</label>
-      <input
-        type="text"
-        name="precio"
-        id="precio"
-        class="form-control"
-        value="<%= viaje.precio %>"
-        disabled
-      />
+      <input required type="text" name="precio" id="precio" class="form-control" value="<%= viaje.precio %>" disabled />
     </div>
     <div class="form-group">
       <label for="cantidad">Cantidad de pasajes:</label>
-      <input
-        type="number"
-        name="cantidad"
-        id="cantidad"
-        class="form-control"
-        value="1"
-        min="1"
-      />
+      <input required type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" />
     </div>
     <div class="form-group">
       <label for="tipo">Tipo:</label>
-      <input
-        type="text"
-        name="tipo"
-        id="tipo"
-        class="form-control"
-        value="<%= viaje.combi.tipo %>"
-        disabled
-      />
+      <input required type="text" name="tipo" id="tipo" class="form-control" value="<%= viaje.combi.tipo %>" disabled />
     </div>
     <div class="form-group">
-    <label for="insumos">Insumos:</label>
-    <br>
-    <select name="insumos" id="insumos">
+      <label for="insumos">Insumos:</label>
+      <br>
+      <select name="insumos" id="insumos">
+        <% insumos.forEach( (insumo) => { %>
+        <option value="<%= insumo.nombre%>"> <%= insumo.nombre%> </option>
+        <%})%>
+      </select>
       <% insumos.forEach( (insumo) => { %>
-        <option  value="<%= insumo.nombre%>" > <%= insumo.nombre%> </option>
-      <%})%>
-    </select>
-    <% insumos.forEach( (insumo) => { %>
       <input type="hidden" class="<%= insumo.nombre %>" name="precio" value="<%= insumo.precio %>">
-    <%} ) %>
-    <br>
-    <button type="button" id="agregar">Agregar Insumo</button>
-    <br>
+      <%} ) %>
+      <br>
+      <button type="button" id="agregar">Agregar Insumo</button>
+      <br>
 
-    <div id="listInsumo">
+      <div id="listInsumo">
 
-    </div>
-    
-    </div>
-    <div class="form-group">
-        <label for="subtotal">Subtotal:</label>
-        <input
-          type="text"
-          name="subtotal"
-          id="subtotal"
-          class="form-control"
-          value="<%= viaje.precio %>"
-          disabled
-        />
-        <input type="text" name="id-subtotal" value="valor del subtotal" hidden />
       </div>
-      <div class="form-group">
-        <label for="descuento Gold">Descuento:</label>
-        <input
-          type="text"
-          name="descuento"
-          id="descuento"
-          class="form-control"
-      value="<% if(tipo=="Cliente gold") {%> <%= "10%" %>  <% }else{ %><%= "0%" %><% } %>"
-          disabled
-        />
-        <input type="text" name="id-descuento-gold" value="valor del descuento Gold" hidden />
+
+    </div>
     <div class="form-group">
-      <label for="total">Total:</label>
-      <input
-        type="text"
-        name="total"
-        id="total"
-        class="form-control"
-        value=" <%= viaje.precio %>"
-        disabled
-      />
-      <input type="text" name="id-total" value="valor del total" hidden />
-            
-      <% if(tipo == "Cliente gold"){ %>
-      <input type="radio" id="tarjetaPreCargada" name="elegirT" value="1" onclick="selecTarjeta(this);"
-                    <% if(tipo == "Cliente gold"){ %><%= "checked" %>
-                    <%}%>>
+      <label for="subtotal">Subtotal:</label>
+      <input required type="text" name="subtotal" id="subtotal" class="form-control" value="<%= viaje.precio %>"
+        disabled />
+      <input type="text" name="id-subtotal" value="valor del subtotal" hidden />
+    </div>
+    <div class="form-group">
+      <label for="descuento Gold">Descuento:</label>
+      <input required type="text" name="descuento" id="descuento" class="form-control"
+        value="<% if(tipo=="Cliente gold") {%> <%= "10%" %>  <% }else{ %><%= "0%" %><% } %>" disabled />
+      <input type="text" name="id-descuento-gold" value="valor del descuento Gold" hidden />
+      <div class="form-group">
+        <label for="total">Total:</label>
+        <input required type="text" name="total" id="total" class="form-control" value=" <%= viaje.precio %>"
+          disabled />
+        <input type="text" name="id-total" value="valor del total" hidden />
+
+        <% if(tipo == "Cliente gold"){ %>
+        <input type="radio" id="tarjetaPreCargada" name="elegirT" value="1" 
+          <% if(tipo == "Cliente gold"){ %><%= "checked" %> <%}%>>
                     <label for="gold">Elegir tarjeta pre-cargada</label>
-      <input type="radio" id="nuevaT" name="elegirT" value="2" onclick="selecTarjeta(this);">
+      <input type="radio" id="nuevaT" name="elegirT" value="2" >
                     <label for="gold">Cargar otra tarjeta</label><br>
-      <% } %>
-                  
-      <div id="tarjeta">
+      <% } %> <div id="tarjeta">
         <div class="form-group">
-            <label for="cod">Numero de la Tarjeta:</label>
-            <div id="divCod">
-              <input type="text" required name="cod" id="cod" class="form-control" autocomplete="off" 
-              placeholder="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }else{ %><%= "" %><% } %>" 
-              value="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }else{ %><%= "" %><% } %>">
-            </div>
+          <label for="cod">Numero de la Tarjeta:</label>
+          <div id="divCod">
+            <input type="text" required name="cod" id="cod" class="form-control"
+              placeholder="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }else{ %><%= "" %><% } %>"
+              value="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }else{ %><%= '' %><% } %>">
+          </div>
         </div>
         <div class="form-group">
-            <label for="vencimiento"> Fecha de Vencimiento: </label>
-            <div id="divVencimiento">
-            <input type="text" onfocus="(this.type='month')" required name="vencimiento" id="vencimiento" class="form-control" autocomplete="off"
-            placeholder="<% if(tipo=="Cliente gold") {%> <%= (new Date(Date.parse(usr.tarjeta.vencimiento))).vence() %>  <% }else{ %><%= "" %><% } %>"
-            value="<% if(tipo=="Cliente gold") {%> <%= (new Date(Date.parse(usr.tarjeta.vencimiento))).vence() %>  <% }else{ %><%= "" %><% } %>">
+          <label for="vencimiento"> Fecha de Vencimiento: </label>
+          <div id="divVencimiento">
+            <input type="month"  required name="vencimiento" id="vencimiento"
+              class="form-control" autocomplete="off"
+              value="<% if(tipo=="Cliente gold") {%><%= (new Date(Date.parse(usr.tarjeta.vencimiento))).vence() %><% } %>"
+             >
             <div id="errFV"></div>
           </div>
         </div>
         <div class="form-group">
-            <label for="nombreT">Nombre como figura en la tarjeta:</label>
-            <div id="divNombreT">
-            <input type="text" required class="form-control" name="nombreT" id="nombreT" autocomplete="off" 
-            placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %>  <% }else{ %><%= "" %><% } %>"
-            value="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %>  <% }else{ %><%= "" %><% } %>">
-        </div>
-        <div class="form-group">
+          <label for="nombreT">Nombre como figura en la tarjeta:</label>
+          <div id="divNombreT">
+            <input type="text" required class="form-control" name="nombreT" id="nombreT"
+              placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %><% }else{ %><%= '' %><% } %>"
+              value="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.nombreCompleto %><% }else{ %><%= '' %><% } %>">
+          </div>
+          <div class="form-group">
             <label for="dniT">DNI del titular:</label>
             <div id="divDniT">
-            <input type="text" onfocus="(this.type='number')" required name="dniT" id="dniT" autocomplete="off" class="form-control" 
-            placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>"
-            value="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>">
+              <input type="text" onfocus="(this.type='number')" required name="dniT" id="dniT" class="form-control"
+                placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>"
+                value="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.dni %><% }else{ %><%= "" %><% } %>">
+            </div>
           </div>
-        </div>
-        <div class="form-group">
+          <div class="form-group">
             <label for="seg">Codigo de Seguridad</label>
-            <input type="text" required size="3" name="seg" id="seg"  autocomplete="off" class="form-control" maxlength="3">
-            <div id="errCS" ></div>
-        </div>  
-        <div id="errT"> </div>
+            <input type="text" required size="3" name="seg" id="seg" class="form-control" maxlength="3">
+            <div id="errCS"></div>
+          </div>
+          <div id="errT" name="errT"></div>
 
-    </div>
-    </div>
-    <button type="submit">Confirmar</button>
-    <a href="http://localhost:3000/home">Cancelar</a>
+        </div>
+      </div>
+      <button id="comprarB" type="submit">Confirmar</button>
+      <a href="http://localhost:3000/home">Cancelar</a>
   </form>
 </div>
 

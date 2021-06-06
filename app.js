@@ -2203,60 +2203,70 @@ app.get("/comprar-pasaje/:id", (req, res) => {
 });
 
 app.post("/comprar-pasaje", (req, res) => {
-  console.log(req.body);
-  if (req.session.rol !== "Cliente gold" && req.session.rol !== "Cliente comun") {
-    res.redirect("/");
-  } else {
-    Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
-      if (err) {
-        console.log(err);
-      } else {
-        if (resultTarjeta.monto > req.body.total) {
-          // insumos es un diccionario que va a tener el nombre de cada insumo con su cantidad comprada,
-          // falta implementar la carga cuando este el front end listo
-          const insumos = {};
+  Tarjeta.findOne({ codigo: req.body.cod, }, (err, resultTarjeta) => {
+    if (err) {
+      res.json({ response: { error: "errT", mensaje: "Error en la conexion con el banco" } })
+    } else {
+      if(resultTarjeta){
+        if (
+          resultTarjeta.dni === req.body.dniT &&
+          Date.parse(resultTarjeta.vencimiento) ==
+          Date.parse(req.body.vencimiento + "-01") &&
+          resultTarjeta.nombreCompleto === req.body.nombreT &&
+          resultTarjeta.codSeguridad === req.body.seg
+        ) {
+          if (resultTarjeta.monto > parseFloat(req.body.total)) {
+            Viaje.findOne({_id:req.body.idViaje},(err,result)=>{
+              if(err){
 
-          // obtengo todos los nombres de los insumos
-          const nombresInsumos = Object.keys(insumos);
-
-          // busco todos los insumos que esten dentro de la coleccion de nombresInsumos
-          Insumo.find(
-            { title: { $in: nombresInsumos } },
-            (err, resultInsumos) => {
-              if (err) {
-                console.log(err);
-              } else {
-                // creo un arreglo donde van a ir todos los insumos correspondientes al pasaje
-                const insumosPasaje = [];
-                resultInsumos.forEach((insumo) => {
-                  insumosPasaje.push({
-                    nombre: insumo.nombre,
-                    precio: insumo.precio,
-                    cantidad: insumos[insumo.nombre],
-                  });
-                });
-                p = new Pasaje({
-                  emailPasajero: req.session.email,
-                  insumos: insumosPasaje,
-                  cantidad: req.body.cantidad,
-                  idViaje: req.body.viaje,
-                  fecha: req.body.fecha,
-                  precio: req.body.precio,
-                });
-                p.save((err) => {
-                  console.log(err);
-                });
-                console.log("Monto descontado de la tarjeta");
-                res.redirect("/pasajes");
+              }else{
+                if(result){
+                  if(result.asientosDisponibles>=req.body.cantidad){
+                    p = new Pasaje({
+                      emailPasajero: req.session.email,
+                      insumos: req.body.insumos,
+                      cantidad: req.body.cantidad,
+                      idViaje: req.body.idViaje,
+                      fecha: result.fecha,
+                      precio: parseFloat(req.body.total),
+                      "origen.nombre": result.ruta.origen.nombre,
+                      "origen.provincia": result.ruta.origen.provincia,
+                      "destino.nombre": result.ruta.destino.nombre,
+                      "destino.provincia": result.ruta.destino.provincia,
+                      estadoPasaje: "Pendiente",
+                      tipoServicio: result.combi.tipo,
+                    });
+                    p.save((err) => {
+                      if(err){
+                        console.log(err)
+                      }else{
+                        console.log("Monto descontado de la tarjeta");
+                        res.json({ response: "bien" });
+                        let as = result.asientosDisponibles - parseFloat(req.body.cantidad)
+                        Viaje.updateOne({_id:req.body.idViaje},{
+                          asientosDisponibles:as
+                        },(err)=>{
+                          if(err){
+                            console.log(err);
+                          }
+                        })
+                      }
+                    });
+                  } else{res.json({ response: { error: "errT", mensaje: "Hay " + result.asientosDisponibles+" asientos disponibles cambie la cantidad de pasajes o busque otro viaje" } });}
+                }
               }
-            }
-          );
+            })
+          } else {
+            res.json({ response: { error: "errT", mensaje: "No hay saldo suficiente en la tarjeta" } });
+          }
         } else {
-          res.send("No hay saldo suficiente en la tarjeta");
+          res.json({ response: { error: "errT", mensaje: "Datos de la tarjeta incorrecta" } })
         }
+      }else{
+        res.json({ response: { error: "errT", mensaje: "La tarjeta no existe" } })
       }
-    });
-  }
+    }
+  });
 });
 app.put("/pasaje/:id", (req, res) => {
   Pasaje.findOneAndUpdate(

@@ -1,5 +1,5 @@
 $("#cantidad").change(function () {
-  subtotal.value = calcularSub() + precio.value * cantidad.value;
+  subYTotal()
 });
 
 $("#agregar").click(() => {
@@ -90,4 +90,68 @@ function resetForm() {
       }
   });
 });
-
+$(document).ready(() => {
+  $("#comprarB").click(function (event) {
+   let v= $("#comprar").validate({
+      submitHandler: function (form) {
+        subYTotal();
+        fetch("/comprar-pasaje", {
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cantidad: cantidad.value,
+            idViaje: idViaje.value,
+            total: total.value,
+            insumos: insumosL(),
+            cod: cod.value,
+            vencimiento: vencimiento.value,
+            nombreT: nombreT.value,
+            dniT: dniT.value,
+            seg: seg.value,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.response == "bien") {
+              location.replace( '/pasajes-pendientes')
+            } else {
+              let lugar = data.response.error;
+              let error = data.response.mensaje;
+              let mostrar = {}
+              mostrar[lugar] = error;
+              console.log(mostrar);
+              v.showErrors(
+                 mostrar
+              )
+            }
+          });
+      },
+    });
+  });
+});
+function insumosL(){
+  let insumo= document.getElementsByClassName("nombre");
+  let listI=[]
+  for (let i = 0; i < insumo.length; i++) {
+    const e = insumo[i];
+    let cantidad=document.getElementsByClassName("cantidad")
+    for (let j = 0; j < cantidad.length; j++) {
+      const r = cantidad[j];
+      if(r.name == e.name){
+        let precio = document.getElementsByClassName(e.name);
+        listI.push({insumo:e.name, cantidad:r.value, precio:precio[0].value})
+      } 
+    }
+  }
+  return listI
+}
+function pad(number) {
+  if (number < 10) {
+    return "0" + number;
+  }
+  return number;
+}
+Date.prototype.vence = function () {
+  return this.getFullYear() + '-' + pad(this.getMonth() + 1);
+};
+vencimiento.min=(new Date).vence();

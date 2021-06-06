@@ -73,3 +73,21 @@ function subYTotal() {
   }
  }
  subYTotal();
+
+function resetForm() {
+  document.getElementById("divCod").innerHTML ='<input type="text" required name="cod" id="cod" class="form-control" autocomplete="off" placeholder="" value="">';
+  document.getElementById("divVencimiento").innerHTML ='<input type="month" required name="vencimiento" id="vencimiento" class="form-control" autocomplete="off" placeholder="" value="">';
+  document.getElementById("divNombreT").innerHTML ='<input type="text" required name="nombreT" id="nombreT" class="form-control" autocomplete="off" placeholder="" value="">';
+  document.getElementById("divDniT").innerHTML ='<input type="number" required name="dniT" id="dniT" class="form-control" autocomplete="off" placeholder="" value="">';
+}
+
+ $(function() {
+  $('input:radio[name="elegirT"]').change(function() {
+      if ($(this).val() == '1') {
+        preCargado();
+      } else {  
+        resetForm();
+      }
+  });
+});
+

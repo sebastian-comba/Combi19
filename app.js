@@ -2181,11 +2181,21 @@ app.get("/comprar-pasaje/:id", (req, res) => {
           console.log(err);
           res.send(err);
         } else {
-          res.render("comprar-pasaje", {
-            viaje: resultViaje,
-            insumos: resultInsumos,
-            tipo:req.session.rol
-          });
+          Usuario.findOne(
+            { email: req.session.email, borrado: false },
+            (err, usuario) => {
+              if (err) {
+                res.redirect("/");
+              } else {                
+                 res.render("comprar-pasaje", {
+                  viaje: resultViaje,
+                  insumos: resultInsumos,
+                  tipo:req.session.rol,
+                  usr:usuario,
+                });
+              }
+            }
+          );
         }
       });
     }
@@ -2193,6 +2203,7 @@ app.get("/comprar-pasaje/:id", (req, res) => {
 });
 
 app.post("/comprar-pasaje", (req, res) => {
+  console.log(req.body);
   if (req.session.rol !== "Cliente gold" && req.session.rol !== "Cliente comun") {
     res.redirect("/");
   } else {

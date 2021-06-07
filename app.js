@@ -78,10 +78,10 @@ app.get("/home", (req, res) => {
   if (req.session.nombre) {
     switch (req.session.rol) {
       case "Chofer":
-        res.render("home-chofer", {});
+        res.render("home-chofer", {data: req.session});
         break;
       case "Admin":
-        res.render("home-admin", {});
+        res.render("home-admin", {data: req.session});
         break;
       default:
         Comentario.find(

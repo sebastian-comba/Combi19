@@ -85,8 +85,10 @@ function resetForm() {
   $('input:radio[name="elegirT"]').change(function() {
       if ($(this).val() == '1') {
         preCargado();
+        vencimiento.min = (new Date).vence();
       } else {  
         resetForm();
+        vencimiento.min = (new Date).vence();
       }
   });
 });

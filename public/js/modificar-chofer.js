@@ -37,7 +37,7 @@ function validarClave1() {
     }
 }
 function validarClave2() {
-    if (clave.value.length > 6 && clave.value !== clave1.value) {
+    if (clave.value.length >= 6 && clave.value !== clave1.value) {
         document.getElementById("errC2").innerHTML =
             '<small  style="color:red"><p class="er">Ambas Contraseñas deben coincidir</p></small>';
     }

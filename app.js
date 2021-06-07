@@ -1988,6 +1988,7 @@ app.put("/viaje", (req, res) => {
                           if (err) {
                             console.log(err);
                           } else {
+                            console.log(req.body);
                             if (
                               transformarFecha(
                                 req.body.fecha + "T" + resRuta.hora

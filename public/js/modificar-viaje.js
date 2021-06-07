@@ -20,6 +20,7 @@ function limpiar() {
 
 
 function modificar() {
+    console.log(idViaje.value); 
     fetch("/viaje", {
         method: "put",
         headers: { "Content-Type": "application/json" },

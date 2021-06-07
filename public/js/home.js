@@ -113,7 +113,7 @@ $(document).ready(() => {
                 e.asientosDisponibles +
                 "</p><br><p><strong>Precio:</strong> $" +
                 e.precio +
-                '</p></div></div></p><form action="/comprar-pasaje/'+e._id+'" method="get" ><button>Comprar</button> </form></div></div > <br> ';
+                '</p></div></div></p><form action="/comprar-pasaje/'+e._id+'" method="get" ><button>Comprar</button> </form></div></div> <br> ';
             }
           } else {
             viajes.innerHTML =

@@ -99,7 +99,7 @@ app.get("/home", (req, res) => {
                   res.locals.lugares = result;
                 }
                 res.render("home", {
-                  data: req.session.rol,
+                  data: req.session,
                   comentarios: resultComentario,
                 });
               }).sort({ ciudad: 1, provincia: 1 });
@@ -565,13 +565,13 @@ app.post("/alta-insumo", (req, res) => {
 app.delete("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre
   Insumo.findOne({ _id: req.params.id }, (err, resultInsumo) => {
-    Pasaje.findOne(
+    Pasaje.find(
       {
         fecha: { $gte: hoy },
         insumos: { $elemMatch: { nombre: resultInsumo.nombre } },
       },
       (err, resultPasaje) => {
-        if (resultPasaje !== null) {
+        if (resultPasaje.length) {
           res.json({
             response:
               "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro",
@@ -1911,7 +1911,7 @@ app.post("/buscar-viajes", (req, res) => {
     m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
   }
   Viaje.find(
-    {
+    { asientosDisponibles: {$gt:0},
       "ruta.origen.nombre": req.body.ciudadO,
       "ruta.origen.provincia": req.body.provinciaO,
       "ruta.destino.nombre": req.body.ciudadD,

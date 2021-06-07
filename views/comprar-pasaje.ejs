@@ -34,8 +34,8 @@ const monthNames = ["enero", "febrero", "Marzo", "abril", "mayo", "junio",
   function preCargado() {
     document.getElementById("divCod").innerHTML = '<input type="text" required name="cod" id="cod" class="form-control"  placeholder="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }%>" value="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.codigo %><% }%>">';
     document.getElementById("divVencimiento").innerHTML = '<input type="month"  required name="vencimiento" id="vencimiento" class="form-control"   value="<% if(tipo=="Cliente gold") {%><%=(new Date(Date.parse(usr.tarjeta.vencimiento))).vence()%><% }%>">';
-    document.getElementById("divNombreT").innerHTML = '<input type="text" required class="form-control" name="nombreT" id="nombreT"  placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %>  <% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %>  <% }else{ %><%= "" %><% } %>">';
-    document.getElementById("divDniT").innerHTML = '<input type="text" onfocus="(this.type="number")" required name="dniT" id="dniT"  class="form-control" placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>">';
+    document.getElementById("divNombreT").innerHTML = '<input type="text" required class="form-control" name="nombreT" id="nombreT"  placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.nombreCompleto %>  <% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.nombreCompleto %><% }else{ %><%= "" %><% } %>">';
+    document.getElementById("divDniT").innerHTML = '<input type="text" onfocus="(this.type="number")" required name="dniT" id="dniT"  class="form-control" placeholder="<% if(tipo=="Cliente gold") {%> <%= usr.tarjeta.dni %>  <% }else{ %><%= "" %><% } %>" value="<% if(tipo=="Cliente gold") {%><%= usr.tarjeta.dni %><% }else{ %><%= "" %><% } %>">';
   }
 </script>
 

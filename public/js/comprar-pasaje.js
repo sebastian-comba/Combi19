@@ -94,6 +94,7 @@ $(document).ready(() => {
   $("#comprarB").click(function (event) {
    let v= $("#comprar").validate({
       submitHandler: function (form) {
+        if (window.confirm("Esta seguro de realizar la compra por $" + total.value + " ?")) {
         subYTotal();
         fetch("/comprar-pasaje", {
           method: "post",
@@ -125,7 +126,7 @@ $(document).ready(() => {
               )
             }
           });
-      },
+       } },
     });
   });
 });

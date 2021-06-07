@@ -109,7 +109,7 @@ $(document).ready(() => {
                 e.ruta.destino.nombre +
                 "</p><p><strong>Fecha y hora:</strong> " +
                 new Date(Date.parse(e.fecha)).completa() +
-                '</div><div class="col-6"> <p><strong>Cantidad de ascientos:</strong> ' +
+                '</div><div class="col-6"> <p><strong>Cantidad de asientos:</strong> ' +
                 e.asientosDisponibles +
                 "</p><br><p><strong>Precio:</strong> $" +
                 e.precio +

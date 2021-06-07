@@ -44,7 +44,6 @@ app.use(
 );
 app.use(express.json());
 
-
 // variable que devuelve la fecha de hoy
 // falta implementar un cron job para que se actualice automaticamente a las 00:00hs
 const now = new Date();
@@ -206,7 +205,9 @@ app.delete("/comentario/:id", (req, res) => {
     Comentario.deleteOne({ _id: req.params.id }, (err) => {
       if (err) {
         console.log(err);
-        res.json({ response: "Hubo un error, no se pudo eliminar el comentario" });
+        res.json({
+          response: "Hubo un error, no se pudo eliminar el comentario",
+        });
       } else {
         res.json({ response: "bien" });
       }
@@ -520,7 +521,7 @@ app.get("/listar-insumos", (req, res) => {
       } else {
         res.render("listar-insumos", { data: insumos });
       }
-    }).sort({ nombre: 1, tipo: 1, precio:1 });
+    }).sort({ nombre: 1, tipo: 1, precio: 1 });
   }
 });
 
@@ -779,7 +780,7 @@ app.post("/registro", (req, res) => {
           if (
             result.dni === req.body.dniT &&
             Date.parse(result.vencimiento) ==
-            Date.parse(req.body.vencimiento + "-01") &&
+              Date.parse(req.body.vencimiento + "-01") &&
             result.nombreCompleto === req.body.nombreT &&
             result.codSeguridad === req.body.codS
           ) {
@@ -921,7 +922,10 @@ app.get("/modificar-chofer/:email", (req, res) => {
   }
 });
 app.get("/modificar-perfil", (req, res) => {
-  if (req.session.rol !== "Cliente comun" && req.session.rol !== "Cliente gold") {
+  if (
+    req.session.rol !== "Cliente comun" &&
+    req.session.rol !== "Cliente gold"
+  ) {
     res.redirect("/");
   } else {
     Usuario.findOne(
@@ -938,131 +942,205 @@ app.get("/modificar-perfil", (req, res) => {
 });
 
 app.post("/modificar-perfil", (req, res) => {
-
   Usuario.findOne({ email: req.session.email }, (err, result) => {
     if (err) {
       console.log(err);
     } else {
-      Usuario.findOne({ email: req.body.email, _id: { $ne: result._id } }, (err, resultC) => {
-        if (resultC) {
-          res.json({ response: { lugar: "email", error: "El email introducido esta siendo usado por otro usuario" } });
-        } else {
-          let email = req.session.email;
-          if (req.body.cat === "gold") {
-            Tarjeta.findOne({ codigo: req.body.cod }, (err, result) => {
-              if (err) {
-                res.json({ response: { lugar: "err", error: "Error en la conexion con el banco" } });
-              } else {
-                if (!result) {
-                  res.json({ response: { lugar: "err", error: "Tarjeta inexistente" } });
-                } else {
-                  if (
-                    result.dni === req.body.dniT &&
-                    Date.parse(result.vencimiento) ==
-                    Date.parse(req.body.vencimiento + "-01") &&
-                    result.nombreCompleto === req.body.nombreT &&
-                    result.codSeguridad === req.body.seg
-                  ) {
-                    if (result.monto >= 250) {
-                      us = new Usuario({
-                        nombre: req.body.nombre,
-                        apellido: req.body.apellido,
-                        email: req.body.email,
-                        clave: req.body.clave,
-                        dni: req.body.dni,
-                        fechaN: req.body.fechaN,
-                        rol: "Cliente " + req.body.cat,
-                        borrado: false,
-                        suspendido: false,
-                        categoria: req.body.cat,
-                        tarjeta: {
-                          codigo: req.body.cod,
-                          vencimiento: req.body.vencimiento,
-                          nombreCompleto: req.body.nombreT,
-                          dni: req.body.dniT,
-                        },
-                      });
-                      Tarjeta.updateOne(
-                        { codigo: result.codigo },
-                        { monto: result.monto - 250 },
-                        (err) => {
-                          if (err) {
-                            res.json({ response: { lugar: "err", error: "Problemas en la conexion con el banco. Intentelo en unos minutos " } });
-                          } else {
-                            Usuario.deleteOne({ email: email }, (error) => {
-                              if (!error) {
-                                us.save((err) => {
-                                  if (err) {
-                                    res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } });
-                                  } else {
-                                    Comentario.updateMany({ email: email }, { nombre: req.body.nombre, apellido: req.body.apellido, email: req.body.email });
-                                    Pasaje.updateMany({ emailPajajero: email }, { emailPasajero: req.body.email });
-                                    req.session.nombre = us.nombre;
-                                    req.session.apellido = us.apellido;
-                                    req.session.rol = us.rol;
-                                    req.session.email = us.email;
-                                    req.session.categoria = us.categoria;
-                                    res.json({ response: "bien" });
-                                  }
-                                });
-                              } else {
-                                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } })
-                              }
-                            });
-                          }
-                        })
-
-                    } else {
-                      res.json({ response: { lugar: "err", error: "Tarjeta sin fondos suficientes para realizar el pago" } });
-                    }
-                  } else {
-                    res.json({ response: { lugar: "err", error: "Datos de la tarjeta incorrectos" } });
-                  }
-                }
-              }
+      Usuario.findOne(
+        { email: req.body.email, _id: { $ne: result._id } },
+        (err, resultC) => {
+          if (resultC) {
+            res.json({
+              response: {
+                lugar: "email",
+                error:
+                  "El email introducido esta siendo usado por otro usuario",
+              },
             });
           } else {
-            let nombre = req.body.nombre;
-            let apellido = req.body.apellido;
-            us = new Usuario({
-              nombre: nombre,
-              apellido: apellido,
-              email: req.body.email,
-              clave: req.body.clave,
-              dni: req.body.dni,
-              fechaN: req.body.fechaN,
-              rol: "Cliente " + req.body.cat,
-              borrado: false,
-              suspendido: false,
-              categoria: req.body.cat,
-            });
-            Usuario.deleteOne({ email: email }, (error) => {
-              if (!error) {
-                us.save((err) => {
-                  if (err) {
-                    res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } });
+            let email = req.session.email;
+            if (req.body.cat === "gold") {
+              Tarjeta.findOne({ codigo: req.body.cod }, (err, result) => {
+                if (err) {
+                  res.json({
+                    response: {
+                      lugar: "err",
+                      error: "Error en la conexion con el banco",
+                    },
+                  });
+                } else {
+                  if (!result) {
+                    res.json({
+                      response: { lugar: "err", error: "Tarjeta inexistente" },
+                    });
                   } else {
-                    Comentario.updateMany({ email: email }, { nombre: req.body.nombre, apellido: req.body.apellido, email: req.body.email });
-                    Pasaje.updateMany({ emailPajajero: email }, { emailPasajero: req.body.email });
-                    req.session.nombre = us.nombre;
-                    req.session.apellido = us.apellido;
-                    req.session.rol = us.rol;
-                    req.session.email = us.email;
-                    req.session.categoria = us.categoria;
-                    res.json({ response: "bien" });
+                    if (
+                      result.dni === req.body.dniT &&
+                      Date.parse(result.vencimiento) ==
+                        Date.parse(req.body.vencimiento + "-01") &&
+                      result.nombreCompleto === req.body.nombreT &&
+                      result.codSeguridad === req.body.seg
+                    ) {
+                      if (result.monto >= 250) {
+                        us = new Usuario({
+                          nombre: req.body.nombre,
+                          apellido: req.body.apellido,
+                          email: req.body.email,
+                          clave: req.body.clave,
+                          dni: req.body.dni,
+                          fechaN: req.body.fechaN,
+                          rol: "Cliente " + req.body.cat,
+                          borrado: false,
+                          suspendido: false,
+                          categoria: req.body.cat,
+                          tarjeta: {
+                            codigo: req.body.cod,
+                            vencimiento: req.body.vencimiento,
+                            nombreCompleto: req.body.nombreT,
+                            dni: req.body.dniT,
+                          },
+                        });
+                        Tarjeta.updateOne(
+                          { codigo: result.codigo },
+                          { monto: result.monto - 250 },
+                          (err) => {
+                            if (err) {
+                              res.json({
+                                response: {
+                                  lugar: "err",
+                                  error:
+                                    "Problemas en la conexion con el banco. Intentelo en unos minutos ",
+                                },
+                              });
+                            } else {
+                              Usuario.deleteOne({ email: email }, (error) => {
+                                if (!error) {
+                                  us.save((err) => {
+                                    if (err) {
+                                      res.json({
+                                        response: {
+                                          lugar: "err",
+                                          error:
+                                            "Lo sentimos hubo un error al queres modificar el perfil",
+                                        },
+                                      });
+                                    } else {
+                                      Comentario.updateMany(
+                                        { email: email },
+                                        {
+                                          nombre: req.body.nombre,
+                                          apellido: req.body.apellido,
+                                          email: req.body.email,
+                                        }
+                                      );
+                                      Pasaje.updateMany(
+                                        { emailPajajero: email },
+                                        { emailPasajero: req.body.email }
+                                      );
+                                      req.session.nombre = us.nombre;
+                                      req.session.apellido = us.apellido;
+                                      req.session.rol = us.rol;
+                                      req.session.email = us.email;
+                                      req.session.categoria = us.categoria;
+                                      res.json({ response: "bien" });
+                                    }
+                                  });
+                                } else {
+                                  res.json({
+                                    response: {
+                                      lugar: "err",
+                                      error:
+                                        "Lo sentimos hubo un error al queres modificar el perfil",
+                                    },
+                                  });
+                                }
+                              });
+                            }
+                          }
+                        );
+                      } else {
+                        res.json({
+                          response: {
+                            lugar: "err",
+                            error:
+                              "Tarjeta sin fondos suficientes para realizar el pago",
+                          },
+                        });
+                      }
+                    } else {
+                      res.json({
+                        response: {
+                          lugar: "err",
+                          error: "Datos de la tarjeta incorrectos",
+                        },
+                      });
+                    }
                   }
-                });
-              } else {
-                res.json({ response: { lugar: "err", error: "Lo sentimos hubo un error al queres modificar el perfil" } })
-              }
-            })
+                }
+              });
+            } else {
+              let nombre = req.body.nombre;
+              let apellido = req.body.apellido;
+              us = new Usuario({
+                nombre: nombre,
+                apellido: apellido,
+                email: req.body.email,
+                clave: req.body.clave,
+                dni: req.body.dni,
+                fechaN: req.body.fechaN,
+                rol: "Cliente " + req.body.cat,
+                borrado: false,
+                suspendido: false,
+                categoria: req.body.cat,
+              });
+              Usuario.deleteOne({ email: email }, (error) => {
+                if (!error) {
+                  us.save((err) => {
+                    if (err) {
+                      res.json({
+                        response: {
+                          lugar: "err",
+                          error:
+                            "Lo sentimos hubo un error al queres modificar el perfil",
+                        },
+                      });
+                    } else {
+                      Comentario.updateMany(
+                        { email: email },
+                        {
+                          nombre: req.body.nombre,
+                          apellido: req.body.apellido,
+                          email: req.body.email,
+                        }
+                      );
+                      Pasaje.updateMany(
+                        { emailPajajero: email },
+                        { emailPasajero: req.body.email }
+                      );
+                      req.session.nombre = us.nombre;
+                      req.session.apellido = us.apellido;
+                      req.session.rol = us.rol;
+                      req.session.email = us.email;
+                      req.session.categoria = us.categoria;
+                      res.json({ response: "bien" });
+                    }
+                  });
+                } else {
+                  res.json({
+                    response: {
+                      lugar: "err",
+                      error:
+                        "Lo sentimos hubo un error al queres modificar el perfil",
+                    },
+                  });
+                }
+              });
+            }
           }
-
-
         }
-      })
+      );
     }
-  })
+  });
 });
 
 app.put("/modificar-chofer", (req, res) => {
@@ -1221,7 +1299,7 @@ app.get("/listar-combi", (req, res) => {
           data: dat,
         });
       }
-    }).sort({ patente: 1});
+    }).sort({ patente: 1 });
   }
 });
 app.get("/detalles-combi/:patente", (req, res) => {
@@ -1468,7 +1546,14 @@ app.get("/listar-rutas", (req, res) => {
       } else {
         res.render("listar-rutas", { data: rutas });
       }
-    }).sort({ "origen.nombre": 1, "origen.provincia": 1, "destino.nombre": 1, "destino.provincia": 1, hora: -1, "combi.patente": 1});
+    }).sort({
+      "origen.nombre": 1,
+      "origen.provincia": 1,
+      "destino.nombre": 1,
+      "destino.provincia": 1,
+      hora: -1,
+      "combi.patente": 1,
+    });
   }
 });
 
@@ -1489,29 +1574,40 @@ app.get("/cargar-rutas", (req, res) => {
             res.locals.combis = combis;
             res.render("cargar-rutas", {});
           }
-        }).sort({ patente:1});
+        }).sort({ patente: 1 });
       }
-    }).sort({ ciudad:1,provincia:1 });
+    }).sort({ ciudad: 1, provincia: 1 });
   }
 });
 app.post("/cargar-rutas", (req, res) => {
   Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
     if (err) {
       res.json({
-        response: { lugar: "errO", mensaje: "El lugar de Origen no existe por favor selecione uno de la lista", }
+        response: {
+          lugar: "errO",
+          mensaje:
+            "El lugar de Origen no existe por favor selecione uno de la lista",
+        },
       });
     } else {
       Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
         if (err) {
           res.json({
-            response: { lugar: "errD", mensaje: "El lugar de Destino no existe por favor selecione uno de la lista" }
+            response: {
+              lugar: "errD",
+              mensaje:
+                "El lugar de Destino no existe por favor selecione uno de la lista",
+            },
           });
         } else {
           Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
             if (err) {
               res.json({
-                response: { lugar: "errC", mensaje: "La combi no existe por favor selecione uno de la lista" }
-
+                response: {
+                  lugar: "errC",
+                  mensaje:
+                    "La combi no existe por favor selecione uno de la lista",
+                },
               });
             } else {
               Ruta.findOne(
@@ -1536,7 +1632,12 @@ app.post("/cargar-rutas", (req, res) => {
                     console.log(err);
                   } else {
                     if (resultRuta !== null) {
-                      res.json({ response: { lugar: "err", mensaje: "La ruta ya existe" } });
+                      res.json({
+                        response: {
+                          lugar: "err",
+                          mensaje: "La ruta ya existe",
+                        },
+                      });
                     } else {
                       var ruta = new Ruta({
                         origen: {
@@ -1564,7 +1665,11 @@ app.post("/cargar-rutas", (req, res) => {
                         if (err) {
                           console.log(err);
                           res.json({
-                            response: { lugar: "err", mensaje: "Lo sentimos no se pudo guardar la ruta. Intentelo en unos minutos" }
+                            response: {
+                              lugar: "err",
+                              mensaje:
+                                "Lo sentimos no se pudo guardar la ruta. Intentelo en unos minutos",
+                            },
                           });
                         } else {
                           res.json({ response: "bien" });
@@ -1643,9 +1748,9 @@ app.get("/modificar-ruta/:id", (req, res) => {
                 res.locals.combis = combis;
                 res.render("modificar-ruta", {});
               }
-            }).sort({patente:1});
+            }).sort({ patente: 1 });
           }
-        }).sort({ ciudad:1, provincia:1});
+        }).sort({ ciudad: 1, provincia: 1 });
       }
     });
   }
@@ -1665,26 +1770,39 @@ app.put("/modificar-ruta", (req, res) => {
           res.json({
             response: {
               lugar: "err",
-              mensaje: "No se puede modificar la ruta porque tiene viajes a futuro",
-            }
+              mensaje:
+                "No se puede modificar la ruta porque tiene viajes a futuro",
+            },
           });
         } else {
           Lugar.findOne({ _id: req.body.origen }, (err, origenR) => {
             if (err) {
               res.json({
-                response: { lugar: "errO", mensaje: "El lugar de Origen no existe por favor selecione uno de la lista" }
+                response: {
+                  lugar: "errO",
+                  mensaje:
+                    "El lugar de Origen no existe por favor selecione uno de la lista",
+                },
               });
             } else {
               Lugar.findOne({ _id: req.body.destino }, (err, destinoR) => {
                 if (err) {
                   res.json({
-                    response: { lugar: "errD", mensaje: "El lugar de Destino no existe por favor selecione uno de la lista", }
+                    response: {
+                      lugar: "errD",
+                      mensaje:
+                        "El lugar de Destino no existe por favor selecione uno de la lista",
+                    },
                   });
                 } else {
                   Combi.findOne({ patente: req.body.combi }, (err, combiR) => {
                     if (err) {
                       res.json({
-                        response: { lugar: "errC", mensaje: "La combi no existe por favor selecione uno de la lista" }
+                        response: {
+                          lugar: "errC",
+                          mensaje:
+                            "La combi no existe por favor selecione uno de la lista",
+                        },
                       });
                     } else {
                       Ruta.findOne(
@@ -1703,14 +1821,19 @@ app.put("/modificar-ruta", (req, res) => {
                           distancia: req.body.distancia,
                           hora: req.body.hora,
                           borrado: false,
-                          _id: { $ne: req.body.id }
+                          _id: { $ne: req.body.id },
                         },
                         (err, resultRuta) => {
                           if (err) {
                             console.log(err);
                           } else {
                             if (resultRuta !== null) {
-                              res.json({ response: { lugar: "err", mensaje: "La ruta ya existe" } });
+                              res.json({
+                                response: {
+                                  lugar: "err",
+                                  mensaje: "La ruta ya existe",
+                                },
+                              });
                             } else {
                               Ruta.updateOne(
                                 { _id: req.body.id },
@@ -1773,39 +1896,73 @@ app.get("/cargar-viaje", (req, res) => {
       } else {
         res.render("cargar-viaje", { data: result });
       }
-    }).sort({ "origen.nombre": 1, "origen.provincia": 1, "destino.nombre": 1, "destino.provincia": 1, hora: -1, "combi.patente": 1 });
+    }).sort({
+      "origen.nombre": 1,
+      "origen.provincia": 1,
+      "destino.nombre": 1,
+      "destino.provincia": 1,
+      hora: -1,
+      "combi.patente": 1,
+    });
   }
 });
 app.post("/cargar-viaje", (req, res) => {
   Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
     if (err) {
-      res.json({ response: { lugar: "errR", mensaje: "la Ruta selecionada no existe"}  });
+      res.json({
+        response: { lugar: "errR", mensaje: "la Ruta selecionada no existe" },
+      });
     } else {
       Combi.findOne({ patente: resRuta.combi.patente }, (err, resCombi) => {
         if (err) {
-          res.json({ response: { lugar: "err", mensaje: "la Combi selecionada no existe"}});
+          res.json({
+            response: {
+              lugar: "err",
+              mensaje: "la Combi selecionada no existe",
+            },
+          });
         } else {
           if (req.body.asientos > resCombi.asientos) {
             res.json({
               response: {
-                lugar: "errA", mensaje: "No se puede guardar el viaje, la cantidad de asientos es mayor o igual a " +
-                  resCombi.asientos,}   
+                lugar: "errA",
+                mensaje:
+                  "No se puede guardar el viaje, la cantidad de asientos es mayor o igual a " +
+                  resCombi.asientos,
+              },
             });
           } else {
             Viaje.find(
-              { "combi.patente": resCombi.patente,  $or: [
-                {$and:[
-                  { llegada: { $gte: transformarFecha(req.body.llegada)}},
-                  { fecha: { $lte: transformarFecha(req.body.llegada) }}
-                ]
-                }, {
-                  $and: [
-                    { llegada: { $gte: transformarFecha(req.body.fecha + "T" + resRuta.hora) } },
-                    { fecha: { $lte: transformarFecha(req.body.fecha + "T" + resRuta.hora) } }
-                  ]
-                },
-                
-              ] , borrado: false },
+              {
+                "combi.patente": resCombi.patente,
+                $or: [
+                  {
+                    $and: [
+                      { llegada: { $gte: transformarFecha(req.body.llegada) } },
+                      { fecha: { $lte: transformarFecha(req.body.llegada) } },
+                    ],
+                  },
+                  {
+                    $and: [
+                      {
+                        llegada: {
+                          $gte: transformarFecha(
+                            req.body.fecha + "T" + resRuta.hora
+                          ),
+                        },
+                      },
+                      {
+                        fecha: {
+                          $lte: transformarFecha(
+                            req.body.fecha + "T" + resRuta.hora
+                          ),
+                        },
+                      },
+                    ],
+                  },
+                ],
+                borrado: false,
+              },
               (err, resultV) => {
                 if (err) {
                   console.log(err);
@@ -1850,7 +2007,11 @@ app.post("/cargar-viaje", (req, res) => {
                     });
                   } else {
                     res.json({
-                      response: { lugar: "err", mensaje: "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",}                    
+                      response: {
+                        lugar: "err",
+                        mensaje:
+                          "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
+                      },
                     });
                   }
                 }
@@ -1877,7 +2038,7 @@ app.get("/viajes", (req, res) => {
           res.render("listar-viajes", { viajes: result });
         }
       }
-    ).sort({fecha:1,llegada:1});
+    ).sort({ fecha: 1, llegada: 1 });
   }
 });
 app.get("/viajes-pasados", (req, res) => {
@@ -1893,7 +2054,7 @@ app.get("/viajes-pasados", (req, res) => {
           res.render("listar-viajes-pasados", { viajes: result });
         }
       }
-    ).sort({ fecha: -1, llegada:-1 });;
+    ).sort({ fecha: -1, llegada: -1 });
   }
 });
 app.post("/buscar-viajes", (req, res) => {
@@ -1921,7 +2082,7 @@ app.post("/buscar-viajes", (req, res) => {
     (err, result) => {
       res.json({ viajes: result });
     }
-  ).sort({ fecha: 1, llegada: 1 });;
+  ).sort({ fecha: 1, llegada: 1 });
 });
 
 // UPDATE VIAJE
@@ -1948,7 +2109,14 @@ app.get("/modificar-viaje/:id", (req, res) => {
           res.send("No hay rutas disponibles");
         }
       }
-    }).sort({ "origen.nombre": 1, "origen.provincia": 1, "destino.nombre": 1, "destino.provincia": 1, hora: -1, "combi.patente": 1 });
+    }).sort({
+      "origen.nombre": 1,
+      "origen.provincia": 1,
+      "destino.nombre": 1,
+      "destino.provincia": 1,
+      hora: -1,
+      "combi.patente": 1,
+    });
   }
 });
 
@@ -1960,26 +2128,41 @@ app.put("/viaje", (req, res) => {
       } else {
         if (resPasaje && viajeR.ruta.idRuta !== req.body.ruta) {
           res.json({
-            response: { lugar: "err", mensaje: "No se puede modificar la ruta del viaje, tiene pasajes comprados."}
-              ,
+            response: {
+              lugar: "err",
+              mensaje:
+                "No se puede modificar la ruta del viaje, tiene pasajes comprados.",
+            },
           });
         } else {
           Ruta.findOne({ _id: req.body.ruta }, (err, resRuta) => {
             if (err) {
-              res.json({ response: { lugar: "errR", mensaje: "la Ruta selecionada no existe"}  });
+              res.json({
+                response: {
+                  lugar: "errR",
+                  mensaje: "la Ruta selecionada no existe",
+                },
+              });
             } else {
               Combi.findOne(
                 { patente: resRuta.combi.patente },
                 (err, resCombi) => {
                   if (err) {
-                    res.json({ response: { lugar: "errR", mensaje: "la Combi selecionada no existe" } });
+                    res.json({
+                      response: {
+                        lugar: "errR",
+                        mensaje: "la Combi selecionada no existe",
+                      },
+                    });
                   } else {
                     if (req.body.asientos > resCombi.asientos) {
                       res.json({
                         response: {
-                          lugar: "err", mensaje: "No se puede modificar el viaje, la cantidad de asientos es mayor o igual a " +
-                            resCombi.asientos}
-                          
+                          lugar: "err",
+                          mensaje:
+                            "No se puede modificar el viaje, la cantidad de asientos es mayor o igual a " +
+                            resCombi.asientos,
+                        },
                       });
                     } else {
                       Viaje.findOne(
@@ -1994,27 +2177,60 @@ app.put("/viaje", (req, res) => {
                               ) < resViaje.fecha
                             ) {
                               res.json({
-                                response: { lugar: "errF", mensaje: "la fecha no puede ser posterior a la establecida previamente.",}
-                                  
+                                response: {
+                                  lugar: "errF",
+                                  mensaje:
+                                    "la fecha no puede ser posterior a la establecida previamente.",
+                                },
                               });
                             } else {
                               Viaje.find(
-
                                 {
-                                  "combi.patente": resCombi.patente, $or: [
+                                  "combi.patente": resCombi.patente,
+                                  $or: [
                                     {
                                       $and: [
-                                        { llegada: { $gte: transformarFecha(req.body.llegada) } },
-                                        { fecha: { $lte: transformarFecha(req.body.llegada) } }
-                                      ]
-                                    }, {
-                                      $and: [
-                                        { llegada: { $gte: transformarFecha(req.body.fecha + "T" + resRuta.hora) } },
-                                        { fecha: { $lte: transformarFecha(req.body.fecha + "T" + resRuta.hora) } }
-                                      ]
+                                        {
+                                          llegada: {
+                                            $gte: transformarFecha(
+                                              req.body.llegada
+                                            ),
+                                          },
+                                        },
+                                        {
+                                          fecha: {
+                                            $lte: transformarFecha(
+                                              req.body.llegada
+                                            ),
+                                          },
+                                        },
+                                      ],
                                     },
-
-                                  ], borrado: false, _id:{$ne: req.body.idViaje}
+                                    {
+                                      $and: [
+                                        {
+                                          llegada: {
+                                            $gte: transformarFecha(
+                                              req.body.fecha +
+                                                "T" +
+                                                resRuta.hora
+                                            ),
+                                          },
+                                        },
+                                        {
+                                          fecha: {
+                                            $lte: transformarFecha(
+                                              req.body.fecha +
+                                                "T" +
+                                                resRuta.hora
+                                            ),
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                  borrado: false,
+                                  _id: { $ne: req.body.idViaje },
                                 },
                                 (err, resultV) => {
                                   if (err) {
@@ -2060,8 +2276,11 @@ app.put("/viaje", (req, res) => {
                                         (err) => {
                                           if (err) {
                                             res.json({
-                                              response: { lugar: "err", mensaje: "Lo sentimos ocurrio un error al momento de modificar. Por favor intentelo de nuevo en unos minutos",}
-                                                
+                                              response: {
+                                                lugar: "err",
+                                                mensaje:
+                                                  "Lo sentimos ocurrio un error al momento de modificar. Por favor intentelo de nuevo en unos minutos",
+                                              },
                                             });
                                           } else {
                                             res.json({
@@ -2072,12 +2291,16 @@ app.put("/viaje", (req, res) => {
                                       );
                                     } else {
                                       res.json({
-                                        response: { lugar: "err", mensaje: "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ", }
+                                        response: {
+                                          lugar: "err",
+                                          mensaje:
+                                            "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
+                                        },
                                       });
                                     }
                                   }
                                 }
-                             );
+                              );
                             }
                           }
                         }
@@ -2166,7 +2389,7 @@ app.get("/pasajes-cancelados", (req, res) => {
           res.render("listar-pasajes-cancelados", { data: result });
         }
       }
-    ).sort({ fecha:1 });
+    ).sort({ fecha: 1 });
   }
 });
 
@@ -2186,12 +2409,12 @@ app.get("/comprar-pasaje/:id", (req, res) => {
             (err, usuario) => {
               if (err) {
                 res.redirect("/");
-              } else {                
-                 res.render("comprar-pasaje", {
+              } else {
+                res.render("comprar-pasaje", {
                   viaje: resultViaje,
                   insumos: resultInsumos,
-                  tipo:req.session.rol,
-                  usr:usuario,
+                  tipo: req.session.rol,
+                  usr: usuario,
                 });
               }
             }
@@ -2199,29 +2422,33 @@ app.get("/comprar-pasaje/:id", (req, res) => {
         }
       });
     }
-  }).sort({nombre:1});
+  }).sort({ nombre: 1 });
 });
 
 app.post("/comprar-pasaje", (req, res) => {
-  Tarjeta.findOne({ codigo: req.body.cod, }, (err, resultTarjeta) => {
+  Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
     if (err) {
-      res.json({ response: { error: "errT", mensaje: "Error en la conexion con el banco" } })
+      res.json({
+        response: {
+          error: "errT",
+          mensaje: "Error en la conexion con el banco",
+        },
+      });
     } else {
-      if(resultTarjeta){
+      if (resultTarjeta) {
         if (
           resultTarjeta.dni === req.body.dniT &&
           Date.parse(resultTarjeta.vencimiento) ==
-          Date.parse(req.body.vencimiento + "-01") &&
+            Date.parse(req.body.vencimiento + "-01") &&
           resultTarjeta.nombreCompleto === req.body.nombreT &&
           resultTarjeta.codSeguridad === req.body.seg
         ) {
           if (resultTarjeta.monto > parseFloat(req.body.total)) {
-            Viaje.findOne({_id:req.body.idViaje},(err,result)=>{
-              if(err){
-
-              }else{
-                if(result){
-                  if(result.asientosDisponibles>=req.body.cantidad){
+            Viaje.findOne({ _id: req.body.idViaje }, (err, result) => {
+              if (err) {
+              } else {
+                if (result) {
+                  if (result.asientosDisponibles >= req.body.cantidad) {
                     p = new Pasaje({
                       emailPasajero: req.session.email,
                       insumos: req.body.insumos,
@@ -2237,33 +2464,61 @@ app.post("/comprar-pasaje", (req, res) => {
                       tipoServicio: result.combi.tipo,
                     });
                     p.save((err) => {
-                      if(err){
-                        console.log(err)
-                      }else{
+                      if (err) {
+                        console.log(err);
+                      } else {
                         console.log("Monto descontado de la tarjeta");
                         res.json({ response: "bien" });
-                        let as = result.asientosDisponibles - parseFloat(req.body.cantidad)
-                        Viaje.updateOne({_id:req.body.idViaje},{
-                          asientosDisponibles:as
-                        },(err)=>{
-                          if(err){
-                            console.log(err);
+                        let as =
+                          result.asientosDisponibles -
+                          parseFloat(req.body.cantidad);
+                        Viaje.updateOne(
+                          { _id: req.body.idViaje },
+                          {
+                            asientosDisponibles: as,
+                          },
+                          (err) => {
+                            if (err) {
+                              console.log(err);
+                            }
                           }
-                        })
+                        );
                       }
                     });
-                  } else{res.json({ response: { error: "errT", mensaje: "Hay " + result.asientosDisponibles+" asientos disponibles cambie la cantidad de pasajes o busque otro viaje" } });}
+                  } else {
+                    res.json({
+                      response: {
+                        error: "errT",
+                        mensaje:
+                          "Hay " +
+                          result.asientosDisponibles +
+                          " asientos disponibles cambie la cantidad de pasajes o busque otro viaje",
+                      },
+                    });
+                  }
                 }
               }
-            })
+            });
           } else {
-            res.json({ response: { error: "errT", mensaje: "No hay saldo suficiente en la tarjeta" } });
+            res.json({
+              response: {
+                error: "errT",
+                mensaje: "No hay saldo suficiente en la tarjeta",
+              },
+            });
           }
         } else {
-          res.json({ response: { error: "errT", mensaje: "Datos de la tarjeta incorrecta" } })
+          res.json({
+            response: {
+              error: "errT",
+              mensaje: "Datos de la tarjeta incorrecta",
+            },
+          });
         }
-      }else{
-        res.json({ response: { error: "errT", mensaje: "La tarjeta no existe" } })
+      } else {
+        res.json({
+          response: { error: "errT", mensaje: "La tarjeta no existe" },
+        });
       }
     }
   });

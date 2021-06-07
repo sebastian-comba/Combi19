@@ -140,7 +140,7 @@ function insumosL(){
       const r = cantidad[j];
       if(r.name == e.name){
         let precio = document.getElementsByClassName(e.name);
-        listI.push({insumo:e.name, cantidad:r.value, precio:precio[0].value})
+        listI.push({nombre:e.name, cantidad:r.value, precio:precio[0].value})
       } 
     }
   }

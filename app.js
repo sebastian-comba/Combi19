@@ -565,13 +565,13 @@ app.post("/alta-insumo", (req, res) => {
 app.delete("/insumo/:id", (req, res) => {
   //busca en los pasajes a futuro si hay uno con el mismo nombre
   Insumo.findOne({ _id: req.params.id }, (err, resultInsumo) => {
-    Pasaje.findOne(
+    Pasaje.find(
       {
         fecha: { $gte: hoy },
         insumos: { $elemMatch: { nombre: resultInsumo.nombre } },
       },
       (err, resultPasaje) => {
-        if (resultPasaje !== null) {
+        if (resultPasaje.length) {
           res.json({
             response:
               "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro",

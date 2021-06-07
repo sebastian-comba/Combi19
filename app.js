@@ -1911,7 +1911,7 @@ app.post("/buscar-viajes", (req, res) => {
     m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
   }
   Viaje.find(
-    {
+    { asientosDisponibles: {$gt:0},
       "ruta.origen.nombre": req.body.ciudadO,
       "ruta.origen.provincia": req.body.provinciaO,
       "ruta.destino.nombre": req.body.ciudadD,

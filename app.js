@@ -99,7 +99,7 @@ app.get("/home", (req, res) => {
                   res.locals.lugares = result;
                 }
                 res.render("home", {
-                  data: req.session.rol,
+                  data: req.session,
                   comentarios: resultComentario,
                 });
               }).sort({ ciudad: 1, provincia: 1 });

@@ -312,11 +312,10 @@ app.delete("/lugar/:id", (req, res) => {
             if (result !== null) {
               res.json({ response: "No se puede borrar, tiene ruta asignada" });
             } else {
-              Lugar.updateOne(
+              Lugar.deleteOne(
                 {
                   _id: req.params.id,
                 },
-                { borrado: true },
                 (err) => {
                   if (err) {
                     console.log(err);
@@ -577,9 +576,8 @@ app.delete("/insumo/:id", (req, res) => {
               "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro",
           });
         } else {
-          Insumo.updateOne(
+          Insumo.deleteOne(
             { _id: resultInsumo._id },
-            { borrado: true },
             (err) => {
               if (err) {
                 console.log(err);
@@ -1174,9 +1172,8 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
                       response: "No se puede eliminar esta asignado a viajes",
                     });
                   } else {
-                    Usuario.updateOne(
+                    Usuario.deleteOne(
                       { email: req.params.email },
-                      { borrado: true },
                       (err) => {
                         if (err) {
                           res.json({ response: "error" });
@@ -1335,9 +1332,8 @@ app.delete("/eliminar-combi/:patente", (req, res) => {
                         "No se puede eliminar por que esta asiganada a rutas",
                     });
                   } else {
-                    Combi.updateOne(
+                    Combi.deleteOne(
                       { patente: req.params.patente },
-                      { borrado: true },
                       (err) => {
                         if (err) {
                           res.json({ response: "error" });

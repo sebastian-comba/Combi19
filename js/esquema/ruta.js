@@ -20,7 +20,6 @@ const rutaSchema = new mongoose.Schema({
   },
   distancia: { type: Number, required: true },
   hora: { type: String, required: true },
-  borrado: { type: Boolean, required: true },
 });
 
 const Ruta = mongoose.model("Ruta", rutaSchema);

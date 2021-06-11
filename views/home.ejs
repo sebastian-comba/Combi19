@@ -1,11 +1,11 @@
 <%- include("partials/header-pasajero"); -%>
 <%if (data.rol ==="Cliente comun"){%>
 <h1>Bienvenido/a <%= data.nombre%> <%= data.apellido%></h1>
-<h2>Cliente</h2>
+<h3><i>Cliente</i></h3>
 <%}else{%>
 
 <h1>Bienvenido/a <%= data.nombre%> <%= data.apellido%></h1>
-<h2><i>Cliente Gold</i></h2>
+<h3><i>Cliente Gold</i></h3>
 <%}
 function pad(number) {
   if (number < 10) {

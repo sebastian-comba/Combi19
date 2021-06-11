@@ -78,10 +78,10 @@ app.get("/home", (req, res) => {
   if (req.session.nombre) {
     switch (req.session.rol) {
       case "Chofer":
-        res.render("home-chofer", {});
+        res.render("home-chofer", {data: req.session});
         break;
       case "Admin":
-        res.render("home-admin", {});
+        res.render("home-admin", {data: req.session});
         break;
       default:
         Comentario.find(
@@ -92,9 +92,8 @@ app.get("/home", (req, res) => {
             if (err) {
               console.log(err);
             } else {
-              // res.locals.comentarios = resultComentario;
               res.locals.miEmail = req.session.email;
-              Lugar.find({ borrado: false }, (err, result) => {
+              Lugar.find((err, result) => {
                 if (result) {
                   res.locals.lugares = result;
                 }
@@ -227,12 +226,12 @@ app.get("/lugares", (req, res) => {
   }
 });
 
-// READ lugares no borrados
+// READ lugares 
 app.get("/listar-lugares", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Lugar.find({ borrado: false }, (err, result) => {
+    Lugar.find((err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -256,13 +255,11 @@ app.post("/cargar-lugar", (req, res) => {
   var l = new Lugar({
     ciudad: req.body.ciudad,
     provincia: req.body.provincia,
-    borrado: false,
   });
   Lugar.findOne(
     {
       ciudad: req.body.ciudad,
       provincia: req.body.provincia,
-      borrado: false,
     },
     (err, result) => {
       if (!err) {
@@ -306,17 +303,15 @@ app.delete("/lugar/:id", (req, res) => {
                 "destino.provincia": resLugar.provincia,
               },
             ],
-            borrado: false,
           },
           (err, result) => {
             if (result !== null) {
               res.json({ response: "No se puede borrar, tiene ruta asignada" });
             } else {
-              Lugar.updateOne(
+              Lugar.deleteOne(
                 {
                   _id: req.params.id,
                 },
-                { borrado: true },
                 (err) => {
                   if (err) {
                     console.log(err);
@@ -339,7 +334,7 @@ app.get("/modificar-lugar/:id", (req, res) => {
     res.redirect("/");
   } else {
     Lugar.findOne(
-      { _id: req.params.id, borrado: false },
+      { _id: req.params.id},
       (err, resultLugar) => {
         if (err) {
           res.redirect("/listar-lugares");
@@ -368,7 +363,6 @@ app.put("/modificar-lugar", (req, res) => {
               "destino.provincia": resLugar.provincia,
             },
           ],
-          borrado: false,
         },
         (err, result) => {
           if (err) {
@@ -379,7 +373,6 @@ app.put("/modificar-lugar", (req, res) => {
                 ciudad: req.body.ciudad,
                 provincia: req.body.provincia,
                 _id: { $ne: req.body.id },
-                borrado: false,
               },
               (err, found) => {
                 if (err) {
@@ -449,7 +442,6 @@ app.put("/modificar-lugar", (req, res) => {
                                   "destino.provincia": req.body.provincia,
                                 },
                               ],
-                              borrado: false,
                             },
                             (err, result) => {
                               if (err) {
@@ -509,12 +501,12 @@ app.get("/insumos", (req, res) => {
   }
 });
 
-// READ todos los insumos no borrados
+// READ insumos
 app.get("/listar-insumos", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Insumo.find({ borrado: false }, (err, insumos) => {
+    Insumo.find((err, insumos) => {
       if (err) {
         console.log(err);
       } else {
@@ -544,7 +536,6 @@ app.post("/alta-insumo", (req, res) => {
           nombre: req.body.nombre,
           tipo: req.body.tipo,
           precio: req.body.precio,
-          borrado: false,
         });
         insumo.save((err) => {
           if (err) {
@@ -577,9 +568,8 @@ app.delete("/insumo/:id", (req, res) => {
               "No se puede eliminar el insumo porque ha sido comprado en viajes a futuro",
           });
         } else {
-          Insumo.updateOne(
+          Insumo.deleteOne(
             { _id: resultInsumo._id },
-            { borrado: true },
             (err) => {
               if (err) {
                 console.log(err);
@@ -598,12 +588,11 @@ app.delete("/insumo/:id", (req, res) => {
 
 // UPDATE Insumo
 app.get("/modificar-insumo/:id", (req, res) => {
-  //findOne poner en una variable y enviar eso en el data de render
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
     Insumo.findOne(
-      { _id: req.params.id, borrado: false },
+      { _id: req.params.id},
       (err, resultInsumo) => {
         if (err) {
           res.redirect("/");
@@ -617,7 +606,7 @@ app.get("/modificar-insumo/:id", (req, res) => {
 app.put("/modificar-insumo", (req, res) => {
   //busca insumos con el mismo nombre, pero diferente id
   Insumo.findOne(
-    { nombre: req.body.nombre, _id: { $ne: req.body.id }, borrado: false },
+    { nombre: req.body.nombre, _id: { $ne: req.body.id }},
     (err, found) => {
       if (err) {
         console.log(err);
@@ -630,7 +619,6 @@ app.put("/modificar-insumo", (req, res) => {
               nombre: req.body.nombre,
               tipo: req.body.tipo,
               precio: req.body.precio,
-              borrado: false,
             },
             (err) => {
               if (err) {
@@ -668,7 +656,7 @@ app.post("/iniciar", (req, res) => {
         if (err) {
           res.json({ response: "Error al autenticar el usuario " });
         } else if (result) {
-          if (us.borrado || us.suspendido) {
+          if (us.suspendido) {
             res.json({ response: "suspendido" });
           } else {
             req.session.nombre = us.nombre;
@@ -701,7 +689,7 @@ app.get("/listar-chofer", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Usuario.find({ borrado: false, rol: "Chofer" }, (err, result) => {
+    Usuario.find({ rol: "Chofer" }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -728,12 +716,12 @@ app.get("/detalle-chofer/:email", (req, res) => {
     res.redirect("/");
   } else {
     Usuario.findOne(
-      { email: req.params.email, rol: "Chofer", borrado: false },
+      { email: req.params.email, rol: "Chofer"},
       (err, result) => {
         if (!result) {
           res.redirect("/listar-chofer");
         } else {
-          Combi.find({ borrado: false }, (err, combi) => {
+          Combi.find((err, combi) => {
             if (err) {
               console.log(err);
             } else {
@@ -792,7 +780,6 @@ app.post("/registro", (req, res) => {
                 dni: req.body.dni,
                 fechaN: req.body.fechaN,
                 rol: "Cliente " + req.body.categoria,
-                borrado: false,
                 suspendido: false,
                 categoria: req.body.categoria,
                 tarjeta: {
@@ -851,7 +838,6 @@ app.post("/registro", (req, res) => {
       dni: req.body.dni,
       fechaN: req.body.fechaN,
       rol: "Cliente " + req.body.categoria,
-      borrado: false,
       suspendido: false,
       categoria: req.body.categoria,
     });
@@ -886,10 +872,10 @@ app.post("/alta-chofer", (req, res) => {
     clave: req.body.clave,
     dni: req.body.dni,
     rol: "Chofer",
-    borrado: false,
     suspendido: false,
     telefono: req.body.telefono,
   });
+  console.log(req.body.email);
   us.save((err) => {
     if (err) {
       res.json({ response: "error" });
@@ -905,7 +891,7 @@ app.get("/modificar-chofer/:email", (req, res) => {
     res.redirect("/");
   } else {
     Usuario.findOne(
-      { email: req.params.email, rol: "Chofer", borrado: false },
+      { email: req.params.email, rol: "Chofer"},
       (err, chofer) => {
         if (err) {
           res.redirect("/listar-chofer");
@@ -925,7 +911,7 @@ app.get("/modificar-perfil", (req, res) => {
     res.redirect("/");
   } else {
     Usuario.findOne(
-      { email: req.session.email, borrado: false },
+      { email: req.session.email},
       (err, usuario) => {
         if (err) {
           res.redirect("/");
@@ -972,7 +958,6 @@ app.post("/modificar-perfil", (req, res) => {
                         dni: req.body.dni,
                         fechaN: req.body.fechaN,
                         rol: "Cliente " + req.body.cat,
-                        borrado: false,
                         suspendido: false,
                         categoria: req.body.cat,
                         tarjeta: {
@@ -1032,7 +1017,6 @@ app.post("/modificar-perfil", (req, res) => {
               dni: req.body.dni,
               fechaN: req.body.fechaN,
               rol: "Cliente " + req.body.cat,
-              borrado: false,
               suspendido: false,
               categoria: req.body.cat,
             });
@@ -1087,7 +1071,6 @@ app.put("/modificar-chofer", (req, res) => {
                   clave: req.body.clave,
                   dni: req.body.dni,
                   rol: "Chofer",
-                  borrado: false,
                   suspendido: false,
                   telefono: req.body.telefono,
                 });
@@ -1148,7 +1131,6 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
     Combi.find(
       {
         "chofer.email": req.params.email,
-        borrado: false,
       },
       (err, viajes) => {
         if (err) {
@@ -1162,7 +1144,6 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
             Viaje.find(
               {
                 "chofer.email": req.params.email,
-                borrado: false,
                 fecha: { $gte: hoy },
               },
               (err, viajes) => {
@@ -1174,9 +1155,8 @@ app.delete("/eliminar-chofer/:email", (req, res) => {
                       response: "No se puede eliminar esta asignado a viajes",
                     });
                   } else {
-                    Usuario.updateOne(
+                    Usuario.deleteOne(
                       { email: req.params.email },
-                      { borrado: true },
                       (err) => {
                         if (err) {
                           res.json({ response: "error" });
@@ -1202,7 +1182,7 @@ app.get("/listar-combi", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Combi.find({ borrado: false }, (err, result) => {
+    Combi.find((err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -1229,7 +1209,7 @@ app.get("/detalles-combi/:patente", (req, res) => {
     res.redirect("/");
   } else {
     Combi.findOne(
-      { patente: req.params.patente, borrado: false },
+      { patente: req.params.patente},
       (err, result) => {
         if (err) {
           res.redirect("/listar-combi");
@@ -1247,7 +1227,7 @@ app.get("/alta-combi", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Usuario.find({ borrado: false, rol: "Chofer" }, (err, result) => {
+    Usuario.find({ rol: "Chofer" }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -1269,7 +1249,7 @@ app.get("/alta-combi", (req, res) => {
 //guardar combi
 app.post("/alta-combi", (req, res) => {
   Usuario.findOne(
-    { email: req.body.chofer, rol: "Chofer", borrado: false },
+    { email: req.body.chofer, rol: "Chofer"},
     (err, result) => {
       if (err) {
         res.json({ response: "errorC" });
@@ -1288,7 +1268,6 @@ app.post("/alta-combi", (req, res) => {
             },
             asientos: req.body.asientos,
             tipo: req.body.tipo,
-            borrado: false,
           });
           combi.save((err) => {
             if (err) {
@@ -1311,7 +1290,6 @@ app.delete("/eliminar-combi/:patente", (req, res) => {
       {
         "combi.patente": req.params.patente,
         fecha: { $gte: hoy },
-        borrado: false,
       },
       (err, viajes) => {
         if (err) {
@@ -1323,7 +1301,6 @@ app.delete("/eliminar-combi/:patente", (req, res) => {
             Ruta.find(
               {
                 "combi.patente": req.params.patente,
-                borrado: false,
               },
               (err, ruta) => {
                 if (err) {
@@ -1335,9 +1312,8 @@ app.delete("/eliminar-combi/:patente", (req, res) => {
                         "No se puede eliminar por que esta asiganada a rutas",
                     });
                   } else {
-                    Combi.updateOne(
+                    Combi.deleteOne(
                       { patente: req.params.patente },
-                      { borrado: true },
                       (err) => {
                         if (err) {
                           res.json({ response: "error" });
@@ -1362,12 +1338,12 @@ app.get("/modificar-combi/:patente", (req, res) => {
     res.redirect("/");
   } else {
     Combi.findOne(
-      { patente: req.params.patente, borrado: false },
+      { patente: req.params.patente},
       (err, combi) => {
         if (err) {
           res.redirect("/listar-combi");
         } else {
-          Usuario.find({ borrado: false, rol: "Chofer" }, (err, result) => {
+          Usuario.find({ rol: "Chofer" }, (err, result) => {
             if (err) {
               console.log(err);
             } else {
@@ -1394,7 +1370,7 @@ app.get("/modificar-combi/:patente", (req, res) => {
 });
 
 app.put("/modificar-combi", (req, res) => {
-  Usuario.findOne({ email: req.body.chofer, borrado: false }, (err, result) => {
+  Usuario.findOne({ email: req.body.chofer}, (err, result) => {
     if (!result) {
       res.json({ response: "errorC" });
     } else {
@@ -1457,12 +1433,12 @@ app.put("/modificar-combi", (req, res) => {
 
 // CRUD Ruta
 //
-// READ Rutas no borradas
+// READ Rutas 
 app.get("/listar-rutas", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Ruta.find({ borrado: false }, (err, rutas) => {
+    Ruta.find((err, rutas) => {
       if (err) {
         console.log(err);
       } else {
@@ -1477,12 +1453,12 @@ app.get("/cargar-rutas", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Lugar.find({ borrado: false }, (err, lugares) => {
+    Lugar.find((err, lugares) => {
       if (err) {
         console.log(err);
       } else {
         res.locals.lugares = lugares;
-        Combi.find({ borrado: false }, (err, combis) => {
+        Combi.find((err, combis) => {
           if (err) {
             console.log(err);
           } else {
@@ -1529,7 +1505,6 @@ app.post("/cargar-rutas", (req, res) => {
                   "combi.idCombi": combiR._id,
                   distancia: req.body.distancia,
                   hora: req.body.hora,
-                  borrado: false,
                 },
                 (err, resultRuta) => {
                   if (err) {
@@ -1558,7 +1533,6 @@ app.post("/cargar-rutas", (req, res) => {
                         },
                         distancia: req.body.distancia,
                         hora: req.body.hora,
-                        borrado: false,
                       });
                       ruta.save((err) => {
                         if (err) {
@@ -1591,7 +1565,6 @@ app.delete("/ruta/:id", (req, res) => {
       {
         "ruta.idRuta": req.params.id,
         fecha: { $gte: hoy },
-        borrado: false,
       },
       (err, viajes) => {
         if (err) {
@@ -1603,10 +1576,9 @@ app.delete("/ruta/:id", (req, res) => {
                 "No se puede eliminar la ruta porque tiene viajes a futuro",
             });
           } else {
-            Ruta.updateOne(
+            Ruta.deleteOne(
               { _id: req.params.id },
-              { borrado: true },
-              (err, resultRuta) => {
+              (err) => {
                 if (err) {
                   console.log(err);
                 } else {
@@ -1626,17 +1598,17 @@ app.get("/modificar-ruta/:id", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Ruta.findOne({ _id: req.params.id, borrado: false }, (err, resultRuta) => {
+    Ruta.findOne({ _id: req.params.id}, (err, resultRuta) => {
       if (err) {
         console.log(err);
       } else {
         res.locals.ruta = resultRuta;
-        Lugar.find({ borrado: false }, (err, lugares) => {
+        Lugar.find( (err, lugares) => {
           if (err) {
             console.log(err);
           } else {
             res.locals.lugares = lugares;
-            Combi.find({ borrado: false }, (err, combis) => {
+            Combi.find( (err, combis) => {
               if (err) {
                 console.log(err);
               } else {
@@ -1655,7 +1627,6 @@ app.put("/modificar-ruta", (req, res) => {
     {
       "ruta.idRuta": req.body.id,
       fecha: { $gte: hoy },
-      borrado: false,
     },
     (err, viajes) => {
       if (err) {
@@ -1702,7 +1673,6 @@ app.put("/modificar-ruta", (req, res) => {
                           "combi.idCombi": combiR._id,
                           distancia: req.body.distancia,
                           hora: req.body.hora,
-                          borrado: false,
                           _id: { $ne: req.body.id }
                         },
                         (err, resultRuta) => {
@@ -1734,7 +1704,6 @@ app.put("/modificar-ruta", (req, res) => {
                                   },
                                   distancia: req.body.distancia,
                                   hora: req.body.hora,
-                                  borrado: false,
                                 },
                                 (err, updRuta) => {
                                   if (err) {
@@ -1767,7 +1736,7 @@ app.get("/cargar-viaje", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Ruta.find({ borrado: false }, (err, result) => {
+    Ruta.find((err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -1805,7 +1774,7 @@ app.post("/cargar-viaje", (req, res) => {
                   ]
                 },
                 
-              ] , borrado: false },
+              ] ,},
               (err, resultV) => {
                 if (err) {
                   console.log(err);
@@ -1839,7 +1808,6 @@ app.post("/cargar-viaje", (req, res) => {
                       precio: req.body.precio,
                       asientosDisponibles: req.body.asientos,
                       estado: "En espera",
-                      borrado: false,
                     });
                     v.save((err) => {
                       if (err) {
@@ -1869,7 +1837,7 @@ app.get("/viajes", (req, res) => {
     res.redirect("/");
   } else {
     Viaje.find(
-      { borrado: false, fecha: { $gte: new Date() } },
+      { fecha: { $gte: new Date() } },
       (err, result) => {
         if (err) {
           console.log(err);
@@ -1885,7 +1853,7 @@ app.get("/viajes-pasados", (req, res) => {
     res.redirect("/");
   } else {
     Viaje.find(
-      { borrado: false, fecha: { $lt: new Date() } },
+      { fecha: { $lt: new Date() } },
       (err, result) => {
         if (err) {
           console.log(err);
@@ -1929,7 +1897,7 @@ app.get("/modificar-viaje/:id", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Ruta.find({ borrado: false }, (err, rutaResult) => {
+    Ruta.find( (err, rutaResult) => {
       if (err) {
         console.log(err);
       } else {
@@ -2015,7 +1983,7 @@ app.put("/viaje", (req, res) => {
                                       ]
                                     },
 
-                                  ], borrado: false, _id:{$ne: req.body.idViaje}
+                                  ], _id:{$ne: req.body.idViaje}
                                 },
                                 (err, resultV) => {
                                   if (err) {
@@ -2056,7 +2024,6 @@ app.put("/viaje", (req, res) => {
                                           asientosDisponibles:
                                             req.body.asientos,
                                           estado: "En espera",
-                                          borrado: false,
                                         },
                                         (err) => {
                                           if (err) {
@@ -2106,7 +2073,7 @@ app.delete("/viaje/:id", (req, res) => {
           response: "No se puede borrar el viaje, tiene pasajes comprados",
         });
       } else {
-        Viaje.updateOne({ _id: req.params.id }, { borrado: true }, (error) => {
+        Viaje.deleteOne({ _id: req.params.id }, (error) => {
           if (error) {
             console.log(error);
           } else {
@@ -2173,7 +2140,7 @@ app.get("/pasajes-cancelados", (req, res) => {
 
 // Crear pasaje
 app.get("/comprar-pasaje/:id", (req, res) => {
-  Insumo.find({ borrado: false }, (err, resultInsumos) => {
+  Insumo.find((err, resultInsumos) => {
     if (err) {
       console.log(err);
     } else {
@@ -2183,7 +2150,7 @@ app.get("/comprar-pasaje/:id", (req, res) => {
           res.send(err);
         } else {
           Usuario.findOne(
-            { email: req.session.email, borrado: false },
+            { email: req.session.email},
             (err, usuario) => {
               if (err) {
                 res.redirect("/");

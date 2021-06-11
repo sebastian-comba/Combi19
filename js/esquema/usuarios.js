@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
   dni: { type: String, required: true },
   fechaN: { type: Date},
   rol: { type: String, required: true },
-  borrado: { type: Boolean, required: true },
   suspendido: { type: Boolean, required: true },
   categoria: { type: String },
   telefono: { type: String },

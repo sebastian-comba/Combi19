@@ -88,7 +88,8 @@ function pad(number) {
 </a>
 <% let c = comentarios.slice(0, 10);
     c.forEach(function(comentario) { %>
-<p><%= comentario.nombre%> - <%= comentario.apellido%> - <%= comentario.texto%> - <%= (new Date(Date.parse(comentario.fecha))).completa()%>
+<p>(<%= (new Date(Date.parse(comentario.fecha))).completa()%>) <%= comentario.nombre%> <%= comentario.apellido%>: <br>
+  "<%= comentario.texto%> "
     <% if (comentario.modificado) {%>
     <i>(editado)</i>
     <% } %>

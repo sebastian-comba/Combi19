@@ -15,7 +15,7 @@ function validarLLegada() {
             '<small  style="color:red"><p class="er">La fecha de llegada no puede ser menor o igual a la fecha de salida </p></small>';
     }
 } 
-function validarLLegada() {
+function validarSalida() {
     if (fecha.value < fecha.min) {
         document.getElementById("errF").innerHTML =
             '<small  style="color:red"><p class="er">La fecha de salida no puede ser anterior a ahora </p></small>';

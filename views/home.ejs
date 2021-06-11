@@ -89,17 +89,18 @@ function pad(number) {
 <% let c = comentarios.slice(0, 10);
     c.forEach(function(comentario) { %>
 <p>(<%= (new Date(Date.parse(comentario.fecha))).completa()%>) <%= comentario.nombre%> <%= comentario.apellido%>: <br>
-  "<%= comentario.texto%> "
+  "<%= comentario.texto%>"
     <% if (comentario.modificado) {%>
     <i>(editado)</i>
     <% } %>
     <% if (comentario.email == miEmail ) {%>
 <form action="modificar-comentario/<%= comentario._id %>" method="GET">
     <button type="submit">Modificar comentario</button>
+    <button class="eliminar" type="button" id="<%= comentario._id %>" onclick="eliminar(this)">
+      Eliminar
+  </button>
 </form>
-<button class="eliminar" id="<%= comentario._id %>" onclick="eliminar(this)">
-    Eliminar
-</button>
+
 <div id="error"></div>
 <script>
     function eliminar(comp) {

@@ -1,5 +1,5 @@
 <%- include("partials/header-pasajero"); -%>
-<h2>Mi perfil</h2>
+<h2>Mi perfil</h2><br>
 <%
 function pad(number) {
   if (number < 10) {
@@ -36,9 +36,9 @@ Date.prototype.mes= function(){
         <p><strong>Fecha de nacimiento:</strong> <%= (new Date(Date.parse(data.fechaN))).fecha()%></p>
         <p><strong>Tipo de subscripción:</strong> <%= data.categoria %></p>
     </div>
-    <div class="col-6">
+    <div class="col-6 recuadro">
         <% if (data.categoria == 'gold') {%>
-        <p><strong>Datos de su tarjeta:</strong></p>
+        <h3>Datos de su tarjeta:</h3><br>
         <p><strong>Codigo:</strong> <%= data.tarjeta.codigo %></p>
         <p><strong>Vencimiento:</strong> <%= (new Date(Date.parse(data.tarjeta.vencimiento))).mes() %></p>
         <p><strong>Nombre completo:</strong> <%= data.tarjeta.nombreCompleto %></p>

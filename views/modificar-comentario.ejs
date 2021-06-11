@@ -16,12 +16,13 @@
         <input type="hidden" value="<%= data._id %>" id="id" name="id" />
         <input type="hidden" value="<%= data.email %>" id="email" name="email" />
         <button id="modificar">Modificar</button>
+        <a href="http://localhost:3000/">
+            <button id="cancelar">Cancelar</button>
+        </a>
     </div>
 </div>
 
-<a href="http://localhost:3000/">
-    <button id="cancelar">Cancelar</button>
-</a>
+
 <script src="/js/modificar-comentario.js"></script>
 
 <%- include("partials/footer"); -%>

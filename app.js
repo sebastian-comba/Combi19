@@ -136,7 +136,7 @@ app.post("/crear-comentario", (req, res) => {
           nombre: req.body.nombre,
           apellido: req.body.apellido,
           email: req.body.email,
-          fecha: now,
+          fecha: new Date(),
           texto: req.body.texto,
           modificado: false,
         });
@@ -178,7 +178,6 @@ app.put("/modificar-comentario", (req, res) => {
   Comentario.findOneAndUpdate(
     { _id: req.body.id },
     {
-      // cambia la fecha en la modificacion? fecha: now,
       texto: req.body.texto,
       modificado: true,
     },

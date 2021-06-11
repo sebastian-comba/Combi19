@@ -11,7 +11,6 @@ const combiSchema = new mongoose.Schema({
   },
   asientos: { type: Number, required: true },
   tipo: { type: String, required: true },
-  borrado: { type: Boolean, required: true },
 });
 
 const Combi = mongoose.model("Combi", combiSchema);

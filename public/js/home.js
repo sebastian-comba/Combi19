@@ -101,15 +101,15 @@ $(document).ready(() => {
               const e = data.viajes[i]; 
               viajes.innerHTML =
                 viajes.innerHTML +
-                ' <div class="card"> <div div class="card-title" style = "background-color:#0a546b; color: azure; text-align: center;" > <strong>Tipo:</strong> ' +
+                ' <div class="card"> <div div class="card-title" style = "background-color:#0a546b; color: azure; text-align: center" > <h4> <strong>Tipo:</strong> ' +
                 e.combi.tipo +
-                '</div ><div class="card-body"><div class="row"><div class="col-6"><p><strong>Origen:</strong> ' +
+                '</h4></div ><div class="card-body"><div class="row"><div class="col-6"><p><strong>Origen:</strong> ' +
                 e.ruta.origen.nombre +
                 "</p><p><strong>Destino:</strong>" +
                 e.ruta.destino.nombre +
                 "</p><p><strong>Fecha y hora:</strong> " +
                 new Date(Date.parse(e.fecha)).completa() +
-                '</div><div class="col-6"> <p><strong>Cantidad de ascientos:</strong> ' +
+                '</div><div class="col-6"> <p><strong>Cantidad de asientos:</strong> ' +
                 e.asientosDisponibles +
                 "</p><br><p><strong>Precio:</strong> $" +
                 e.precio +

@@ -93,11 +93,11 @@
       <div style=" margin: 3px; padding: 1px; ">
         <p>Datos de la combi:</p>
         <label for="marca">Marca:</label>
-        <input id="marca" disable><br><br>
+        <input id="marca" disabled><br><br>
         <label for="modelo">Modelo:</label>
-        <input id="modelo" disable><br><br>
+        <input id="modelo" disabled><br><br>
         <label for="tipo">Tipo:</label>
-        <input id="tipo" disable>
+        <input id="tipo" disabled>
       </div>
       <hr>
       <label for="fecha">Fecha:</label>
@@ -121,13 +121,12 @@
       <input type="text" id="asientos" name="asientos" class="mV" value="<%= viaje.asientosDisponibles %>" />
       <div id="errA" class="err"></div>
       <br />
-      <input type="hidden" name="idViaje" id="idViaje" value="<%= viaje._id %>">
       <br>
       <div id="err" class="err"></div>
       <button type="submit" id="modificar">Guardar cambios</button>
       
       
-      <a href="http://localhost:3000/home">Cancelar</a>
+      <a href="http://localhost:3000/viajes">Cancelar</a>
     </div>
     
   </div>

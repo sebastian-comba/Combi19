@@ -1,9 +1,11 @@
 <%- include("partials/header-pasajero"); -%>
-<%if (data==="Cliente comun"){%>
-<h1>Bienvenido Cliente</h1>
+<%if (data.rol ==="Cliente comun"){%>
+<h1>Bienvenido/a <%= data.nombre%> <%= data.apellido%></h1>
+<h3><i>Cliente</i></h3>
 <%}else{%>
 
-<h1>Bienvenido <%= data%></h1>
+<h1>Bienvenido/a <%= data.nombre%> <%= data.apellido%></h1>
+<h3><i>Cliente Gold</i></h3>
 <%}
 function pad(number) {
   if (number < 10) {
@@ -86,7 +88,8 @@ function pad(number) {
 </a>
 <% let c = comentarios.slice(0, 10);
     c.forEach(function(comentario) { %>
-<p><%= comentario.nombre%> - <%= comentario.apellido%> - <%= comentario.texto%> - <%= (new Date(Date.parse(comentario.fecha))).completa()%>
+<p>(<%= (new Date(Date.parse(comentario.fecha))).completa()%>) <%= comentario.nombre%> <%= comentario.apellido%>: <br>
+  "<%= comentario.texto%> "
     <% if (comentario.modificado) {%>
     <i>(editado)</i>
     <% } %>

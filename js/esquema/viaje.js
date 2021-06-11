@@ -28,7 +28,6 @@ const viajeSchema = new mongoose.Schema({
   precio: { type: Number, required: true },
   asientosDisponibles: { type: Number, required: true },
   estado: { type: String, required: true },
-  borrado: { type: Boolean, required: true },
 });
 
 viajeSchema.index({ idRuta: 1, fecha: 1 }, { unique: true });

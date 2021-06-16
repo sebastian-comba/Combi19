@@ -20,6 +20,7 @@ const pasajeSchema = new mongoose.Schema({
   },
   tipoServicio: { type: String, required: true },
   fecha: { type: Date, required: true },
+  fechaCancelado: {type: Date},
   precio: { type: String, required: true },
   estadoPasaje: { type: String, required: true },
   idViaje: { type: String, required: true },

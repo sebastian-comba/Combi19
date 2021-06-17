@@ -30,7 +30,7 @@ const viajeSchema = new mongoose.Schema({
   estado: { type: String, required: true },
 });
 
-viajeSchema.index({ idRuta: 1, fecha: 1 }, { unique: true });
+/*viajeSchema.index({ idRuta: 1, fecha: 1 }, { unique: true });*/
 
 const Viaje = mongoose.model("Viaje", viajeSchema);
 

@@ -1871,37 +1871,39 @@ app.post("/cargar-viaje", (req, res) => {
             });
           } else {
             Viaje.find(
-              {
-                $or: [
-                  { "combi.patente": resCombi.patente },
-                  { "chofer.email": resCombi.chofer.email },
-                ],
-                $or: [
-                  {
-                    $and: [
-                      { llegada: { $gte: transformarFecha(req.body.llegada) } },
-                      { fecha: { $lte: transformarFecha(req.body.llegada) } },
-                    ],
-                  },
-                  {
-                    $and: [
-                      {
-                        llegada: {
-                          $gte: transformarFecha(
-                            req.body.fecha + "T" + resRuta.hora
-                          ),
+              { $and:[{
+                  $or: [
+                    { "combi.patente": resCombi.patente },
+                    { "chofer.mail": resCombi.chofer.email },
+                  ]
+                },{
+                  $or: [
+                    {
+                      $and: [
+                        { llegada: { $gte: transformarFecha(req.body.llegada) } },
+                        { fecha: { $lte: transformarFecha(req.body.llegada) } },
+                      ],
+                    },
+                    {
+                      $and: [
+                        {
+                          llegada: {
+                            $gte: transformarFecha(
+                              req.body.fecha + "T" + resRuta.hora
+                            ),
+                          },
                         },
-                      },
-                      {
-                        fecha: {
-                          $lte: transformarFecha(
-                            req.body.fecha + "T" + resRuta.hora
-                          ),
+                        {
+                          fecha: {
+                            $lte: transformarFecha(
+                              req.body.fecha + "T" + resRuta.hora
+                            ),
+                          },
                         },
-                      },
-                    ],
-                  },
-                ],
+                      ],
+                    },
+                  ]
+                }]
               },
               (err, resultV) => {
                 if (err) {
@@ -2120,11 +2122,11 @@ app.put("/viaje", (req, res) => {
                               });
                             } else {
                               Viaje.find(
-                                {
+                                {$and: [{
                                   $or: [
                                     {"combi.patente": resCombi.patente},
-                                    {"chofer.email": resCombi.chofer.email},
-                                  ],
+                                    {"chofer.mail": resCombi.chofer.email},
+                                  ]},{
                                   $or: [
                                     {
                                       $and: [
@@ -2167,6 +2169,7 @@ app.put("/viaje", (req, res) => {
                                       ],
                                     },
                                   ],
+                                }],
                                   _id: { $ne: req.body.idViaje },
                                 },
                                 (err, resultV) => {

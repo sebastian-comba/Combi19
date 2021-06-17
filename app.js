@@ -2249,7 +2249,7 @@ app.put("/viaje", (req, res) => {
 
 // DELETE VIAJE
 app.delete("/viaje/:id", (req, res) => {
-  Pasaje.findOne({ idViaje: req.params.id }, (err, result) => {
+  Pasaje.findOne({ idViaje: req.params.id, estadoPasaje:{$ne:"Cancelado"} }, (err, result) => {
     if (err) {
       console.log(err);
     } else {

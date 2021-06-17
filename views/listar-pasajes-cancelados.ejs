@@ -33,6 +33,12 @@
 function round(aDate){
   return(Math.round(aDate));
 }
+
+function calcularHoras (date1, date2){
+  return(
+    round(getDifferenceInHours((new Date(Date.parse(date1))), (new Date(Date.parse(date2)))))
+  )
+}
   %>
 
 <div id="error"></div>
@@ -51,9 +57,12 @@ function round(aDate){
   <tbody>
     <% data.forEach(function(pasaje) { %>
     <tr>
-      <td><%= pasaje.estadoPasaje %><i>(<%= round(getDifferenceInHours((new Date(Date.parse(pasaje.fecha))), (new Date(Date.parse(pasaje.fechaCancelado)))))%> hs antes del viaje)</i></td>
+      <td><%= pasaje.estadoPasaje %> <br><i>(<%= calcularHoras(pasaje.fecha, pasaje.fechaCancelado)%> hs antes del viaje)</i></td>
       <td><%= pasaje.cantidad %></td>
-      <td><%= pasaje.precio %></td>
+      <td>Total: $<%= pasaje.precio %><br><i>
+         <% if(calcularHoras(pasaje.fecha, pasaje.fechaCancelado) < 48){ %> 
+        (Devuelto: $<%=  pasaje.precio/2 %>)<% }else{ %>(Devuelto: $<%=  pasaje.precio %>)<% } %>
+      </i></td>
       <td><%= pasaje.origen.nombre %> - <%= pasaje.origen.provincia %></td>
       <td><%= pasaje.destino.nombre %> - <%= pasaje.destino.provincia %></td>
       <td><%= (new Date(Date.parse(pasaje.fecha))).completa() %></td>

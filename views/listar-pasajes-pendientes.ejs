@@ -45,7 +45,7 @@
     <tr>
       <td><%= pasaje.estadoPasaje %></td>
       <td><%= pasaje.cantidad %></td>
-      <td><%= pasaje.precio %></td>
+      <td>$<%= pasaje.precio %></td>
       <td><%= pasaje.origen.nombre %> - <%= pasaje.origen.provincia %></td>
       <td><%= pasaje.destino.nombre %> - <%= pasaje.destino.provincia %></td>
       <td><%= (new Date(Date.parse(pasaje.fecha))).completa() %></td>

@@ -91,6 +91,7 @@
         .then((data) => {
             switch (data.response) {
                 case "bien":
+                    window.alert("Se ha eliminado exitosamente el viaje");
                     location.reload();
                     break;
                 default:

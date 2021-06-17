@@ -1871,8 +1871,10 @@ app.post("/cargar-viaje", (req, res) => {
             });
           } else {
             Viaje.find(
-              {
+              {$or:{
                 "combi.patente": resCombi.patente,
+                "chofer.email":resCombi.chofer.email,
+              },
                 $or: [
                   {
                     $and: [
@@ -2249,7 +2251,7 @@ app.put("/viaje", (req, res) => {
 
 // DELETE VIAJE
 app.delete("/viaje/:id", (req, res) => {
-  Pasaje.findOne({ idViaje: req.params.id }, (err, result) => {
+  Pasaje.findOne({ idViaje: req.params.id, estadoPasaje: { $ne: "Cancelado"}}, (err, result) => {
     if (err) {
       console.log(err);
     } else {

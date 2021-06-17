@@ -28,7 +28,7 @@
         <%= ruta.combi.patente %>, <%= ruta.combi.marca %>, <%=
         ruta.combi.modelo %>
       </td>
-      <td><%= ruta.distancia %></td>
+      <td><%= ruta.distancia %> Km</td> 
       <td><%= ruta.hora %></td>
       <td>
         <form action="modificar-ruta/<%= ruta._id %>" method="GET">
@@ -55,6 +55,7 @@
         .then((data) => {
           switch (data.response) {
             case "bien":
+              window.alert("Se ha eliminado exitosamente la ruta");
               location.reload();
               break;
             default:

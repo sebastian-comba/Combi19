@@ -1,9 +1,46 @@
 <%- include("partials/header-pasajero"); -%>
-<h1>Lista de Pasajes</h1>
+<h1>Mis pasajes cancelados</h1>
 
 <% if (!data.length) { %>
 <h2>No posee pasajes cancelados</h2>
-<% } else { %>
+<% } else { 
+  
+  function pad(number) {
+    if (number < 10) {
+      return "0" + number;
+    }
+    return number;
+  }
+      
+      Date.prototype.completa = function () {
+    return (
+      pad(this.getDate()) +
+      "/" +
+      pad(this.getMonth() + 1) +
+      "/" +
+      pad(this.getFullYear()) +
+      " " +
+      pad(this.getHours()) +
+      ":" +
+      pad(this.getMinutes()) +
+      "hs"
+    );
+  }
+  function getDifferenceInHours(date1, date2) {
+    const diffInMs = Math.abs(date2 - date1);
+    return diffInMs / (1000 * 60 * 60);
+  }
+function round(aDate){
+  return(Math.round(aDate));
+}
+
+function calcularHoras (date1, date2){
+  return(
+    round(getDifferenceInHours((new Date(Date.parse(date1))), (new Date(Date.parse(date2)))))
+  )
+}
+  %>
+
 <div id="error"></div>
 <table class="table table-striped">
   <thead>
@@ -20,9 +57,12 @@
   <tbody>
     <% data.forEach(function(pasaje) { %>
     <tr>
-      <td><%= pasaje.estadoPasaje %></td>
+      <td><%= pasaje.estadoPasaje %> <br><i>(<%= calcularHoras(pasaje.fecha, pasaje.fechaCancelado)%> hs antes del viaje)</i></td>
       <td><%= pasaje.cantidad %></td>
-      <td><%= pasaje.precio %></td>
+      <td>Total: $<%= pasaje.precio %><br><i>
+         <% if(calcularHoras(pasaje.fecha, pasaje.fechaCancelado) < 48){ %> 
+        (Devuelto: $<%=  pasaje.precio/2 %>)<% }else{ %>(Devuelto: $<%=  pasaje.precio %>)<% } %>
+      </i></td>
       <td><%= pasaje.origen.nombre %> - <%= pasaje.origen.provincia %></td>
       <td><%= pasaje.destino.nombre %> - <%= pasaje.destino.provincia %></td>
       <td><%= (new Date(Date.parse(pasaje.fecha))).completa() %></td>

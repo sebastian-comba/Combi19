@@ -2455,7 +2455,7 @@ app.post("/comprar-pasaje", (req, res) => {
 app.put("/pasaje/:id", (req, res) => {
   Pasaje.findOneAndUpdate(
     { _id: req.params.id },
-    { estadoPasaje: "Cancelado" },
+    { estadoPasaje: "Cancelado", fechaCancelado: now },
     (err, resultPasaje) => {
       if (err) {
         console.log(err);

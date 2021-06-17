@@ -48,6 +48,7 @@
         .then((data) => {
           switch (data.response) {
             case "bien":
+              window.alert("Se ha eliminado exitosamente el lugar");
               location.reload();
               break;
             default:

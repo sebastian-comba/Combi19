@@ -66,7 +66,7 @@
       </td>
       <td><%= (new Date(Date.parse(viaje.fecha))).completa()%></td>
       <td><%= (new Date(Date.parse(viaje.llegada))).completa() %></td>
-      <td><%= viaje.precio %></td>
+      <td>$<%= viaje.precio %></td>
       <td>
         <form action="/modificar-viaje/<%= viaje._id %>" method="GET">
           <button type="submit">Modificar</button>
@@ -91,6 +91,7 @@
         .then((data) => {
             switch (data.response) {
                 case "bien":
+                    window.alert("Se ha eliminado exitosamente el viaje");
                     location.reload();
                     break;
                 default:

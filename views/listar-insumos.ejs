@@ -22,7 +22,7 @@
             <tr>
                 <td><%= insumo.nombre %></td>
                 <td><%= insumo.tipo %></td>
-                <td><%= insumo.precio %></td>
+                <td>$<%= insumo.precio %></td>
                 <td>
                     <form action="modificar-insumo/<%= insumo._id %>" method="GET">
                         <button type="submit">Modificar</button>

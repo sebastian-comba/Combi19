@@ -57,7 +57,7 @@ function calcularHoras (date1, date2){
   <tbody>
     <% data.forEach(function(pasaje) { %>
     <tr>
-      <td><%= pasaje.estadoPasaje %> <br><i>(<%= calcularHoras(pasaje.fecha, pasaje.fechaCancelado)%> hs antes del viaje)</i></td>
+      <td><%= pasaje.estadoPasaje %> <br><i>(<%= (new Date(Date.parse(pasaje.fechaCancelado))).completa() %>)</i></td>
       <td><%= pasaje.cantidad %></td>
       <td>Total: $<%= pasaje.precio %><br><i>
          <% if(calcularHoras(pasaje.fecha, pasaje.fechaCancelado) < 48){ %> 

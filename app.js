@@ -1871,10 +1871,11 @@ app.post("/cargar-viaje", (req, res) => {
             });
           } else {
             Viaje.find(
-              {$or:{
-                "combi.patente": resCombi.patente,
-                "chofer.email":resCombi.chofer.email,
-              },
+              {
+                $or: [
+                  { "combi.patente": resCombi.patente },
+                  { "chofer.email": resCombi.chofer.email },
+                ],
                 $or: [
                   {
                     $and: [
@@ -1948,7 +1949,7 @@ app.post("/cargar-viaje", (req, res) => {
                       response: {
                         lugar: "err",
                         mensaje:
-                          "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
+                          "El chofer o la combi tienen otro viaje en esa fecha, por favor seleccione otra ruta o cambie la fecha ",
                       },
                     });
                   }
@@ -2120,7 +2121,10 @@ app.put("/viaje", (req, res) => {
                             } else {
                               Viaje.find(
                                 {
-                                  "combi.patente": resCombi.patente,
+                                  $or: [
+                                    {"combi.patente": resCombi.patente},
+                                    {"chofer.email": resCombi.chofer.email},
+                                  ],
                                   $or: [
                                     {
                                       $and: [
@@ -2226,7 +2230,7 @@ app.put("/viaje", (req, res) => {
                                         response: {
                                           lugar: "err",
                                           mensaje:
-                                            "combi en uso en ese rango de dias, por favor seleccione otra ruta o cambie la fecha ",
+                                            "El chofer o la combi tienen otro viaje en esa fecha, por favor seleccione otra ruta o cambie la fecha ",
                                         },
                                       });
                                     }

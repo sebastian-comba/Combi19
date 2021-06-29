@@ -1909,6 +1909,7 @@ app.post("/cargar-viaje", (req, res) => {
                 if (err) {
                   console.log(err);
                 } else {
+                  console.log(req.body.ruta)
                   if (!resultV.length) {
                     let v = new Viaje({
                       ruta: {
@@ -1994,31 +1995,48 @@ app.get("/viajes-pasados", (req, res) => {
 });
 app.post("/buscar-viajes", (req, res) => {
   let hoy = new Date();
-  let f = transformarFecha(req.body.fecha);
-  let h = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 1);
-  let m = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 2);
+  if (req.body.fecha){
 
-  if (
-    f.getDate() + 1 == hoy.getDate() &&
-    f.getMonth() == hoy.getMonth() &&
-    f.getFullYear() == hoy.getFullYear()
-  ) {
-    h = hoy;
-    m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
-  }
-  Viaje.find(
-    {
-      asientosDisponibles: { $gt: 0 },
-      "ruta.origen.nombre": req.body.ciudadO,
-      "ruta.origen.provincia": req.body.provinciaO,
-      "ruta.destino.nombre": req.body.ciudadD,
-      "ruta.destino.provincia": req.body.provinciaD,
-      $and: [{ fecha: { $gte: h } }, { fecha: { $lt: m } }],
-    },
-    (err, result) => {
-      res.json({ viajes: result });
+    let f = transformarFecha(req.body.fecha);
+    let h = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 1);
+    let m = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 2);
+
+    if (
+      f.getDate() + 1 == hoy.getDate() &&
+      f.getMonth() == hoy.getMonth() &&
+      f.getFullYear() == hoy.getFullYear()
+    ) {
+      h = hoy;
+      m = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + 1);
     }
-  ).sort({ fecha: 1, llegada: 1 });
+    Viaje.find(
+      {
+        asientosDisponibles: { $gt: 0 },
+        "ruta.origen.nombre": req.body.ciudadO,
+        "ruta.origen.provincia": req.body.provinciaO,
+        "ruta.destino.nombre": req.body.ciudadD,
+        "ruta.destino.provincia": req.body.provinciaD,
+        $and: [{ fecha: { $gte: h } }, { fecha: { $lt: m } }],
+      },
+      (err, result) => {
+        res.json({ viajes: result });
+      }
+    ).sort({ fecha: 1, llegada: 1 });
+  }else{
+    Viaje.find(
+      {
+        asientosDisponibles: { $gt: 0 },
+        "ruta.origen.nombre": req.body.ciudadO,
+        "ruta.origen.provincia": req.body.provinciaO,
+        "ruta.destino.nombre": req.body.ciudadD,
+        "ruta.destino.provincia": req.body.provinciaD,
+        fecha: { $gte: hoy } 
+      },
+      (err, result) => {
+        res.json({ viajes: result });
+      }
+    ).sort({ fecha: 1, llegada: 1 });
+  }
 });
 
 // UPDATE VIAJE

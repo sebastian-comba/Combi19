@@ -34,7 +34,6 @@ Date.prototype.completa = function () {
 let h = new Date();
 let hoy = h.fecha();
 fecha.min = hoy;
-fecha.value = hoy;
 
 document.getElementById("origen").onchange = () => {
   let id = document.getElementById("origen").value;

@@ -1,0 +1,23 @@
+<%- include("partials/header-chofer"); -%>
+<h1>Registrar síntomas</h1>
+<% if (!data) { %>
+<h2>Error</h2>
+<% } else { %>
+<div id="error"></div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Pasajero</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><%= data.emailPasajero %></td>
+      <td></td>
+      <td></td>
+  </tbody>
+</table>
+<% } %>
+<%- include("partials/footer"); -%>

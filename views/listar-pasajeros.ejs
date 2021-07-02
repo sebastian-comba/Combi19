@@ -1,0 +1,39 @@
+<%- include("partials/header-chofer"); -%>
+<h1>Lista de Pasajeros</h1>
+<h5>Origen: <%= viaje.ruta.origen.nombre %> <%= viaje.ruta.origen.provincia %></h5>
+<h5>Destino: <%= viaje.ruta.destino.nombre %> <%= viaje.ruta.destino.provincia %></h5>
+<h5>Fecha salida: <%= viaje.fecha %></h>
+<h5>Asientos disponibles: <%= viaje.asientosDisponibles %></h5>
+<h5>Estado: <%= viaje.estado %></h5>
+<% if (!pasajes.length) { %>
+<h2>No hay pasajeros</h2>
+<% } else { %>
+<div id="error"></div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Pasajero</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% pasajes.forEach(function(pasaje) { %>
+    <tr>
+      <td><%= pasaje.emailPasajero %></td>
+      <td>
+        <form action="/registrar-sintomas/<%= pasaje._id %>" method="GET">
+          <button type="submit">Registrar síntomas</button>
+        </form>
+      </td>
+      <td>
+        <form action="" method="GET">
+          <button type="submit">No se presentó</button>
+        </form>
+      </td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table>
+<% } %>
+<%- include("partials/footer"); -%>

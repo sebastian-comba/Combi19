@@ -2299,10 +2299,32 @@ app.delete("/viaje/:id", (req, res) => {
   });
 });
 
+// Listado de viajes asignados a un chofer
+app.get("/viajes-chofer", (req, res) => {
+  if(
+    req.session.rol !== "Chofer"
+  ) {
+    res.redirect("/");
+  } else {
+    Viaje.find(
+      {
+        fecha: { $gte: new Date() }, 
+        "chofer.mail":req.session.email
+      }, 
+      (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("viajes-chofer", { viajes: result });
+      }
+    }).sort({ fecha: 1, llegada: 1 });  
+  }
+});
+
 // CRUD PASAJES
 //
 
-// Obtener todos los pasajes pendientes
+// Obtener todos los pasajes pendientes pasajero
 app.get("/pasajes-pendientes", (req, res) => {
   if (
     req.session.rol !== "Cliente comun" &&
@@ -2347,6 +2369,41 @@ app.get("/pasajes-cancelados", (req, res) => {
         }
       }
     ).sort({ fecha: 1 });
+  }
+});
+
+// Obtener todos los pasajeros de un viaje
+app.get("/listar-pasajeros/:idViaje", (req, res) => {
+  if (
+    req.session.rol !== "Chofer"
+  ) {
+    res.redirect("/");
+  } else {
+    Viaje.findOne(
+      {
+        _id:req.params.idViaje
+      },
+      (err,resultViaje) => {
+      if(err){
+        console.log(err);
+      } else {
+        res.locals.viaje = resultViaje;
+        Pasaje.find(
+          {
+            idViaje: req.params.idViaje,
+            estadoPasaje:"Pendiente"
+          },
+          (err, resultPasaje) => {
+            if (err) {
+              console.log(err);
+            } else {
+              res.locals.pasajes = resultPasaje;
+              res.render("listar-pasajeros");
+            }
+          }
+        );
+      }
+    })
   }
 });
 
@@ -2538,6 +2595,22 @@ app.get("/perfil", (req, res) => {
       }
     );
   }
+});
+
+// CHOFER registrar sintomas
+app.get("/registrar-sintomas/:id", (req, res) => {
+  Pasaje.findOne(
+    {
+      _id:req.params.id
+    },
+    (err, resultPasaje) => {
+      if(err){
+        console.log(err);
+      } else {
+        res.render("registrar-sintomas", {data: resultPasaje});
+      }
+    }
+  );
 });
 
 // NO TOCAR

@@ -39,9 +39,15 @@
         <br>
         <% } %>
           <div id="err"></div>
-          <button type="validar">Verificar sintomas</button>
+          <button id="validar">Verificar sintomas</button>
+          <a href="http://localhost:3000/listar-pasajeros/<%= data.idViaje %>">
+            <button id="cancelar">Cancelar</button>
+        </a>
           <% } %>
-        <input type="hidden" name="idViaje" id="idViaje" value="<%= data.idViaje %> ">
+        <input type="hidden" name="idViaje" id="idViaje" value="<%= data.idViaje %>">
+        <input type="hidden" name="idPasaje" id="idPasaje" value="<%= data._id %>">
+        <input type="hidden" name="emailPasajero" id="emailPasajero" value="<%= data.emailPasajero %>">
+        <input type="hidden" name="cantidadAsientos" id="cantidadAsientos" value="<%= data.cantidad %>">
         <script src="/js/registrar-sintomas.js">
         </script>
             <%- include("partials/footer"); -%>

@@ -60,14 +60,40 @@
         </form>
       </td>
       <td>
-        <form action="" method="GET">
-          <button type="submit">No se presentó</button>
-        </form>
+          <input type="hidden" name="idPasaje" id="idPasaje" value="<%= pasaje._id %>">
+          <input type="hidden" name="emailPasajero" id="emailPasajero" value="<%= pasaje.emailPasajero %>">
+          <input type="hidden" name="idViaje" id="idViaje" value="<%= pasaje.idViaje%>">
+          <input type="hidden" name="cantidadAsientos" id="cantidadAsientos" value="<%= pasaje.cantidad %>">
+          <button id="ausente" onclick="pasajeAusente()">No se presentó</button>
       </td>
     <% }}}%>
     </tr>
     <% }); %>
   </tbody>
 </table>
+<script>
+function pasajeAusente(){
+    fetch("/cancelar-pasaje-chofer", {
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            idPasaje:idPasaje.value,
+            emailPasajero: emailPasajero.value,
+            cantidadAsientos: cantidadAsientos.value,
+            idViaje:idViaje.value,
+            motivo: "Ausente"
+        }),
+    })
+        .then((res) => res.json())
+        .then((data) => {
+            switch (data.response) {
+                case "bien":
+                    window.confirm("Desea registrar al pasajero como ausente?");
+                    location.replace("/listar-pasajeros/" + idViaje.value);
+                    break;
+            }
+        });
+}
+</script>
 <% } %>
 <%- include("partials/footer"); -%>

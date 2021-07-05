@@ -2391,7 +2391,7 @@ app.get("/listar-pasajeros/:idViaje", (req, res) => {
         Pasaje.find(
           {
             idViaje: req.params.idViaje,
-            estadoPasaje:"Pendiente"
+            motivoCancelacion:{$ne:"El pasajero cancelo"}
           },
           (err, resultPasaje) => {
             if (err) {
@@ -2537,7 +2537,7 @@ app.post("/comprar-pasaje", (req, res) => {
 app.put("/pasaje/:id", (req, res) => {
   Pasaje.findOneAndUpdate(
     { _id: req.params.id },
-    { estadoPasaje: "Cancelado", fechaCancelado: now },
+    { estadoPasaje: "Cancelado", fechaCancelado: now, motivoCancelacion:"El pasajero cancelo" },
     (err, resultPasaje) => {
       if (err) {
         console.log(err);
@@ -2611,6 +2611,94 @@ app.get("/registrar-sintomas/:id", (req, res) => {
       }
     }
   );
+});
+
+app.post("/cancelar-pasaje-chofer", (req, res) => {
+      if (req.body.motivo == "Sospechoso de covid") {
+        Usuario.findOneAndUpdate({
+          email:req.body.emailPasajero,
+        },
+        {
+          suspendido:true,
+          fechaSuspendido:new Date(),
+        }, (err) => {
+          if(err){
+            console.log(err);
+          } else {
+            Pasaje.findOneAndUpdate({ 
+              _id: req.body.idPasaje
+            },
+            {
+              estadoPasaje:"Cancelado",
+              motivoCancelacion:"Sospechoso de covid",
+            },
+              (err)=>{
+              if (err){
+                console.log(err);
+              } else {
+                Viaje.findOneAndUpdate(
+                  {
+                    _id:req.body.idViaje,
+                  },
+                  {
+                    $inc: { asientosDisponibles: req.body.cantidadAsientos }, 
+                  },(err) => {
+                    if (err){
+                      console.log(err);
+                    } else {      
+                      res.json({ response: "bien" }); 
+                    }
+                  });
+                }
+            });
+          }
+        });//falta eliminar otros pasajes dentro de los siguientes 15 dias
+      } else { 
+        if (req.body.motivo == "Ausente"){
+          Pasaje.findOneAndUpdate({ 
+            _id: req.body.idPasaje
+          },
+          {
+            estadoPasaje:"Cancelado",
+            motivoCancelacion:"Ausente",
+          },
+            (err)=>{
+            if (err){
+              console.log(err);
+            } else {
+              Viaje.findOneAndUpdate(
+                {
+                  _id:req.body.idViaje,
+                },
+                {
+                  $inc: { asientosDisponibles: req.body.cantidadAsientos }, 
+                },(err) => {
+                  if (err){
+                    console.log(err);
+                  } else {      
+                    res.json({ response: "bien" }); 
+                  }
+                });
+            }
+          });
+        }
+      }
+});
+
+app.post("/registrar-sintomas", (req, res) => {
+  Pasaje.findOneAndUpdate({ 
+    _id: req.body.idPasaje
+  },
+  {
+    estadoPasaje:"Activo"
+  },
+  (err)=>{
+    if (err){
+      console.log(err);
+    } else {
+      res.json({ response: "bien" });
+    }
+  });
 });
 
 // NO TOCAR

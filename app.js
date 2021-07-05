@@ -2606,7 +2606,7 @@ app.get("/registrar-sintomas/:id", (req, res) => {
     (err, resultPasaje) => {
       if(err){
         console.log(err);
-      } else {
+      } else { 
         res.render("registrar-sintomas", {data: resultPasaje});
       }
     }

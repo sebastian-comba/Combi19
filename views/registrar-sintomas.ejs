@@ -1,23 +1,46 @@
 <%- include("partials/header-chofer"); -%>
-<h1>Registrar síntomas</h1>
-<% if (!data) { %>
-<h2>Error</h2>
-<% } else { %>
-<div id="error"></div>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th scope="col">Pasajero</th>
-      <th scope="col"></th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><%= data.emailPasajero %></td>
-      <td></td>
-      <td></td>
-  </tbody>
-</table>
-<% } %>
-<%- include("partials/footer"); -%>
+  <h1>Registrar síntomas</h1>
+  <h5>Email del comprador: <%= data.emailPasajero%>
+
+  </h5>
+  <h5>Pasajes Comprados: <%= data.cantidad%>
+  </h5>
+  <% if (!data) { %>
+    <h2>Error</h2>
+    <% } else { %>
+      <div id="error"></div>
+      <br> 
+      <% for (i=1;i<=data.cantidad;i++){%>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Pasaje <%= i %>
+            </h5>
+            <class class="card-text">
+              <form id="form_<%=i%>" >
+                <label for="temperatura">Temperatura:</label>
+                <input name="temperatura" name="form_<%=i%>" onblur="temp(this)" required type="number"><br><br>
+                <label >Sintomas que tubo en los ultimos 15 dias <small>(debe marcar las que tubo)</small></label> <br>
+                  <input type="checkbox" id="sintoma1" name="form_<%=i%>" onchange="check(this)" value="Bike">
+                  <label for="sintoma1"> Fiebre  </label> 
+                  <br>
+                  <input type="checkbox" id="sintoma2" name="form_<%=i%>" onchange="check(this)" value="Car">
+                  <label for="sintoma2"> Perdida gusto y/o olfato en la ultima semana</label> 
+                  <br>
+                    <input type="checkbox" id="sintoma3" name="form_<%=i%>" onchange="check(this)" value="Car">
+                    <label for="sintoma3"> Dolor garganta</label>
+                  <br>
+                    <input type="checkbox" id="sintoma4" name="form_<%=i%>" onchange="check(this)" value="Car">
+                    <label for="sintoma4"> Dificultad respiratoria</label>
+                  
+              </form>
+
+            </class>
+          </div>
+        </div>
+        <br>
+        <% } %>
+          <% } %>
+        <input type="hidden" name="idViaje" id="idViaje" value="<%= data.idViaje %> ">
+        <script src="/js/registrar-sintomas.js">
+        </script>
+            <%- include("partials/footer"); -%>

@@ -23,6 +23,7 @@ const pasajeSchema = new mongoose.Schema({
   fechaCancelado: {type: Date},
   precio: { type: String, required: true },
   estadoPasaje: { type: String, required: true },
+  motivoCancelacion: {type: String},
   idViaje: { type: String, required: true },
 });
 

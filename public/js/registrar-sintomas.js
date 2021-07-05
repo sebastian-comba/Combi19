@@ -19,6 +19,6 @@ function temp(fiebre){
     }
 }
 function alerta(form){
-    window.alert("El pasajero es sospechoso de covid. Avisele  que le sera devuelto la totalidad del/ de los pasaje/s y que por 15 dias no podra comprar otros pasajes");
+    window.alert("El pasajero es sospechoso de covid. Avisele que le sera devuelto la totalidad del/ de los pasaje/s y que por 15 dias no podra comprar otros pasajes, y serán cancelados los que tenga comprados");
     location.replace("/listar-pasajeros/" + idViaje.value);
 }

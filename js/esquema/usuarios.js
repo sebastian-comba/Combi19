@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   fechaN: { type: Date},
   rol: { type: String, required: true },
   suspendido: { type: Boolean, required: true },
+  fechaSuspendido: { type: Date },
   categoria: { type: String },
   telefono: { type: String },
   tarjeta: {

@@ -8,7 +8,6 @@
   <% if (!data) { %>
     <h2>Error</h2>
     <% } else { %>
-      <div id="error"></div>
       <br> 
       <% for (i=1;i<=data.cantidad;i++){%>
         <div class="card">
@@ -18,7 +17,7 @@
             <class class="card-text">
               <form id="form_<%=i%>" >
                 <label for="temperatura">Temperatura:</label>
-                <input name="temperatura" name="form_<%=i%>" onblur="temp(this)" required type="number"><br><br>
+                <input name="temperatura" class="sintoma" step="0.1" name="form_<%=i%>" onblur="temp(this)" required type="number"><br><br>
                 <label >Sintomas que tubo en los ultimos 15 dias <small>(debe marcar las que tubo)</small></label> <br>
                   <input type="checkbox" id="sintoma1" name="form_<%=i%>" onchange="check(this)" value="Bike">
                   <label for="sintoma1"> Fiebre  </label> 
@@ -39,6 +38,8 @@
         </div>
         <br>
         <% } %>
+          <div id="err"></div>
+          <button type="validar">Verificar sintomas</button>
           <% } %>
         <input type="hidden" name="idViaje" id="idViaje" value="<%= data.idViaje %> ">
         <script src="/js/registrar-sintomas.js">

@@ -1,8 +1,30 @@
 <%- include("partials/header-chofer"); -%>
+<% 
+  function pad(number) {
+    if (number < 10) {
+      return "0" + number;
+    }
+    return number;
+  }
+      
+      Date.prototype.completa = function () {
+    return (
+      pad(this.getDate()) +
+      "/" +
+      pad(this.getMonth() + 1) +
+      "/" +
+      pad(this.getFullYear()) +
+      " " +
+      pad(this.getHours()) +
+      ":" +
+      pad(this.getMinutes()) +
+      "hs"
+    );
+  } %> 
 <h1>Lista de Pasajeros</h1>
 <h5>Origen: <%= viaje.ruta.origen.nombre %> <%= viaje.ruta.origen.provincia %></h5>
 <h5>Destino: <%= viaje.ruta.destino.nombre %> <%= viaje.ruta.destino.provincia %></h5>
-<h5>Fecha salida: <%= viaje.fecha %></h>
+<h5>Fecha salida: <%= (viaje.fecha).completa() %></h>
 <h5>Asientos disponibles: <%= viaje.asientosDisponibles %></h5>
 <h5>Estado: <%= viaje.estado %></h5>
 <% if (!pasajes.length) { %>

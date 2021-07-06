@@ -2873,7 +2873,7 @@ app.get("/pasajes-pasados-chofer", (req, res) => {
     res.redirect("/");
   } else {
     Viaje.find(
-      { estadoPasaje: "Finalizado", "chofer.mail": req.session.email } },
+      { estadoPasaje: "Finalizado", "chofer.mail": req.session.email },
       (err, result) => {
         if (err) {
           console.log(err);

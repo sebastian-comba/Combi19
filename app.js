@@ -2764,6 +2764,23 @@ app.post("/vender-pasaje", (req, res) => {
   });
 });
 
+app.get("/pasajes-pasados-pasajero", (req, res) => {
+  if (
+    req.session.rol !== "Cliente comun" ||
+    req.session.rol !== "Cliente gold"
+  ) {
+    res.redirect("/");
+  } else {
+    Pasaje.find({ estadoPasaje: "Finalizado" }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("pasajes-pasados-pasajero", { viajes: result });
+      }
+    }).sort({ fecha: -1, llegada: -1 });
+  }
+});
+
 // NO TOCAR
 app.listen(3000, function () {
   console.log("Server started on port " + port);

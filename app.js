@@ -1871,45 +1871,55 @@ app.post("/cargar-viaje", (req, res) => {
             });
           } else {
             Viaje.find(
-              { $and:[{
-                  $or: [
-                    { "combi.patente": resCombi.patente },
-                    { "chofer.mail": resCombi.chofer.email },
-                  ]
-                },{
-                  $or: [
-                    {
-                      $and: [
-                        { llegada: { $gte: transformarFecha(req.body.llegada) } },
-                        { fecha: { $lte: transformarFecha(req.body.llegada) } },
-                      ],
-                    },
-                    {
-                      $and: [
-                        {
-                          llegada: {
-                            $gte: transformarFecha(
-                              req.body.fecha + "T" + resRuta.hora
-                            ),
+              {
+                $and: [
+                  {
+                    $or: [
+                      { "combi.patente": resCombi.patente },
+                      { "chofer.mail": resCombi.chofer.email },
+                    ],
+                  },
+                  {
+                    $or: [
+                      {
+                        $and: [
+                          {
+                            llegada: {
+                              $gte: transformarFecha(req.body.llegada),
+                            },
                           },
-                        },
-                        {
-                          fecha: {
-                            $lte: transformarFecha(
-                              req.body.fecha + "T" + resRuta.hora
-                            ),
+                          {
+                            fecha: { $lte: transformarFecha(req.body.llegada) },
                           },
-                        },
-                      ],
-                    },
-                  ]
-                }]
+                        ],
+                      },
+                      {
+                        $and: [
+                          {
+                            llegada: {
+                              $gte: transformarFecha(
+                                req.body.fecha + "T" + resRuta.hora
+                              ),
+                            },
+                          },
+                          {
+                            fecha: {
+                              $lte: transformarFecha(
+                                req.body.fecha + "T" + resRuta.hora
+                              ),
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
               },
               (err, resultV) => {
                 if (err) {
                   console.log(err);
                 } else {
-                  console.log(req.body.ruta)
+                  console.log(req.body.ruta);
                   if (!resultV.length) {
                     let v = new Viaje({
                       ruta: {
@@ -1995,8 +2005,7 @@ app.get("/viajes-pasados", (req, res) => {
 });
 app.post("/buscar-viajes", (req, res) => {
   let hoy = new Date();
-  if (req.body.fecha){
-
+  if (req.body.fecha) {
     let f = transformarFecha(req.body.fecha);
     let h = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 1);
     let m = new Date(f.getFullYear(), f.getMonth(), f.getDate() + 2);
@@ -2022,7 +2031,7 @@ app.post("/buscar-viajes", (req, res) => {
         res.json({ viajes: result });
       }
     ).sort({ fecha: 1, llegada: 1 });
-  }else{
+  } else {
     Viaje.find(
       {
         asientosDisponibles: { $gt: 0 },
@@ -2030,7 +2039,7 @@ app.post("/buscar-viajes", (req, res) => {
         "ruta.origen.provincia": req.body.provinciaO,
         "ruta.destino.nombre": req.body.ciudadD,
         "ruta.destino.provincia": req.body.provinciaD,
-        fecha: { $gte: hoy } 
+        fecha: { $gte: hoy },
       },
       (err, result) => {
         res.json({ viajes: result });
@@ -2140,54 +2149,61 @@ app.put("/viaje", (req, res) => {
                               });
                             } else {
                               Viaje.find(
-                                {$and: [{
-                                  $or: [
-                                    {"combi.patente": resCombi.patente},
-                                    {"chofer.mail": resCombi.chofer.email},
-                                  ]},{
-                                  $or: [
+                                {
+                                  $and: [
                                     {
-                                      $and: [
+                                      $or: [
+                                        { "combi.patente": resCombi.patente },
                                         {
-                                          llegada: {
-                                            $gte: transformarFecha(
-                                              req.body.llegada
-                                            ),
-                                          },
-                                        },
-                                        {
-                                          fecha: {
-                                            $lte: transformarFecha(
-                                              req.body.llegada
-                                            ),
-                                          },
+                                          "chofer.mail": resCombi.chofer.email,
                                         },
                                       ],
                                     },
                                     {
-                                      $and: [
+                                      $or: [
                                         {
-                                          llegada: {
-                                            $gte: transformarFecha(
-                                              req.body.fecha +
-                                                "T" +
-                                                resRuta.hora
-                                            ),
-                                          },
+                                          $and: [
+                                            {
+                                              llegada: {
+                                                $gte: transformarFecha(
+                                                  req.body.llegada
+                                                ),
+                                              },
+                                            },
+                                            {
+                                              fecha: {
+                                                $lte: transformarFecha(
+                                                  req.body.llegada
+                                                ),
+                                              },
+                                            },
+                                          ],
                                         },
                                         {
-                                          fecha: {
-                                            $lte: transformarFecha(
-                                              req.body.fecha +
-                                                "T" +
-                                                resRuta.hora
-                                            ),
-                                          },
+                                          $and: [
+                                            {
+                                              llegada: {
+                                                $gte: transformarFecha(
+                                                  req.body.fecha +
+                                                    "T" +
+                                                    resRuta.hora
+                                                ),
+                                              },
+                                            },
+                                            {
+                                              fecha: {
+                                                $lte: transformarFecha(
+                                                  req.body.fecha +
+                                                    "T" +
+                                                    resRuta.hora
+                                                ),
+                                              },
+                                            },
+                                          ],
                                         },
                                       ],
                                     },
                                   ],
-                                }],
                                   _id: { $ne: req.body.idViaje },
                                 },
                                 (err, resultV) => {
@@ -2276,48 +2292,50 @@ app.put("/viaje", (req, res) => {
 
 // DELETE VIAJE
 app.delete("/viaje/:id", (req, res) => {
-  Pasaje.findOne({ idViaje: req.params.id, estadoPasaje: { $ne: "Cancelado"}}, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      if (result !== null) {
-        res.json({
-          response: "No se puede borrar el viaje, tiene pasajes comprados",
-        });
+  Pasaje.findOne(
+    { idViaje: req.params.id, estadoPasaje: { $ne: "Cancelado" } },
+    (err, result) => {
+      if (err) {
+        console.log(err);
       } else {
-        Viaje.deleteOne({ _id: req.params.id }, (error) => {
-          if (error) {
-            console.log(error);
-          } else {
-            res.json({
-              response: "bien",
-            });
-          }
-        });
+        if (result !== null) {
+          res.json({
+            response: "No se puede borrar el viaje, tiene pasajes comprados",
+          });
+        } else {
+          Viaje.deleteOne({ _id: req.params.id }, (error) => {
+            if (error) {
+              console.log(error);
+            } else {
+              res.json({
+                response: "bien",
+              });
+            }
+          });
+        }
       }
     }
-  });
+  );
 });
 
 // Listado de viajes asignados a un chofer
 app.get("/viajes-chofer", (req, res) => {
-  if(
-    req.session.rol !== "Chofer"
-  ) {
+  if (req.session.rol !== "Chofer") {
     res.redirect("/");
   } else {
     Viaje.find(
       {
-        fecha: { $gte: new Date() }, 
-        "chofer.mail":req.session.email
-      }, 
+        fecha: { $gte: new Date() },
+        "chofer.mail": req.session.email,
+      },
       (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("viajes-chofer", { viajes: result });
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("viajes-chofer", { viajes: result });
+        }
       }
-    }).sort({ fecha: 1, llegada: 1 });  
+    ).sort({ fecha: 1, llegada: 1 });
   }
 });
 
@@ -2374,36 +2392,35 @@ app.get("/pasajes-cancelados", (req, res) => {
 
 // Obtener todos los pasajeros de un viaje
 app.get("/listar-pasajeros/:idViaje", (req, res) => {
-  if (
-    req.session.rol !== "Chofer"
-  ) {
+  if (req.session.rol !== "Chofer") {
     res.redirect("/");
   } else {
     Viaje.findOne(
       {
-        _id:req.params.idViaje
+        _id: req.params.idViaje,
       },
-      (err,resultViaje) => {
-      if(err){
-        console.log(err);
-      } else {
-        res.locals.viaje = resultViaje;
-        Pasaje.find(
-          {
-            idViaje: req.params.idViaje,
-            motivoCancelacion:{$ne:"El pasajero cancelo"}
-          },
-          (err, resultPasaje) => {
-            if (err) {
-              console.log(err);
-            } else {
-              res.locals.pasajes = resultPasaje;
-              res.render("listar-pasajeros");
+      (err, resultViaje) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.locals.viaje = resultViaje;
+          Pasaje.find(
+            {
+              idViaje: req.params.idViaje,
+              motivoCancelacion: { $ne: "El pasajero cancelo" },
+            },
+            (err, resultPasaje) => {
+              if (err) {
+                console.log(err);
+              } else {
+                res.locals.pasajes = resultPasaje;
+                res.render("listar-pasajeros");
+              }
             }
-          }
-        );
+          );
+        }
       }
-    })
+    );
   }
 });
 
@@ -2537,7 +2554,11 @@ app.post("/comprar-pasaje", (req, res) => {
 app.put("/pasaje/:id", (req, res) => {
   Pasaje.findOneAndUpdate(
     { _id: req.params.id },
-    { estadoPasaje: "Cancelado", fechaCancelado: now, motivoCancelacion:"El pasajero cancelo" },
+    {
+      estadoPasaje: "Cancelado",
+      fechaCancelado: now,
+      motivoCancelacion: "El pasajero cancelo",
+    },
     (err, resultPasaje) => {
       if (err) {
         console.log(err);
@@ -2601,102 +2622,144 @@ app.get("/perfil", (req, res) => {
 app.get("/registrar-sintomas/:id", (req, res) => {
   Pasaje.findOne(
     {
-      _id:req.params.id
+      _id: req.params.id,
     },
     (err, resultPasaje) => {
-      if(err){
+      if (err) {
         console.log(err);
-      } else { 
-        res.render("registrar-sintomas", {data: resultPasaje});
+      } else {
+        res.render("registrar-sintomas", { data: resultPasaje });
       }
     }
   );
 });
 
 app.post("/cancelar-pasaje-chofer", (req, res) => {
-      if (req.body.motivo == "Sospechoso de covid") {
-        Usuario.findOneAndUpdate({
-          email:req.body.emailPasajero,
-        },
-        {
-          suspendido:true,
-          fechaSuspendido:new Date(),
-        }, (err) => {
-          if(err){
-            console.log(err);
-          } else {
-            Pasaje.findOneAndUpdate({ 
-              _id: req.body.idPasaje
+  if (req.body.motivo == "Sospechoso de covid") {
+    Usuario.findOneAndUpdate(
+      {
+        email: req.body.emailPasajero,
+      },
+      {
+        suspendido: true,
+        fechaSuspendido: new Date(),
+      },
+      (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          Pasaje.findOneAndUpdate(
+            {
+              _id: req.body.idPasaje,
             },
             {
-              estadoPasaje:"Cancelado",
-              motivoCancelacion:"Sospechoso de covid",
+              estadoPasaje: "Cancelado",
+              motivoCancelacion: "Sospechoso de covid",
             },
-              (err)=>{
-              if (err){
+            (err) => {
+              if (err) {
                 console.log(err);
               } else {
                 Viaje.findOneAndUpdate(
                   {
-                    _id:req.body.idViaje,
+                    _id: req.body.idViaje,
                   },
                   {
-                    $inc: { asientosDisponibles: req.body.cantidadAsientos }, 
-                  },(err) => {
-                    if (err){
+                    $inc: { asientosDisponibles: req.body.cantidadAsientos },
+                  },
+                  (err) => {
+                    if (err) {
                       console.log(err);
-                    } else {      
-                      res.json({ response: "bien" }); 
+                    } else {
+                      res.json({ response: "bien" });
                     }
-                  });
-                }
-            });
-          }
-        });//falta eliminar otros pasajes dentro de los siguientes 15 dias
-      } else { 
-        if (req.body.motivo == "Ausente"){
-          Pasaje.findOneAndUpdate({ 
-            _id: req.body.idPasaje
-          },
-          {
-            estadoPasaje:"Cancelado",
-            motivoCancelacion:"Ausente",
-          },
-            (err)=>{
-            if (err){
-              console.log(err);
-            } else {
-              Viaje.findOneAndUpdate(
-                {
-                  _id:req.body.idViaje,
-                },
-                {
-                  $inc: { asientosDisponibles: req.body.cantidadAsientos }, 
-                },(err) => {
-                  if (err){
-                    console.log(err);
-                  } else {      
-                    res.json({ response: "bien" }); 
                   }
-                });
+                );
+              }
             }
-          });
+          );
         }
       }
+    ); //falta eliminar otros pasajes dentro de los siguientes 15 dias
+  } else {
+    if (req.body.motivo == "Ausente") {
+      Pasaje.findOneAndUpdate(
+        {
+          _id: req.body.idPasaje,
+        },
+        {
+          estadoPasaje: "Cancelado",
+          motivoCancelacion: "Ausente",
+        },
+        (err) => {
+          if (err) {
+            console.log(err);
+          } else {
+            Viaje.findOneAndUpdate(
+              {
+                _id: req.body.idViaje,
+              },
+              {
+                $inc: { asientosDisponibles: req.body.cantidadAsientos },
+              },
+              (err) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  res.json({ response: "bien" });
+                }
+              }
+            );
+          }
+        }
+      );
+    }
+  }
 });
 
 app.post("/registrar-sintomas", (req, res) => {
-  Pasaje.findOneAndUpdate({ 
-    _id: req.body.idPasaje
-  },
-  {
-    estadoPasaje:"Activo"
-  },
-  (err)=>{
-    if (err){
+  Pasaje.findOneAndUpdate(
+    {
+      _id: req.body.idPasaje,
+    },
+    {
+      estadoPasaje: "Activo",
+    },
+    (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json({ response: "bien" });
+      }
+    }
+  );
+});
+
+app.post("/vender-pasaje", (req, res) => {
+  Viaje.find({ _id: req.body.viaje_id }, (err, viaje) => {
+    if (err) {
       console.log(err);
     } else {
-      res.json({ response: "bien" });
+      if (viaje.asientosDisponibles >= req.body.cantidad) {
+        p = new Pasaje({
+          emailPasajero: req.body.email_pasaje,
+          insumos: [],
+          cantidad: req.body.cantidad,
+          idViaje: req.body.viaje_id,
+          fecha: viaje.fecha,
+          precio: parseFloat(req.body.total),
+          "origen.nombre": viaje.ruta.origen.nombre,
+          "origen.provincia": viaje.ruta.origen.provincia,
+          "destino.nombre": viaje.ruta.destino.nombre,
+          "destino.provincia": viaje.ruta.destino.provincia,
+          estadoPasaje: "Pendiente",
+          tipoServicio: viaje.combi.tipo,
+        });
+        p.save();
+        res.json({ response: "bien" });
+      } else {
+        console.log("cantidad de asientos maxima a la disponible");
+      }
     }
   });
 });

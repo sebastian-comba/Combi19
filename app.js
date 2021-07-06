@@ -2624,12 +2624,23 @@ app.post("/verificar", (req, res) => {
             usuario: us,
           });
         }
-      })
-    }else{
-      if (result.rol === "Admin" || result.rol === "Chofer"){
-        res.json({ response: "rol", mensaje: "El email esta registrado para un " + result.rol+".El email debe de pertenecer a un Cliente", usuario: result })
-      }else{
-      res.json({response:"existe", mensaje:"El email esta registrado",usuario:result})
+      });
+    } else {
+      if (result.rol === "Admin" || result.rol === "Chofer") {
+        res.json({
+          response: "rol",
+          mensaje:
+            "El email esta registrado para un " +
+            result.rol +
+            ".El email debe de pertenecer a un Cliente",
+          usuario: result,
+        });
+      } else {
+        res.json({
+          response: "existe",
+          mensaje: "El email esta registrado",
+          usuario: result,
+        });
       }
     }
   });
@@ -2824,6 +2835,10 @@ app.post("/vender-pasaje", (req, res) => {
       console.log(err);
     } else {
       if (viaje.asientosDisponibles >= req.body.cantidad) {
+        Viaje.findOneAndUpdate(
+          { _id: req.body.viaje_id },
+          { asientosDisponibles: asientosDisponibles - req.body.cantidad }
+        );
         p = new Pasaje({
           emailPasajero: req.body.email_pasaje,
           insumos: [],
@@ -2839,9 +2854,13 @@ app.post("/vender-pasaje", (req, res) => {
           tipoServicio: viaje.combi.tipo,
         });
         p.save();
-        res.json({ response: "bien",pasaje:p });
+        res.json({ response: "bien", pasaje: p });
       } else {
-        res.json({ response: "mal", error:"err", mensaje: "cantidad de asientos maxima a la disponible"});
+        res.json({
+          response: "mal",
+          error: "err",
+          mensaje: "cantidad de asientos maxima a la disponible",
+        });
       }
     }
   });

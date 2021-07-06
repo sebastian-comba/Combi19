@@ -2025,8 +2025,8 @@ app.post("/buscar-viajes", (req, res) => {
         "ruta.origen.provincia": req.body.provinciaO,
         "ruta.destino.nombre": req.body.ciudadD,
         "ruta.destino.provincia": req.body.provinciaD,
-        estado:"En espera",
-        $and: [{ fecha: { $gte: h } }, { fecha: { $lt: m } }], 
+        estado: "En espera",
+        $and: [{ fecha: { $gte: h } }, { fecha: { $lt: m } }],
       },
       (err, result) => {
         res.json({ viajes: result });
@@ -2041,7 +2041,7 @@ app.post("/buscar-viajes", (req, res) => {
         "ruta.destino.nombre": req.body.ciudadD,
         "ruta.destino.provincia": req.body.provinciaD,
         estado: "En espera",
-        fecha: { $gte: hoy } 
+        fecha: { $gte: hoy },
       },
       (err, result) => {
         res.json({ viajes: result });
@@ -2291,36 +2291,48 @@ app.put("/viaje", (req, res) => {
     });
   });
 });
-app.get("/iniciar-viaje/:id",(req,res)=>{
-  Viaje.updateOne({_id : req.params.id},{
-    estado:"En viaje"
-  },(err,result)=>{
-    if(!err){
-      res.json({response:"bien"})
-    }else{
-      console.log(err)
+app.get("/iniciar-viaje/:id", (req, res) => {
+  Viaje.updateOne(
+    { _id: req.params.id },
+    {
+      estado: "En viaje",
+    },
+    (err, result) => {
+      if (!err) {
+        res.json({ response: "bien" });
+      } else {
+        console.log(err);
+      }
     }
-  })
-})
+  );
+});
 app.get("/terminar-viaje/:id", (req, res) => {
-  Viaje.updateOne({ _id: req.params.id }, {
-    estado: "Finalizado"
-  }, (err, result) => {
-    if (!err) {
-      Pasaje.updateMany({ idViaje: req.params.id, estadoPasaje:"Activo"},{
-        estadoPasaje: "Finalizado",
-      }, (err, result) => {
-        if (!err) {
-          res.json({ response: "bien" })
-        }else{
-          console.log(err);
-        }
-      })
-    } else {
-      console.log(err)
+  Viaje.updateOne(
+    { _id: req.params.id },
+    {
+      estado: "Finalizado",
+    },
+    (err, result) => {
+      if (!err) {
+        Pasaje.updateMany(
+          { idViaje: req.params.id, estadoPasaje: "Activo" },
+          {
+            estadoPasaje: "Finalizado",
+          },
+          (err, result) => {
+            if (!err) {
+              res.json({ response: "bien" });
+            } else {
+              console.log(err);
+            }
+          }
+        );
+      } else {
+        console.log(err);
+      }
     }
-  })
-})
+  );
+});
 // DELETE VIAJE
 app.delete("/viaje/:id", (req, res) => {
   Pasaje.findOne(
@@ -2484,7 +2496,6 @@ app.get("/comprar-pasaje/:id", (req, res) => {
   }).sort({ nombre: 1 });
 });
 
-
 app.post("/comprar-pasaje", (req, res) => {
   Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
     if (err) {
@@ -2583,41 +2594,50 @@ app.post("/comprar-pasaje", (req, res) => {
     }
   });
 });
-app.get("/vender-pasaje/:idViaje",(req,res)=>{
-  Viaje.findOne({_id:req.params.idViaje},(err,result)=>{
-    if(err){
+app.get("/vender-pasaje/:idViaje", (req, res) => {
+  Viaje.findOne({ _id: req.params.idViaje }, (err, result) => {
+    if (err) {
       console.log(err);
-    }else{
-      res.render("vender-pasaje",{viaje:result})
+    } else {
+      res.render("vender-pasaje", { viaje: result });
     }
-  })
-})
-app.post("/verificar",(req,res)=>{
-  Usuario.findOne({email:req.body.email},(err,result)=>{
-    if(!result){
+  });
+});
+app.post("/verificar", (req, res) => {
+  Usuario.findOne({ email: req.body.email }, (err, result) => {
+    if (!result) {
       let us = new Usuario({
         nombre: "Nombre Temporal",
         apellido: "Apellido Temporal",
         email: req.body.email,
         clave: req.body.email,
         dni: "12345678",
-        fechaN: new Date,
-        rol: "Cliente comun" ,
+        fechaN: new Date(),
+        rol: "Cliente comun",
         suspendido: false,
         categoria: "comun",
       });
       us.save((err) => {
-        if(err){
-          console.log(err)
-        }else{
-          res.json({ response:"no existe", mensaje: "Se a creado un nuevo usuario con datos por defecto. Informar al cliente que se le ha enviado un email con la contraseña y que debera cambiar los datos del perfil",usuario:us })
+        if (err) {
+          console.log(err);
+        } else {
+          res.json({
+            response: "no existe",
+            mensaje:
+              "Se a creado un nuevo usuario con datos por defecto. Informar al cliente que se le ha enviado un email con la contraseña y que debera cambiar los datos del perfil",
+            usuario: us,
+          });
         }
-      })
-    }else{
-      res.json({response:"existe", mensaje:"El email esta registrado",usuario:result})
+      });
+    } else {
+      res.json({
+        response: "existe",
+        mensaje: "El email esta registrado",
+        usuario: result,
+      });
     }
-  })
-})
+  });
+});
 app.put("/pasaje/:id", (req, res) => {
   Pasaje.findOneAndUpdate(
     { _id: req.params.id },
@@ -2845,6 +2865,23 @@ app.get("/pasajes-pasados-pasajero", (req, res) => {
         res.render("pasajes-pasados-pasajero", { viajes: result });
       }
     }).sort({ fecha: -1, llegada: -1 });
+  }
+});
+
+app.get("/pasajes-pasados-chofer", (req, res) => {
+  if (req.session.rol !== "Chofer") {
+    res.redirect("/");
+  } else {
+    Viaje.find(
+      { estadoPasaje: "Finalizado", "chofer.mail": req.session.email } },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("pasajes-pasados-pasajero", { viajes: result });
+        }
+      }
+    ).sort({ fecha: -1, llegada: -1 });
   }
 });
 

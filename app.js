@@ -2837,7 +2837,11 @@ app.post("/vender-pasaje", (req, res) => {
       if (viaje.asientosDisponibles >= req.body.cantidad) {
         Viaje.findOneAndUpdate(
           { _id: req.body.viaje_id },
-          { asientosDisponibles: asientosDisponibles - req.body.cantidad }
+          { asientosDisponibles: asientosDisponibles - req.body.cantidad },(err)=>{
+            if(err){
+              console.log(err);
+            }
+          }
         );
         p = new Pasaje({
           emailPasajero: req.body.email_pasaje,

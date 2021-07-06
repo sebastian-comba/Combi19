@@ -2291,7 +2291,15 @@ app.get("/terminar-viaje/:id", (req, res) => {
     estado: "Finalizado"
   }, (err, result) => {
     if (!err) {
-      res.json({ response: "bien" })
+      Pasaje.updateMany({ idViaje: req.params.id, estadoPasaje:"Activo"},{
+        estadoPasaje: "Finalizado",
+      }, (err, result) => {
+        if (!err) {
+          res.json({ response: "bien" })
+        }else{
+          console.log(err);
+        }
+      })
     } else {
       console.log(err)
     }
@@ -2564,6 +2572,32 @@ app.get("/vender-pasaje/:idViaje",(req,res)=>{
       console.log(err);
     }else{
       res.render("vender-pasaje",{viaje:result})
+    }
+  })
+})
+app.post("/verificar",(req,res)=>{
+  Usuario.findOne({email:req.body.email},(err,result)=>{
+    if(!result){
+      let us = new Usuario({
+        nombre: "Nombre Temporal",
+        apellido: "Apellido Temporal",
+        email: req.body.email,
+        clave: req.body.email,
+        dni: "12345678",
+        fechaN: new Date,
+        rol: "Cliente comun" ,
+        suspendido: false,
+        categoria: "comun",
+      });
+      us.save((err) => {
+        if(err){
+          console.log(err)
+        }else{
+          res.json({ response:"no existe", mensaje: "Se a creado un nuevo usuario con datos por defecto. Informar al cliente que se le ha enviado un email con la contraseña y que debera cambiar los datos del perfil",usuario:us })
+        }
+      })
+    }else{
+      res.json({response:"existe", mensaje:"El email esta registrado",usuario:result})
     }
   })
 })

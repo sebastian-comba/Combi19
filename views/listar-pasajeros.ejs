@@ -44,8 +44,8 @@
                       </td>
                       <td></td>
                       <td></td>
-                      <% } else { if (pasaje.estadoPasaje=="Activo" ) { %>
-                        <td>Activo</td>
+                      <% } else { if (pasaje.estadoPasaje=="Activo" ||pasaje.estadoPasaje=="Finalizado") { %>
+                        <td><%= pasaje.estadoPasaje %> </td>
                         <td></td>
                         <td></td>
                         <% } else { if (pasaje.estadoPasaje=="Pendiente" ) { %>
@@ -69,6 +69,7 @@
                   <% }); %>
               </tbody>
             </table>
+                            <input type="hidden" name="idViaje" id="idViaje" value="<%= viaje._id%>">
             <script>
               function pasajeAusente() {
                 fetch("/cancelar-pasaje-chofer", {

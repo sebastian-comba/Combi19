@@ -1,0 +1,79 @@
+<%- include("partials/header-chofer"); -%>
+    <% function pad(number) { if (number < 10) { return "0" + number; } return number; }
+        Date.prototype.completa=function () { return ( pad(this.getDate()) + "/" + pad(this.getMonth() + 1) + "/" +
+        pad(this.getFullYear()) + " " + pad(this.getHours()) + ":" + pad(this.getMinutes()) + "hs" ); } %>
+        <h1>Venta de pasaje</h1>
+            
+        <hr>
+        <div id="datos_pasajero">
+            <h4>Datos del cliente</h4>
+            <form action="/verificar" method="post"  id="form">
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email" required>
+                <button id="verificar">Verificar</button>
+            </form>
+            
+        </div>
+        <hr>
+        <div id="datos_pasaje" style="display: none;">
+            <h4>Datos del pasaje</h4>
+            
+            <form id="comprar" action="/vender-pasaje" method="POST" id="myForm">
+                <input type="hidden" id="email_pasaje" name="email_pasaje">
+                <input type="hidden" name="viaje_id" id="viaje_id" value="<%= viaje._id %>">
+                <div class="form-group">
+                    <label for="origen">Origen:</label>
+                    <input required type="text" name="origen" id="origen" class="form-control"
+                        value="<%= viaje.ruta.origen.nombre+' , '+viaje.ruta.origen.provincia %>" disabled />
+
+                </div>
+                <div class="form-group">
+                    <label for="destino">Destino:</label>
+                    <input required type="text" name="destino" id="destino" class="form-control"
+                        value="<%= viaje.ruta.destino.nombre +' , ' +viaje.ruta.destino.provincia %>" disabled />
+                    <input type="text" id="idViaje" value="<%= viaje._id %>" hidden />
+                </div>
+                <div class="form-group">
+                    <label for="fecha">Fecha:</label>
+                    <input required type="text" name="fecha" id="fecha" class="form-control"
+                        value="<%= (new Date(Date.parse(viaje.fecha))).completa() %>" disabled />
+                </div>
+                <div class="form-group">
+                    <label for="precio">Precio:</label>
+                    <input required type="text" name="precio" id="precio" class="form-control"
+                        value="<%= viaje.precio %>" disabled />
+                </div>
+                <div class="form-group">
+                    <label for="cantidad">Cantidad de pasajes:</label>
+                    <input required type="number" name="cantidad" id="cantidad" class="form-control" value="1"
+                        min="1" />
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo:</label>
+                    <input required type="text" name="tipo" id="tipo" class="form-control"
+                        value="<%= viaje.combi.tipo %>" disabled />
+                </div>
+                <div class="form-group">
+                    <label for="subtotal">Subtotal:</label>
+                    <input required type="text" name="subtotal" id="subtotal" class="form-control"
+                        value="<%= viaje.precio %>" disabled />
+                </div>
+                <div class="form-group">
+                    <label for="subtotal">Descuento:</label>
+                    <input required type="text" name="descuento" id="descuento" class="form-control" value="0%"
+                        disabled />
+                </div>
+                <div class="form-group">
+                    <label for="subtotal">Total:</label>
+                    <input required type="text" name="total" id="total" class="form-control" value="<%= viaje.precio %>"
+                        disabled />
+                </div>
+
+                <button id="comprarB" type="submit">Confirmar</button>
+                <button><a href="/listar-pasajeros/<%= viaje._id %> ">Cancelar</a></button>
+            </form>
+        </div>
+
+
+<script src="/js/vender-pasaje.js"></script>
+        <%- include("partials/footer"); -%>

@@ -2614,7 +2614,11 @@ app.post("/verificar",(req,res)=>{
         }
       })
     }else{
+      if (result.rol === "Admin" || result.rol === "Chofer"){
+        res.json({ response: "rol", mensaje: "El email esta registrado para un " + result.rol+".El email debe de pertenecer a un Cliente", usuario: result })
+      }else{
       res.json({response:"existe", mensaje:"El email esta registrado",usuario:result})
+      }
     }
   })
 })
@@ -2823,9 +2827,9 @@ app.post("/vender-pasaje", (req, res) => {
           tipoServicio: viaje.combi.tipo,
         });
         p.save();
-        res.json({ response: "bien" });
+        res.json({ response: "bien",pasaje:p });
       } else {
-        console.log("cantidad de asientos maxima a la disponible");
+        res.json({ response: "mal", error:"err", mensaje: "cantidad de asientos maxima a la disponible"});
       }
     }
   });

@@ -6,14 +6,16 @@ $(document).ready(() => {
                 $(form).ajaxSubmit((data) => {
                     if (data) {
                         window.alert(data.mensaje);
-                        email_pasaje.value = data.usuario.email;
-                        $("#datos_pasaje").show("fast");
-                        if (data.usuario.categoria === "gold") {
-                            descuento.value = "10%";
-                            subYTotal();
-                        } else {
-                            descuento.value = "0%";
-                            subYTotal();
+                        if (data.response !== "rol") {
+                            email_pasaje.value = data.usuario.email;
+                            $("#datos_pasaje").show("fast");
+                            if (data.usuario.categoria === "gold") {
+                                descuento.value = "10%";
+                                subYTotal();
+                            } else {
+                                descuento.value = "0%";
+                                subYTotal();
+                            }
                         }
                     }
                 });
@@ -28,7 +30,7 @@ function dosDecimales(n) {
     return t.match(regex)[0];
 }
 function subYTotal() {
-    subtotal.value =  precio.value * cantidad.value;
+    subtotal.value = precio.value * cantidad.value;
     if (descuento.value !== "0%") {
         total.value = dosDecimales(subtotal.value * 0.9)
     } else {
@@ -44,19 +46,19 @@ $(document).ready(() => {
             submitHandler: function (form) {
                 if (window.confirm("Esta seguro de realizar la venta por $" + total.value + " ?")) {
                     $(form).ajaxSubmit((data) => {
-                            if (data.response == "bien") {
-                                location.replace("/registrar-sintomas/"+data.pasaje._id)
-                            } else {
-                                let lugar = data.response.error;
-                                let error = data.response.mensaje;
-                                let mostrar = {}
-                                mostrar[lugar] = error;
-                                console.log(mostrar);
-                                v.showErrors(
-                                    mostrar
-                                )
-                            }
-                        });
+                        if (data.response == "bien") {
+                            location.replace("/registrar-sintomas/" + data.pasaje._id)
+                        } else {
+                            let lugar = data.response.error;
+                            let error = data.response.mensaje;
+                            let mostrar = {}
+                            mostrar[lugar] = error;
+                            console.log(mostrar);
+                            v.showErrors(
+                                mostrar
+                            )
+                        }
+                    });
                 }
             },
         });

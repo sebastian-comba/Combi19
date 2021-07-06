@@ -1,0 +1,56 @@
+<%- include("partials/header-chofer"); -%>
+    <h1>Venta de pasaje</h1>
+    <hr>
+    <div id="datos_viaje">
+        <h4>Datos del viaje</h4>
+        <h5>Origen:<div id="origen_nombre" style="display: inline;">
+                <%= viaje.ruta.origen.nombre %>
+            </div>
+            <div id="origen_provincia" style="display: inline;">
+                <%= viaje.ruta.origen.provincia %>
+            </div>
+        </h5>
+        <h5>Destino: <div id="destino_nombre" style="display: inline;">
+                <%= viaje.ruta.destino.nombre %>
+            </div>
+            <div id="destino_provincia" style="display: inline;">
+                <%= viaje.ruta.destino.provincia %>
+            </div>
+        </h5>
+        <h5>Fecha salida: <div id="salida" style="display: inline;">
+                <%= (viaje.fecha).completa() %>
+            </div>
+        </h5>
+        <h5>Asientos disponibles: <div id="asientos" style="display: inline;">
+                <%= viaje.asientosDisponibles %>
+            </div>
+        </h5>
+        <h5>Estado: <div id="estado" style="display: inline;">
+                <%= viaje.estado %>
+            </div>
+        </h5>
+        <h5>Precio:  $<div id="precio" style="display: inline;">
+                <%= viaje.precio %>
+            </div>
+        </h5>
+        <h5>ID: <div id="id" style="display: inline;">
+                <%= viaje._id %>
+            </div>
+        </h5>
+        <h5>Tipo: <div id="tipo" style="display: inline;">
+                <%= viaje.combi.tipo %>
+            </div>
+        </h5>
+    </div>
+    <hr>
+    <div id="datos_pasajero">
+        <h4>Datos del cliente</h4>
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email">
+        <button>Verificar Existencia</button>
+    </div>
+    <div id="form_pasajero"></div>
+
+
+
+    <%- include("partials/footer"); -%>

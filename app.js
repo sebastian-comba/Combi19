@@ -2016,7 +2016,8 @@ app.post("/buscar-viajes", (req, res) => {
         "ruta.origen.provincia": req.body.provinciaO,
         "ruta.destino.nombre": req.body.ciudadD,
         "ruta.destino.provincia": req.body.provinciaD,
-        $and: [{ fecha: { $gte: h } }, { fecha: { $lt: m } }],
+        estado:"En espera",
+        $and: [{ fecha: { $gte: h } }, { fecha: { $lt: m } }], 
       },
       (err, result) => {
         res.json({ viajes: result });
@@ -2030,6 +2031,7 @@ app.post("/buscar-viajes", (req, res) => {
         "ruta.origen.provincia": req.body.provinciaO,
         "ruta.destino.nombre": req.body.ciudadD,
         "ruta.destino.provincia": req.body.provinciaD,
+        estado: "En espera",
         fecha: { $gte: hoy } 
       },
       (err, result) => {
@@ -2273,7 +2275,28 @@ app.put("/viaje", (req, res) => {
     });
   });
 });
-
+app.get("/iniciar-viaje/:id",(req,res)=>{
+  Viaje.updateOne({_id : req.params.id},{
+    estado:"En viaje"
+  },(err,result)=>{
+    if(!err){
+      res.json({response:"bien"})
+    }else{
+      console.log(err)
+    }
+  })
+})
+app.get("/terminar-viaje/:id", (req, res) => {
+  Viaje.updateOne({ _id: req.params.id }, {
+    estado: "Finalizado"
+  }, (err, result) => {
+    if (!err) {
+      res.json({ response: "bien" })
+    } else {
+      console.log(err)
+    }
+  })
+})
 // DELETE VIAJE
 app.delete("/viaje/:id", (req, res) => {
   Pasaje.findOne({ idViaje: req.params.id, estadoPasaje: { $ne: "Cancelado"}}, (err, result) => {
@@ -2436,6 +2459,7 @@ app.get("/comprar-pasaje/:id", (req, res) => {
   }).sort({ nombre: 1 });
 });
 
+
 app.post("/comprar-pasaje", (req, res) => {
   Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
     if (err) {
@@ -2534,6 +2558,15 @@ app.post("/comprar-pasaje", (req, res) => {
     }
   });
 });
+app.get("/vender-pasaje/:idViaje",(req,res)=>{
+  Viaje.findOne({_id:req.params.idViaje},(err,result)=>{
+    if(err){
+      console.log(err);
+    }else{
+      res.render("vender-pasaje",{viaje:result})
+    }
+  })
+})
 app.put("/pasaje/:id", (req, res) => {
   Pasaje.findOneAndUpdate(
     { _id: req.params.id },

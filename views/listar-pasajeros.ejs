@@ -56,13 +56,7 @@
                             </form>
                           </td>
                           <td name="ausentes">
-                            <input type="hidden" name="idPasaje" id="idPasaje" value="<%= pasaje._id %>">
-                            <input type="hidden" name="emailPasajero" id="emailPasajero"
-                              value="<%= pasaje.emailPasajero %>">
-                            <input type="hidden" name="idViaje" id="idViaje" value="<%= pasaje.idViaje%>">
-                            <input type="hidden" name="cantidadAsientos" id="cantidadAsientos"
-                              value="<%= pasaje.cantidad %>">
-                            <button id="ausente" onclick="pasajeAusente()">No se presentó</button>
+                            <button id="ausente" name="<%= pasaje._id %>" onclick="pasajeAusente(this)">No se presentó</button>
                           </td>
                           <% }}}%>
                   </tr>
@@ -71,14 +65,14 @@
             </table>
                             <input type="hidden" name="idViaje" id="idViaje" value="<%= viaje._id%>">
             <script>
-              function pasajeAusente() {
-                fetch("/cancelar-pasaje-chofer", {
+              function pasajeAusente(pasaje) {
+                ok = window.confirm("Desea registrar al pasajero como ausente?");
+                if(ok){
+                  fetch("/cancelar-pasaje-chofer", {
                   method: "post",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
-                    idPasaje: idPasaje.value,
-                    emailPasajero: emailPasajero.value,
-                    cantidadAsientos: cantidadAsientos.value,
+                    idPasaje: pasaje.name,
                     idViaje: idViaje.value,
                     motivo: "Ausente"
                   }),
@@ -87,11 +81,11 @@
                   .then((data) => {
                     switch (data.response) {
                       case "bien":
-                        window.confirm("Desea registrar al pasajero como ausente?");
                         location.replace("/listar-pasajeros/" + idViaje.value);
                         break;
                     }
                   });
+                }
               }
               if (estado.innerHTML === "En espera") {
                

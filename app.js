@@ -2748,6 +2748,7 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
             },
             {
               estadoPasaje: "Cancelado",
+              fechaCancelado: now,
               motivoCancelacion: "Sospechoso de covid",
             },
             (err) => {
@@ -2783,6 +2784,7 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
         },
         {
           estadoPasaje: "Cancelado",
+          fechaCancelado: now,
           motivoCancelacion: "Ausente",
         },
         (err) => {

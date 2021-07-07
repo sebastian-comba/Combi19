@@ -1,7 +1,11 @@
 <%- include("partials/header-chofer"); -%>
   <% function pad(number) { if (number < 10) { return "0" + number; } return number; } Date.prototype.completa=function
     () { return ( pad(this.getDate()) + "/" + pad(this.getMonth() + 1) + "/" + pad(this.getFullYear()) + " " +
-    pad(this.getHours()) + ":" + pad(this.getMinutes()) + "hs" ); } %>
+    pad(this.getHours()) + ":" + pad(this.getMinutes()) + "hs" );} 
+  function faltanMinutos(){
+   return (((viaje.fecha).getTime() - (new Date))/(1000 * 60)) <= 30;
+  
+  } %>
     <h1>Lista de Pasajeros</h1>
     <h5>Origen: <%= viaje.ruta.origen.nombre %>
         <%= viaje.ruta.origen.provincia %>
@@ -48,7 +52,7 @@
                         <td><%= pasaje.estadoPasaje %> </td>
                         <td></td>
                         <td></td>
-                        <% } else { if (pasaje.estadoPasaje=="Pendiente" ) { %>
+                        <% } else { if (pasaje.estadoPasaje=="Pendiente" && faltanMinutos()) { %>
                           <td>Pendiente</td>
                           <td name="sintomas">
                             <form action="/registrar-sintomas/<%= pasaje._id %>" method="GET">
@@ -59,7 +63,11 @@
                             <button id="ausente" name="<%= pasaje._id %>" onclick="pasajeAusente(this)">No se presentó</button>
                           </td>
                           
-                          <% }}}%>
+                          <% } else {%>
+                            <td>Pendiente</td>
+                            <td></td>
+                            <td></td>
+                        <% }}}%>
                   </tr>
                   <% }); %>
               </tbody>

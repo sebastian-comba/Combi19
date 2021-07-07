@@ -49,8 +49,8 @@ $(document).ready(() => {
                         if (data.response == "bien") {
                             location.replace("/registrar-sintomas/" + data.pasaje._id)
                         } else {
-                            let lugar = data.response.error;
-                            let error = data.response.mensaje;
+                            let lugar = data.error;
+                            let error = data.mensaje;
                             let mostrar = {}
                             mostrar[lugar] = error;
                             console.log(mostrar);

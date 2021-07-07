@@ -2742,9 +2742,13 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          Pasaje.findOneAndUpdate(
+          Pasaje.updateMany(
             {
-              _id: req.body.idPasaje,
+              emailPasajero: req.body.emailPasajero,
+              fecha: {
+                $gte: new Date(),
+                $lt: new Date().setDate(new Date().getDate() + 15),
+              },
             },
             {
               estadoPasaje: "Cancelado",
@@ -2755,17 +2759,39 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
               if (err) {
                 console.log(err);
               } else {
-                Viaje.findOneAndUpdate(
+                Pasaje.find(
                   {
-                    _id: req.body.idViaje,
+                    emailPasajero: req.body.emailPasajero,
+                    fecha: {
+                      $gte: new Date(),
+                      $lt: new Date().setDate(new Date().getDate() + 15),
+                    },
                   },
-                  {
-                    $inc: { asientosDisponibles: req.body.cantidadAsientos },
-                  },
-                  (err) => {
+                  (err, resultPasajes) => {
                     if (err) {
                       console.log(err);
                     } else {
+                      resultPasajes.forEach((viaje) => {
+                        Viaje.updateMany(
+                          {
+                            _id: viaje.idViaje,
+                            fecha: {
+                              $gte: new Date(),
+                              $lt: new Date().setDate(
+                                new Date().getDate() + 15
+                              ),
+                            },
+                          },
+                          {
+                            $inc: { asientosDisponibles: viaje.cantidad },
+                          },
+                          (err) => {
+                            if (err) {
+                              console.log(err);
+                            }
+                          }
+                        );
+                      });
                       res.json({ response: "bien" });
                     }
                   }
@@ -2836,10 +2862,11 @@ app.post("/vender-pasaje", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      if (viaje.asientosDisponibles >= req.body.cantidad) {
+      console.log(viaje[0].asientosDisponibles);
+      if (viaje[0].asientosDisponibles >= req.body.cantidad) {
         Viaje.findOneAndUpdate(
           { _id: req.body.viaje_id },
-          { asientosDisponibles: asientosDisponibles - req.body.cantidad },
+          { $inc: { asientosDisponibles: -req.body.cantidad } },
           (err) => {
             if (err) {
               console.log(err);
@@ -2851,16 +2878,18 @@ app.post("/vender-pasaje", (req, res) => {
           insumos: [],
           cantidad: req.body.cantidad,
           idViaje: req.body.viaje_id,
-          fecha: viaje.fecha,
+          fecha: viaje[0].fecha,
           precio: parseFloat(req.body.total),
-          "origen.nombre": viaje.ruta.origen.nombre,
-          "origen.provincia": viaje.ruta.origen.provincia,
-          "destino.nombre": viaje.ruta.destino.nombre,
-          "destino.provincia": viaje.ruta.destino.provincia,
+          "origen.nombre": viaje[0].ruta.origen.nombre,
+          "origen.provincia": viaje[0].ruta.origen.provincia,
+          "destino.nombre": viaje[0].ruta.destino.nombre,
+          "destino.provincia": viaje[0].ruta.destino.provincia,
           estadoPasaje: "Pendiente",
-          tipoServicio: viaje.combi.tipo,
+          tipoServicio: viaje[0].combi.tipo,
         });
-        p.save();
+        p.save((err) => {
+          console.log(err);
+        });
         res.json({ response: "bien", pasaje: p });
       } else {
         res.json({

@@ -2787,7 +2787,7 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
           );
         }
       }
-    ); //falta eliminar otros pasajes dentro de los siguientes 15 dias
+    );
   } else {
     if (req.body.motivo == "Ausente") {
       Pasaje.findOneAndUpdate(
@@ -2799,16 +2799,16 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
           fechaCancelado: now,
           motivoCancelacion: "Ausente",
         },
-        (err) => {
+        (err, resultPasaje) => {
           if (err) {
             console.log(err);
           } else {
             Viaje.findOneAndUpdate(
               {
-                _id: req.body.idViaje,
+                _id: resultPasaje.idViaje,
               },
               {
-                $inc: { asientosDisponibles: req.body.cantidadAsientos },
+                $inc: { asientosDisponibles: resultPasaje.cantidad },
               },
               (err) => {
                 if (err) {

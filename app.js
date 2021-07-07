@@ -42,6 +42,12 @@ app.use(
     extended: true,
   })
 );
+function pad(number) { if (number < 10) { return "0" + number; } return number; };
+ Date.prototype.completa = function() {
+  return (pad(this.getDate()) + "/" + pad(this.getMonth() + 1) + "/" + pad(this.getFullYear()) + " " +
+    pad(this.getHours()) + ":" + pad(this.getMinutes()) + "hs");
+}
+
 app.use(express.json());
 
 // variable que devuelve la fecha de hoy
@@ -646,12 +652,12 @@ app.post("/iniciar", (req, res) => {
       us.claveCorrecta(req.body.clave, (err, result) => {
         if (err) {
           res.json({ response: "Error al autenticar el usuario " });
-        } else if (result) {    
-            req.session.nombre = us.nombre;
-            req.session.apellido = us.apellido;
-            req.session.rol = us.rol;
-            req.session.email = us.email;
-            res.json({ response: "bien" });
+        } else if (result) {
+          req.session.nombre = us.nombre;
+          req.session.apellido = us.apellido;
+          req.session.rol = us.rol;
+          req.session.email = us.email;
+          res.json({ response: "bien" });
         } else {
           res.json({ response: "clave incorrecta" });
         }
@@ -754,7 +760,7 @@ app.post("/registro", (req, res) => {
           if (
             result.dni === req.body.dniT &&
             Date.parse(result.vencimiento) ==
-              Date.parse(req.body.vencimiento + "-01") &&
+            Date.parse(req.body.vencimiento + "-01") &&
             result.nombreCompleto === req.body.nombreT &&
             result.codSeguridad === req.body.codS
           ) {
@@ -946,7 +952,7 @@ app.post("/modificar-perfil", (req, res) => {
                     if (
                       result.dni === req.body.dniT &&
                       Date.parse(result.vencimiento) ==
-                        Date.parse(req.body.vencimiento + "-01") &&
+                      Date.parse(req.body.vencimiento + "-01") &&
                       result.nombreCompleto === req.body.nombreT &&
                       result.codSeguridad === req.body.seg
                     ) {
@@ -2183,8 +2189,8 @@ app.put("/viaje", (req, res) => {
                                               llegada: {
                                                 $gte: transformarFecha(
                                                   req.body.fecha +
-                                                    "T" +
-                                                    resRuta.hora
+                                                  "T" +
+                                                  resRuta.hora
                                                 ),
                                               },
                                             },
@@ -2192,8 +2198,8 @@ app.put("/viaje", (req, res) => {
                                               fecha: {
                                                 $lte: transformarFecha(
                                                   req.body.fecha +
-                                                    "T" +
-                                                    resRuta.hora
+                                                  "T" +
+                                                  resRuta.hora
                                                 ),
                                               },
                                             },
@@ -2493,111 +2499,134 @@ app.get("/comprar-pasaje/:id", (req, res) => {
 });
 
 app.post("/comprar-pasaje", (req, res) => {
-  // Usuario.findOne({email:req.session.email},(err,result)=>{
-  //   if(err){
-  //     console.log(err);
-  //   }else{
-  //     if(result.suspendido){
-  //       if ((result.fechaSuspendido).setDate())
-  //     }
-  //   }
-  // }):
-  Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
-    if (err) {
-      res.json({
-        response: {
-          error: "errT",
-          mensaje: "Error en la conexion con el banco",
-        },
-      });
-    } else {
-      if (resultTarjeta) {
-        if (
-          resultTarjeta.dni === req.body.dniT &&
-          Date.parse(resultTarjeta.vencimiento) ==
+  function compra(){
+    Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
+      if (err) {
+        res.json({
+          response: {
+            error: "errT",
+            mensaje: "Error en la conexion con el banco",
+          },
+        });
+      } else {
+        if (resultTarjeta) {
+          if (
+            resultTarjeta.dni === req.body.dniT &&
+            Date.parse(resultTarjeta.vencimiento) ==
             Date.parse(req.body.vencimiento + "-01") &&
-          resultTarjeta.nombreCompleto === req.body.nombreT &&
-          resultTarjeta.codSeguridad === req.body.seg
-        ) {
-          if (resultTarjeta.monto > parseFloat(req.body.total)) {
-            Viaje.findOne({ _id: req.body.idViaje }, (err, result) => {
-              if (err) {
-              } else {
-                if (result) {
-                  if (result.asientosDisponibles >= req.body.cantidad) {
-                    p = new Pasaje({
-                      emailPasajero: req.session.email,
-                      insumos: req.body.insumos,
-                      cantidad: req.body.cantidad,
-                      idViaje: req.body.idViaje,
-                      fecha: result.fecha,
-                      precio: parseFloat(req.body.total),
-                      "origen.nombre": result.ruta.origen.nombre,
-                      "origen.provincia": result.ruta.origen.provincia,
-                      "destino.nombre": result.ruta.destino.nombre,
-                      "destino.provincia": result.ruta.destino.provincia,
-                      estadoPasaje: "Pendiente",
-                      tipoServicio: result.combi.tipo,
-                    });
-                    p.save((err) => {
-                      if (err) {
-                        console.log(err);
-                      } else {
-                        console.log("Monto descontado de la tarjeta");
-                        res.json({ response: "bien" });
-                        let as =
-                          result.asientosDisponibles -
-                          parseFloat(req.body.cantidad);
-                        Viaje.updateOne(
-                          { _id: req.body.idViaje },
-                          {
-                            asientosDisponibles: as,
-                          },
-                          (err) => {
-                            if (err) {
-                              console.log(err);
+            resultTarjeta.nombreCompleto === req.body.nombreT &&
+            resultTarjeta.codSeguridad === req.body.seg
+          ) {
+            if (resultTarjeta.monto > parseFloat(req.body.total)) {
+              Viaje.findOne({ _id: req.body.idViaje }, (err, result) => {
+                if (err) {
+                } else {
+                  if (result) {
+                    if (result.asientosDisponibles >= req.body.cantidad) {
+                      p = new Pasaje({
+                        emailPasajero: req.session.email,
+                        insumos: req.body.insumos,
+                        cantidad: req.body.cantidad,
+                        idViaje: req.body.idViaje,
+                        fecha: result.fecha,
+                        precio: parseFloat(req.body.total),
+                        "origen.nombre": result.ruta.origen.nombre,
+                        "origen.provincia": result.ruta.origen.provincia,
+                        "destino.nombre": result.ruta.destino.nombre,
+                        "destino.provincia": result.ruta.destino.provincia,
+                        estadoPasaje: "Pendiente",
+                        tipoServicio: result.combi.tipo,
+                      });
+                      p.save((err) => {
+                        if (err) {
+                          console.log(err);
+                        } else {
+                          console.log("Monto descontado de la tarjeta");
+                          res.json({ response: "bien" });
+                          let as =
+                            result.asientosDisponibles -
+                            parseFloat(req.body.cantidad);
+                          Viaje.updateOne(
+                            { _id: req.body.idViaje },
+                            {
+                              asientosDisponibles: as,
+                            },
+                            (err) => {
+                              if (err) {
+                                console.log(err);
+                              }
                             }
-                          }
-                        );
-                      }
-                    });
-                  } else {
-                    res.json({
-                      response: {
-                        error: "errT",
-                        mensaje:
-                          "Hay " +
-                          result.asientosDisponibles +
-                          " asientos disponibles cambie la cantidad de pasajes o busque otro viaje",
-                      },
-                    });
+                          );
+                        }
+                      });
+                    } else {
+                      res.json({
+                        response: {
+                          error: "errT",
+                          mensaje:
+                            "Hay " +
+                            result.asientosDisponibles +
+                            " asientos disponibles cambie la cantidad de pasajes o busque otro viaje",
+                        },
+                      });
+                    }
                   }
                 }
-              }
-            });
+              });
+            } else {
+              res.json({
+                response: {
+                  error: "errT",
+                  mensaje: "No hay saldo suficiente en la tarjeta",
+                },
+              });
+            }
           } else {
             res.json({
               response: {
                 error: "errT",
-                mensaje: "No hay saldo suficiente en la tarjeta",
+                mensaje: "Datos de la tarjeta incorrecta",
               },
             });
           }
         } else {
           res.json({
-            response: {
-              error: "errT",
-              mensaje: "Datos de la tarjeta incorrecta",
-            },
+            response: { error: "errT", mensaje: "La tarjeta no existe" },
           });
         }
+      }
+    });
+  }
+  Usuario.findOne({ email: req.session.email }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (result.suspendido) {
+        let fS = new Date((result.fechaSuspendido).setDate((result.fechaSuspendido.getDate() + 15)));
+        if (fS >= (new Date())) {
+          res.json({
+            response: {
+              error: "errT",
+              mensaje: "Usted esta suspendido por sospecha de Covid. Estara suspendido hasta el " + fS.completa(),
+            },
+          });
+        } else {
+          Usuario.updateOne({email:req.session.email},{
+            suspendido:false,
+            fechaSuspendido:""
+          }, (err)=>{
+            if(err){
+            console.log(err);
+            }
+          })
+          compra()
+        }
       } else {
-        res.json({
-          response: { error: "errT", mensaje: "La tarjeta no existe" },
-        });
+        compra()
       }
     }
   });
+  
 });
 app.get("/vender-pasaje/:idViaje", (req, res) => {
   Viaje.findOne({ _id: req.params.idViaje }, (err, result) => {
@@ -2754,7 +2783,7 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
           Pasaje.updateMany(
             {
               emailPasajero: req.body.emailPasajero,
-              fecha:{ $gte: (new Date()), $lt:(new Date()).setDate(new Date().getDate()+15) },
+              fecha: { $gte: (new Date()), $lt: (new Date()).setDate(new Date().getDate() + 15) },
             },
             {
               estadoPasaje: "Cancelado",
@@ -2767,16 +2796,16 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
               } else {
                 Pasaje.find({
                   emailPasajero: req.body.emailPasajero,
-                  fecha:{ $gte: (new Date()), $lt:(new Date()).setDate(new Date().getDate()+15) },
-                },(err,resultPasajes) => {
-                  if (err){
+                  fecha: { $gte: (new Date()), $lt: (new Date()).setDate(new Date().getDate() + 15) },
+                }, (err, resultPasajes) => {
+                  if (err) {
                     console.log(err);
                   } else {
                     resultPasajes.forEach(viaje => {
                       Viaje.updateMany(
                         {
                           _id: viaje.idViaje,
-                          fecha:{ $gte: (new Date()), $lt:(new Date()).setDate(new Date().getDate()+15) },
+                          fecha: { $gte: (new Date()), $lt: (new Date()).setDate(new Date().getDate() + 15) },
                         },
                         {
                           $inc: { asientosDisponibles: viaje.cantidad },
@@ -2861,8 +2890,8 @@ app.post("/vender-pasaje", (req, res) => {
       if (viaje[0].asientosDisponibles >= req.body.cantidad) {
         Viaje.findOneAndUpdate(
           { _id: req.body.viaje_id },
-          { $inc: { asientosDisponibles: -req.body.cantidad }},(err)=>{
-            if(err){
+          { $inc: { asientosDisponibles: -req.body.cantidad } }, (err) => {
+            if (err) {
               console.log(err);
             }
           }
@@ -2881,7 +2910,7 @@ app.post("/vender-pasaje", (req, res) => {
           estadoPasaje: "Pendiente",
           tipoServicio: viaje[0].combi.tipo,
         });
-        p.save((err)=>{
+        p.save((err) => {
           console.log(err)
         });
         res.json({ response: "bien", pasaje: p });

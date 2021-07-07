@@ -2493,6 +2493,15 @@ app.get("/comprar-pasaje/:id", (req, res) => {
 });
 
 app.post("/comprar-pasaje", (req, res) => {
+  // Usuario.findOne({email:req.session.email},(err,result)=>{
+  //   if(err){
+  //     console.log(err);
+  //   }else{
+  //     if(result.suspendido){
+  //       if ((result.fechaSuspendido).setDate())
+  //     }
+  //   }
+  // }):
   Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
     if (err) {
       res.json({

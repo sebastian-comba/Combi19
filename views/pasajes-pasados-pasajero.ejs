@@ -1,0 +1,67 @@
+<%- include("partials/header-pasajero"); -%>
+<h1>Mis pasajes pasados</h1>
+
+<% if (!data.length) { %>
+<h2>No posee pasajes pasados</h2>
+<% } else {
+  
+  function pad(number) {
+  if (number < 10) {
+    return "0" + number;
+  }
+  return number;
+}
+    
+    Date.prototype.completa = function () {
+  return (
+    pad(this.getDate()) +
+    "/" +
+    pad(this.getMonth() + 1) +
+    "/" +
+    pad(this.getFullYear()) +
+    " " +
+    pad(this.getHours()) +
+    ":" +
+    pad(this.getMinutes()) +
+    "hs"
+  );
+}%>
+<div id="error"></div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Estado</th>
+      <th scope="col">Cantidad de pasajes comprados</th>
+      <th scope="col">Precio</th>
+      <th scope="col">Origen</th>
+      <th scope="col">Destino</th>
+      <th scope="col">Fecha y hora</th>
+      <th scope="col">Tipo de servicio</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% data.forEach(function(pasaje) { %>
+    <tr>
+      <td><%= pasaje.estadoPasaje %></td>
+      <td><%= pasaje.cantidad %></td>
+      <td>$<%= pasaje.precio %></td>
+      <td><%= pasaje.origen.nombre %> - <%= pasaje.origen.provincia %></td>
+      <td><%= pasaje.destino.nombre %> - <%= pasaje.destino.provincia %></td>
+      <td><%= (new Date(Date.parse(pasaje.fecha))).completa() %></td>
+      <td><%= pasaje.tipoServicio %></td>
+      <td><% if(pasaje.estadoPasaje == "Pendiente"){ %>
+        <button
+          class="cancelar"
+          id="<%= pasaje._id %>"
+          onclick="cancelar(this)"
+        >
+          Cancelar
+        </button>
+        <% } %>
+      </td>
+    </tr>
+    <%  }); %>
+  </tbody>
+</table>
+<% } %> <%- include("partials/footer"); -%>

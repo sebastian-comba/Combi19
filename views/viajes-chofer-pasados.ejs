@@ -1,0 +1,55 @@
+<%- include("partials/header-chofer"); -%>
+<% if (!viajes.length) { %>
+<h1>No posee viajes finalizados</h1>
+<% } else { %>
+<h1>Lista de mis viajes finalizados</h1>
+<div id="error"></div>
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Origen</th>
+        <th scope="col">Destino</th>
+        <th scope="col">Fecha salida</th>
+        <th scope="col">Fecha llegada</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%function pad(number) {
+    if (number < 10) {
+      return "0" + number;
+    }
+    return number;
+  }
+      
+      Date.prototype.completa = function () {
+    return (
+      pad(this.getDate()) +
+      "/" +
+      pad(this.getMonth() + 1) +
+      "/" +
+      pad(this.getFullYear()) +
+      " " +
+      pad(this.getHours()) +
+      ":" +
+      pad(this.getMinutes()) +
+      "hs"
+    );
+  };
+          
+        
+        viajes.forEach( (viaje) => { %>
+      <tr>
+        <td>
+          <%= viaje.ruta.origen.nombre %>, <%= viaje.ruta.origen.provincia %>
+        </td>
+        <td>
+          <%= viaje.ruta.destino.nombre %>, <%= viaje.ruta.destino.provincia %>
+        </td>
+        <td><%= (new Date(Date.parse(viaje.fecha))).completa()%></td>
+        <td><%= (new Date(Date.parse(viaje.llegada))).completa() %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+<% } %>
+<%- include("partials/footer"); -%>

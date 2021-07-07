@@ -2742,9 +2742,10 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          Pasaje.findOneAndUpdate(
+          Pasaje.updateMany(
             {
-              _id: req.body.idPasaje,
+              emailPasajero: req.body.emailPasajero,
+              fecha:{ $gte: (new Date()), $lt:(new Date()).setDate(new Date().getDate()+15) },
             },
             {
               estadoPasaje: "Cancelado",
@@ -2755,21 +2756,32 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
               if (err) {
                 console.log(err);
               } else {
-                Viaje.findOneAndUpdate(
-                  {
-                    _id: req.body.idViaje,
-                  },
-                  {
-                    $inc: { asientosDisponibles: req.body.cantidadAsientos },
-                  },
-                  (err) => {
-                    if (err) {
-                      console.log(err);
-                    } else {
-                      res.json({ response: "bien" });
-                    }
+                Pasaje.find({
+                  emailPasajero: req.body.emailPasajero,
+                  fecha:{ $gte: (new Date()), $lt:(new Date()).setDate(new Date().getDate()+15) },
+                },(err,resultPasajes) => {
+                  if (err){
+                    console.log(err);
+                  } else {
+                    resultPasajes.forEach(viaje => {
+                      Viaje.updateMany(
+                        {
+                          _id: viaje.idViaje,
+                          fecha:{ $gte: (new Date()), $lt:(new Date()).setDate(new Date().getDate()+15) },
+                        },
+                        {
+                          $inc: { asientosDisponibles: viaje.cantidad },
+                        },
+                        (err) => {
+                          if (err) {
+                            console.log(err);
+                          }
+                        }
+                      );
+                    });
+                    res.json({ response: "bien" });
                   }
-                );
+                });
               }
             }
           );

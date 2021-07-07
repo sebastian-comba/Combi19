@@ -646,12 +646,12 @@ app.post("/iniciar", (req, res) => {
       us.claveCorrecta(req.body.clave, (err, result) => {
         if (err) {
           res.json({ response: "Error al autenticar el usuario " });
-        } else if (result) {    
-            req.session.nombre = us.nombre;
-            req.session.apellido = us.apellido;
-            req.session.rol = us.rol;
-            req.session.email = us.email;
-            res.json({ response: "bien" });
+        } else if (result) {
+          req.session.nombre = us.nombre;
+          req.session.apellido = us.apellido;
+          req.session.rol = us.rol;
+          req.session.email = us.email;
+          res.json({ response: "bien" });
         } else {
           res.json({ response: "clave incorrecta" });
         }
@@ -2839,8 +2839,9 @@ app.post("/vender-pasaje", (req, res) => {
       if (viaje.asientosDisponibles >= req.body.cantidad) {
         Viaje.findOneAndUpdate(
           { _id: req.body.viaje_id },
-          { asientosDisponibles: asientosDisponibles - req.body.cantidad },(err)=>{
-            if(err){
+          { asientosDisponibles: asientosDisponibles - req.body.cantidad },
+          (err) => {
+            if (err) {
               console.log(err);
             }
           }

@@ -2358,7 +2358,7 @@ app.delete("/viaje/:id", (req, res) => {
 });
 
 // Listado de viajes asignados a un chofer
-app.get("/viajes-chofer", (req, res) => {
+app.get("/viajes-chofer-pendientes", (req, res) => {
   if (req.session.rol !== "Chofer") {
     res.redirect("/");
   } else {
@@ -2366,6 +2366,7 @@ app.get("/viajes-chofer", (req, res) => {
       {
         fecha: { $gte: new Date() },
         "chofer.mail": req.session.email,
+        estado: {$ne:"Finalizado"},
       },
       (err, result) => {
         if (err) {
@@ -2889,32 +2890,32 @@ app.post("/vender-pasaje", (req, res) => {
 
 app.get("/pasajes-pasados-pasajero", (req, res) => {
   if (
-    req.session.rol !== "Cliente comun" ||
+    req.session.rol !== "Cliente comun" &&
     req.session.rol !== "Cliente gold"
   ) {
     res.redirect("/");
   } else {
-    Pasaje.find({ estadoPasaje: "Finalizado" }, (err, result) => {
+    Pasaje.find({ emailPasajero:req.session.email, estadoPasaje: "Finalizado" }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
-        res.render("pasajes-pasados-pasajero", { viajes: result });
+        res.render("pasajes-pasados-pasajero", { data: result });
       }
     }).sort({ fecha: -1, llegada: -1 });
   }
 });
 
-app.get("/pasajes-pasados-chofer", (req, res) => {
+app.get("/viajes-chofer-pasados", (req, res) => {
   if (req.session.rol !== "Chofer") {
     res.redirect("/");
   } else {
     Viaje.find(
-      { estadoPasaje: "Finalizado", "chofer.mail": req.session.email },
+      { estado: "Finalizado", "chofer.mail": req.session.email },
       (err, result) => {
         if (err) {
           console.log(err);
         } else {
-          res.render("pasajes-pasados-pasajero", { viajes: result });
+          res.render("viajes-chofer-pasados", { viajes: result });
         }
       }
     ).sort({ fecha: -1, llegada: -1 });

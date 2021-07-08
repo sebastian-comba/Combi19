@@ -43,7 +43,7 @@ app.use(
   })
 );
 function pad(number) { if (number < 10) { return "0" + number; } return number; };
- Date.prototype.completa = function() {
+Date.prototype.completa = function () {
   return (pad(this.getDate()) + "/" + pad(this.getMonth() + 1) + "/" + pad(this.getFullYear()) + " " +
     pad(this.getHours()) + ":" + pad(this.getMinutes()) + "hs");
 }
@@ -2372,7 +2372,7 @@ app.get("/viajes-chofer-pendientes", (req, res) => {
       {
         fecha: { $gte: new Date() },
         "chofer.mail": req.session.email,
-        estado: {$ne:"Finalizado"},
+        estado: { $ne: "Finalizado" },
       },
       (err, result) => {
         if (err) {
@@ -2500,7 +2500,7 @@ app.get("/comprar-pasaje/:id", (req, res) => {
 });
 
 app.post("/comprar-pasaje", (req, res) => {
-  function compra(){
+  function compra() {
     Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
       if (err) {
         res.json({
@@ -2612,12 +2612,12 @@ app.post("/comprar-pasaje", (req, res) => {
             },
           });
         } else {
-          Usuario.updateOne({email:req.session.email},{
-            suspendido:false,
-            fechaSuspendido:""
-          }, (err)=>{
-            if(err){
-            console.log(err);
+          Usuario.updateOne({ email: req.session.email }, {
+            suspendido: false,
+            fechaSuspendido: ""
+          }, (err) => {
+            if (err) {
+              console.log(err);
             }
           })
           compra()
@@ -2627,7 +2627,7 @@ app.post("/comprar-pasaje", (req, res) => {
       }
     }
   });
-  
+
 });
 app.get("/vender-pasaje/:idViaje", (req, res) => {
   Viaje.findOne({ _id: req.params.idViaje }, (err, result) => {
@@ -2883,47 +2883,79 @@ app.post("/registrar-sintomas", (req, res) => {
 });
 
 app.post("/vender-pasaje", (req, res) => {
-  Viaje.find({ _id: req.body.viaje_id }, (err, viaje) => {
+  function venta() {
+    Viaje.find({ _id: req.body.viaje_id }, (err, viaje) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(viaje[0].asientosDisponibles);
+        if (viaje[0].asientosDisponibles >= req.body.cantidad) {
+          Viaje.findOneAndUpdate(
+            { _id: req.body.viaje_id },
+            { $inc: { asientosDisponibles: -req.body.cantidad } }, (err) => {
+              if (err) {
+                console.log(err);
+              }
+            }
+          );
+          p = new Pasaje({
+            emailPasajero: req.body.email_pasaje,
+            insumos: [],
+            cantidad: req.body.cantidad,
+            idViaje: req.body.viaje_id,
+            fecha: viaje[0].fecha,
+            precio: parseFloat(req.body.total),
+            "origen.nombre": viaje[0].ruta.origen.nombre,
+            "origen.provincia": viaje[0].ruta.origen.provincia,
+            "destino.nombre": viaje[0].ruta.destino.nombre,
+            "destino.provincia": viaje[0].ruta.destino.provincia,
+            estadoPasaje: "Pendiente",
+            tipoServicio: viaje[0].combi.tipo,
+          });
+          p.save((err) => {
+            console.log(err)
+          });
+          res.json({ response: "bien", pasaje: p });
+        } else {
+          res.json({
+            response: "mal",
+            error: "err",
+            mensaje: "La Cantidad de pasajes es mayor a la cantidad de asientos disponible",
+          });
+        }
+      }
+    });
+  };
+  Usuario.findOne({ email: req.body.email_pasaje}, (err, result) => {
     if (err) {
       console.log(err);
     } else {
-      console.log(viaje[0].asientosDisponibles);
-      if (viaje[0].asientosDisponibles >= req.body.cantidad) {
-        Viaje.findOneAndUpdate(
-          { _id: req.body.viaje_id },
-          { $inc: { asientosDisponibles: -req.body.cantidad } }, (err) => {
+      if (result.suspendido) {
+        let fS = new Date((result.fechaSuspendido).setDate((result.fechaSuspendido.getDate() + 15)));
+        if (fS >= (new Date())) {
+          res.json({
+            response: {
+              error: "err",
+              mensaje: "El usuario esta suspendido por sospecha de Covid. Estara suspendido hasta el " + fS.completa(),
+            },
+          });
+        } else {
+          Usuario.updateOne({ email: req.body.email_pasaje}, {
+            suspendido: false,
+            fechaSuspendido: ""
+          }, (err) => {
             if (err) {
               console.log(err);
             }
-          }
-        );
-        p = new Pasaje({
-          emailPasajero: req.body.email_pasaje,
-          insumos: [],
-          cantidad: req.body.cantidad,
-          idViaje: req.body.viaje_id,
-          fecha: viaje[0].fecha,
-          precio: parseFloat(req.body.total),
-          "origen.nombre": viaje[0].ruta.origen.nombre,
-          "origen.provincia": viaje[0].ruta.origen.provincia,
-          "destino.nombre": viaje[0].ruta.destino.nombre,
-          "destino.provincia": viaje[0].ruta.destino.provincia,
-          estadoPasaje: "Pendiente",
-          tipoServicio: viaje[0].combi.tipo,
-        });
-        p.save((err) => {
-          console.log(err)
-        });
-        res.json({ response: "bien", pasaje: p });
+          })
+          venta()
+        }
       } else {
-        res.json({
-          response: "mal",
-          error: "err",
-          mensaje: "cantidad de asientos maxima a la disponible",
-        });
+        venta()
       }
     }
   });
+
 });
 
 app.get("/pasajes-pasados-pasajero", (req, res) => {
@@ -2933,7 +2965,7 @@ app.get("/pasajes-pasados-pasajero", (req, res) => {
   ) {
     res.redirect("/");
   } else {
-    Pasaje.find({ emailPasajero:req.session.email, estadoPasaje: "Finalizado" }, (err, result) => {
+    Pasaje.find({ emailPasajero: req.session.email, estadoPasaje: "Finalizado" }, (err, result) => {
       if (err) {
         console.log(err);
       } else {

@@ -42,26 +42,11 @@ app.use(
     extended: true,
   })
 );
-function pad(number) {
-  if (number < 10) {
-    return "0" + number;
-  }
-  return number;
-}
+function pad(number) { if (number < 10) { return "0" + number; } return number; };
 Date.prototype.completa = function () {
-  return (
-    pad(this.getDate()) +
-    "/" +
-    pad(this.getMonth() + 1) +
-    "/" +
-    pad(this.getFullYear()) +
-    " " +
-    pad(this.getHours()) +
-    ":" +
-    pad(this.getMinutes()) +
-    "hs"
-  );
-};
+  return (pad(this.getDate()) + "/" + pad(this.getMonth() + 1) + "/" + pad(this.getFullYear()) + " " +
+    pad(this.getHours()) + ":" + pad(this.getMinutes()) + "hs");
+}
 
 app.use(express.json());
 
@@ -775,7 +760,7 @@ app.post("/registro", (req, res) => {
           if (
             result.dni === req.body.dniT &&
             Date.parse(result.vencimiento) ==
-              Date.parse(req.body.vencimiento + "-01") &&
+            Date.parse(req.body.vencimiento + "-01") &&
             result.nombreCompleto === req.body.nombreT &&
             result.codSeguridad === req.body.codS
           ) {
@@ -967,7 +952,7 @@ app.post("/modificar-perfil", (req, res) => {
                     if (
                       result.dni === req.body.dniT &&
                       Date.parse(result.vencimiento) ==
-                        Date.parse(req.body.vencimiento + "-01") &&
+                      Date.parse(req.body.vencimiento + "-01") &&
                       result.nombreCompleto === req.body.nombreT &&
                       result.codSeguridad === req.body.seg
                     ) {
@@ -2011,7 +1996,7 @@ app.get("/viajes-pasados", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ fecha: { $lt: new Date() } }, (err, result) => {
+    Viaje.find({ fecha: { $lte: new Date() } }, (err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -2204,8 +2189,8 @@ app.put("/viaje", (req, res) => {
                                               llegada: {
                                                 $gte: transformarFecha(
                                                   req.body.fecha +
-                                                    "T" +
-                                                    resRuta.hora
+                                                  "T" +
+                                                  resRuta.hora
                                                 ),
                                               },
                                             },
@@ -2213,8 +2198,8 @@ app.put("/viaje", (req, res) => {
                                               fecha: {
                                                 $lte: transformarFecha(
                                                   req.body.fecha +
-                                                    "T" +
-                                                    resRuta.hora
+                                                  "T" +
+                                                  resRuta.hora
                                                 ),
                                               },
                                             },
@@ -2529,7 +2514,7 @@ app.post("/comprar-pasaje", (req, res) => {
           if (
             resultTarjeta.dni === req.body.dniT &&
             Date.parse(resultTarjeta.vencimiento) ==
-              Date.parse(req.body.vencimiento + "-01") &&
+            Date.parse(req.body.vencimiento + "-01") &&
             resultTarjeta.nombreCompleto === req.body.nombreT &&
             resultTarjeta.codSeguridad === req.body.seg
           ) {
@@ -2618,38 +2603,31 @@ app.post("/comprar-pasaje", (req, res) => {
       console.log(err);
     } else {
       if (result.suspendido) {
-        let fS = new Date(
-          result.fechaSuspendido.setDate(result.fechaSuspendido.getDate() + 15)
-        );
-        if (fS >= new Date()) {
+        let fS = new Date((result.fechaSuspendido).setDate((result.fechaSuspendido.getDate() + 15)));
+        if (fS >= (new Date())) {
           res.json({
             response: {
               error: "errT",
-              mensaje:
-                "Usted esta suspendido por sospecha de Covid. Estara suspendido hasta el " +
-                fS.completa(),
+              mensaje: "Usted esta suspendido por sospecha de Covid. Estara suspendido hasta el " + fS.completa(),
             },
           });
         } else {
-          Usuario.updateOne(
-            { email: req.session.email },
-            {
-              suspendido: false,
-              fechaSuspendido: "",
-            },
-            (err) => {
-              if (err) {
-                console.log(err);
-              }
+          Usuario.updateOne({ email: req.session.email }, {
+            suspendido: false,
+            fechaSuspendido: ""
+          }, (err) => {
+            if (err) {
+              console.log(err);
             }
-          );
-          compra();
+          })
+          compra()
         }
       } else {
-        compra();
+        compra()
       }
     }
   });
+
 });
 app.get("/vender-pasaje/:idViaje", (req, res) => {
   Viaje.findOne({ _id: req.params.idViaje }, (err, result) => {
@@ -2806,10 +2784,7 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
           Pasaje.updateMany(
             {
               emailPasajero: req.body.emailPasajero,
-              fecha: {
-                $gte: new Date(),
-                $lt: new Date().setDate(new Date().getDate() + 15),
-              },
+              fecha: { $gte: (new Date()), $lt: (new Date()).setDate(new Date().getDate() + 15) },
             },
             {
               estadoPasaje: "Cancelado",
@@ -2820,43 +2795,32 @@ app.post("/cancelar-pasaje-chofer", (req, res) => {
               if (err) {
                 console.log(err);
               } else {
-                Pasaje.find(
-                  {
-                    emailPasajero: req.body.emailPasajero,
-                    fecha: {
-                      $gte: new Date(),
-                      $lt: new Date().setDate(new Date().getDate() + 15),
-                    },
-                  },
-                  (err, resultPasajes) => {
-                    if (err) {
-                      console.log(err);
-                    } else {
-                      resultPasajes.forEach((viaje) => {
-                        Viaje.updateMany(
-                          {
-                            _id: viaje.idViaje,
-                            fecha: {
-                              $gte: new Date(),
-                              $lt: new Date().setDate(
-                                new Date().getDate() + 15
-                              ),
-                            },
-                          },
-                          {
-                            $inc: { asientosDisponibles: viaje.cantidad },
-                          },
-                          (err) => {
-                            if (err) {
-                              console.log(err);
-                            }
+                Pasaje.find({
+                  emailPasajero: req.body.emailPasajero,
+                  fecha: { $gte: (new Date()), $lt: (new Date()).setDate(new Date().getDate() + 15) },
+                }, (err, resultPasajes) => {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    resultPasajes.forEach(viaje => {
+                      Viaje.updateMany(
+                        {
+                          _id: viaje.idViaje,
+                          fecha: { $gte: (new Date()), $lt: (new Date()).setDate(new Date().getDate() + 15) },
+                        },
+                        {
+                          $inc: { asientosDisponibles: viaje.cantidad },
+                        },
+                        (err) => {
+                          if (err) {
+                            console.log(err);
                           }
-                        );
-                      });
-                      res.json({ response: "bien" });
-                    }
+                        }
+                      );
+                    });
+                    res.json({ response: "bien" });
                   }
-                );
+                });
               }
             }
           );
@@ -2928,8 +2892,7 @@ app.post("/vender-pasaje", (req, res) => {
         if (viaje[0].asientosDisponibles >= req.body.cantidad) {
           Viaje.findOneAndUpdate(
             { _id: req.body.viaje_id },
-            { $inc: { asientosDisponibles: -req.body.cantidad } },
-            (err) => {
+            { $inc: { asientosDisponibles: -req.body.cantidad } }, (err) => {
               if (err) {
                 console.log(err);
               }
@@ -2950,57 +2913,49 @@ app.post("/vender-pasaje", (req, res) => {
             tipoServicio: viaje[0].combi.tipo,
           });
           p.save((err) => {
-            console.log(err);
+            console.log(err)
           });
           res.json({ response: "bien", pasaje: p });
         } else {
           res.json({
             response: "mal",
             error: "err",
-            mensaje:
-              "La Cantidad de pasajes es mayor a la cantidad de asientos disponible",
+            mensaje: "La Cantidad de pasajes es mayor a la cantidad de asientos disponible",
           });
         }
       }
     });
-  }
-  Usuario.findOne({ email: req.body.email_pasaje }, (err, result) => {
+  };
+  Usuario.findOne({ email: req.body.email_pasaje}, (err, result) => {
     if (err) {
       console.log(err);
     } else {
       if (result.suspendido) {
-        let fS = new Date(
-          result.fechaSuspendido.setDate(result.fechaSuspendido.getDate() + 15)
-        );
-        if (fS >= new Date()) {
+        let fS = new Date((result.fechaSuspendido).setDate((result.fechaSuspendido.getDate() + 15)));
+        if (fS >= (new Date())) {
           res.json({
             response: {
               error: "err",
-              mensaje:
-                "El usuario esta suspendido por sospecha de Covid. Estara suspendido hasta el " +
-                fS.completa(),
+              mensaje: "El usuario esta suspendido por sospecha de Covid. Estara suspendido hasta el " + fS.completa(),
             },
           });
         } else {
-          Usuario.updateOne(
-            { email: req.body.email_pasaje },
-            {
-              suspendido: false,
-              fechaSuspendido: "",
-            },
-            (err) => {
-              if (err) {
-                console.log(err);
-              }
+          Usuario.updateOne({ email: req.body.email_pasaje}, {
+            suspendido: false,
+            fechaSuspendido: ""
+          }, (err) => {
+            if (err) {
+              console.log(err);
             }
-          );
-          venta();
+          })
+          venta()
         }
       } else {
-        venta();
+        venta()
       }
     }
   });
+
 });
 
 app.get("/pasajes-pasados-pasajero", (req, res) => {
@@ -3010,16 +2965,13 @@ app.get("/pasajes-pasados-pasajero", (req, res) => {
   ) {
     res.redirect("/");
   } else {
-    Pasaje.find(
-      { emailPasajero: req.session.email, estadoPasaje: "Finalizado" },
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          res.render("pasajes-pasados-pasajero", { data: result });
-        }
+    Pasaje.find({ emailPasajero: req.session.email, estadoPasaje: "Finalizado" }, (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("pasajes-pasados-pasajero", { data: result });
       }
-    ).sort({ fecha: -1, llegada: -1 });
+    }).sort({ fecha: -1, llegada: -1 });
   }
 });
 

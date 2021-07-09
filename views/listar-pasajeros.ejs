@@ -44,16 +44,16 @@
                       <%= pasaje.emailPasajero %>
                     </td>
                     <% if (pasaje.estadoPasaje=="Cancelado" ) { %>
-                      <td>Cancelado - Motivo: <%= pasaje.motivoCancelacion %>
+                      <td name="estado">Cancelado - Motivo: <%= pasaje.motivoCancelacion %>
                       </td>
                       <td></td>
                       <td></td>
                       <% } else { if (pasaje.estadoPasaje=="Activo" ||pasaje.estadoPasaje=="Finalizado") { %>
-                        <td><%= pasaje.estadoPasaje %> </td>
+                        <td name="estado"><%= pasaje.estadoPasaje %> </td>
                         <td></td>
                         <td></td>
                         <% } else { if (pasaje.estadoPasaje=="Pendiente" && faltanMinutos()) { %>
-                          <td>Pendiente</td>
+                          <td name="estado">Pendiente</td>
                           <td name="sintomas">
                             <form action="/registrar-sintomas/<%= pasaje._id %>" method="GET">
                               <button type="submit">Registrar síntomas</button>
@@ -64,7 +64,7 @@
                           </td>
                           
                           <% } else {%>
-                            <td>Pendiente</td>
+                            <td name="estado">Pendiente</td>
                             <td></td>
                             <td></td>
                         <% }}}%>
@@ -97,10 +97,9 @@
                 }
               }
               if (estado.innerHTML === "En espera") {
-               
                 let btn_sintomas = document.getElementsByName("sintomas");
                 let btn_ausentes = document.getElementsByName("ausentes");
-                if (btn_ausentes.length === 0 && btn_sintomas.length === 0) {
+                if (btn_ausentes.length === 0 && btn_sintomas.length === 0 && !pendientes()) {
                   $("#iniciar").show("fast");
                 }
               }else if(estado.innerHTML === "En viaje"){
@@ -110,6 +109,18 @@
                 } 
               }else{
                 botones.innerHTML =""
+              }
+
+              function pendientes(){
+                let estados= document.getElementsByName("estado");
+                let cont=0;
+                for (let i = 0; i < estados.length; i++) {
+                  const e = estados[i];
+                  if(e.innerHTML==="Pendiente"){
+                    cont+=1
+                  }
+                }
+                return cont
               }
             </script>
             <script src="/js/listar-pasajeros.js"></script>

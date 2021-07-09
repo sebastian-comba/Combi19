@@ -46,12 +46,13 @@ $(document).ready(() => {
             submitHandler: function (form) {
                 if (window.confirm("Esta seguro de realizar la venta por $" + total.value + " ?")) {
                     $(form).ajaxSubmit((data) => {
-                        if (data.response == "bien") {
+                        if (data.response === "bien") {
                             location.replace("/registrar-sintomas/" + data.pasaje._id)
                         } else {
-                            let lugar = data.error;
-                            let error = data.mensaje;
-                            let mostrar = {}
+                            console.log(data.error+" "+ data.mensaje);
+                            const lugar = data.error;
+                            const error = data.mensaje;
+                            let mostrar={};
                             mostrar[lugar] = error;
                             console.log(mostrar);
                             v.showErrors(

@@ -2934,10 +2934,10 @@ app.post("/vender-pasaje", (req, res) => {
         let fS = new Date((result.fechaSuspendido).setDate((result.fechaSuspendido.getDate() + 15)));
         if (fS >= (new Date())) {
           res.json({
-            response: {
+            response:"mal", 
               error: "err",
               mensaje: "El usuario esta suspendido por sospecha de Covid. Estara suspendido hasta el " + fS.completa(),
-            },
+            
           });
         } else {
           Usuario.updateOne({ email: req.body.email_pasaje}, {

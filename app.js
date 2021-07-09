@@ -1996,7 +1996,7 @@ app.get("/viajes-pasados", (req, res) => {
   if (req.session.rol !== "Admin") {
     res.redirect("/");
   } else {
-    Viaje.find({ fecha: { $lte: new Date() } }, (err, result) => {
+    Viaje.find({ fecha: { $lt: new Date() } }, (err, result) => {
       if (err) {
         console.log(err);
       } else {

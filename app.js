@@ -42,6 +42,27 @@ app.use(
     extended: true,
   })
 );
+function pad(number) {
+  if (number < 10) {
+    return "0" + number;
+  }
+  return number;
+}
+Date.prototype.completa = function () {
+  return (
+    pad(this.getDate()) +
+    "/" +
+    pad(this.getMonth() + 1) +
+    "/" +
+    pad(this.getFullYear()) +
+    " " +
+    pad(this.getHours()) +
+    ":" +
+    pad(this.getMinutes()) +
+    "hs"
+  );
+};
+
 app.use(express.json());
 
 // variable que devuelve la fecha de hoy
@@ -2358,7 +2379,7 @@ app.delete("/viaje/:id", (req, res) => {
 });
 
 // Listado de viajes asignados a un chofer
-app.get("/viajes-chofer", (req, res) => {
+app.get("/viajes-chofer-pendientes", (req, res) => {
   if (req.session.rol !== "Chofer") {
     res.redirect("/");
   } else {
@@ -2366,6 +2387,7 @@ app.get("/viajes-chofer", (req, res) => {
       {
         fecha: { $gte: new Date() },
         "chofer.mail": req.session.email,
+        estado: { $ne: "Finalizado" },
       },
       (err, result) => {
         if (err) {
@@ -2493,99 +2515,138 @@ app.get("/comprar-pasaje/:id", (req, res) => {
 });
 
 app.post("/comprar-pasaje", (req, res) => {
-  Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
-    if (err) {
-      res.json({
-        response: {
-          error: "errT",
-          mensaje: "Error en la conexion con el banco",
-        },
-      });
-    } else {
-      if (resultTarjeta) {
-        if (
-          resultTarjeta.dni === req.body.dniT &&
-          Date.parse(resultTarjeta.vencimiento) ==
-            Date.parse(req.body.vencimiento + "-01") &&
-          resultTarjeta.nombreCompleto === req.body.nombreT &&
-          resultTarjeta.codSeguridad === req.body.seg
-        ) {
-          if (resultTarjeta.monto > parseFloat(req.body.total)) {
-            Viaje.findOne({ _id: req.body.idViaje }, (err, result) => {
-              if (err) {
-              } else {
-                if (result) {
-                  if (result.asientosDisponibles >= req.body.cantidad) {
-                    p = new Pasaje({
-                      emailPasajero: req.session.email,
-                      insumos: req.body.insumos,
-                      cantidad: req.body.cantidad,
-                      idViaje: req.body.idViaje,
-                      fecha: result.fecha,
-                      precio: parseFloat(req.body.total),
-                      "origen.nombre": result.ruta.origen.nombre,
-                      "origen.provincia": result.ruta.origen.provincia,
-                      "destino.nombre": result.ruta.destino.nombre,
-                      "destino.provincia": result.ruta.destino.provincia,
-                      estadoPasaje: "Pendiente",
-                      tipoServicio: result.combi.tipo,
-                    });
-                    p.save((err) => {
-                      if (err) {
-                        console.log(err);
-                      } else {
-                        console.log("Monto descontado de la tarjeta");
-                        res.json({ response: "bien" });
-                        let as =
-                          result.asientosDisponibles -
-                          parseFloat(req.body.cantidad);
-                        Viaje.updateOne(
-                          { _id: req.body.idViaje },
-                          {
-                            asientosDisponibles: as,
-                          },
-                          (err) => {
-                            if (err) {
-                              console.log(err);
+  function compra() {
+    Tarjeta.findOne({ codigo: req.body.cod }, (err, resultTarjeta) => {
+      if (err) {
+        res.json({
+          response: {
+            error: "errT",
+            mensaje: "Error en la conexion con el banco",
+          },
+        });
+      } else {
+        if (resultTarjeta) {
+          if (
+            resultTarjeta.dni === req.body.dniT &&
+            Date.parse(resultTarjeta.vencimiento) ==
+              Date.parse(req.body.vencimiento + "-01") &&
+            resultTarjeta.nombreCompleto === req.body.nombreT &&
+            resultTarjeta.codSeguridad === req.body.seg
+          ) {
+            if (resultTarjeta.monto > parseFloat(req.body.total)) {
+              Viaje.findOne({ _id: req.body.idViaje }, (err, result) => {
+                if (err) {
+                } else {
+                  if (result) {
+                    if (result.asientosDisponibles >= req.body.cantidad) {
+                      p = new Pasaje({
+                        emailPasajero: req.session.email,
+                        insumos: req.body.insumos,
+                        cantidad: req.body.cantidad,
+                        idViaje: req.body.idViaje,
+                        fecha: result.fecha,
+                        precio: parseFloat(req.body.total),
+                        "origen.nombre": result.ruta.origen.nombre,
+                        "origen.provincia": result.ruta.origen.provincia,
+                        "destino.nombre": result.ruta.destino.nombre,
+                        "destino.provincia": result.ruta.destino.provincia,
+                        estadoPasaje: "Pendiente",
+                        tipoServicio: result.combi.tipo,
+                      });
+                      p.save((err) => {
+                        if (err) {
+                          console.log(err);
+                        } else {
+                          console.log("Monto descontado de la tarjeta");
+                          res.json({ response: "bien" });
+                          let as =
+                            result.asientosDisponibles -
+                            parseFloat(req.body.cantidad);
+                          Viaje.updateOne(
+                            { _id: req.body.idViaje },
+                            {
+                              asientosDisponibles: as,
+                            },
+                            (err) => {
+                              if (err) {
+                                console.log(err);
+                              }
                             }
-                          }
-                        );
-                      }
-                    });
-                  } else {
-                    res.json({
-                      response: {
-                        error: "errT",
-                        mensaje:
-                          "Hay " +
-                          result.asientosDisponibles +
-                          " asientos disponibles cambie la cantidad de pasajes o busque otro viaje",
-                      },
-                    });
+                          );
+                        }
+                      });
+                    } else {
+                      res.json({
+                        response: {
+                          error: "errT",
+                          mensaje:
+                            "Hay " +
+                            result.asientosDisponibles +
+                            " asientos disponibles cambie la cantidad de pasajes o busque otro viaje",
+                        },
+                      });
+                    }
                   }
                 }
-              }
-            });
+              });
+            } else {
+              res.json({
+                response: {
+                  error: "errT",
+                  mensaje: "No hay saldo suficiente en la tarjeta",
+                },
+              });
+            }
           } else {
             res.json({
               response: {
                 error: "errT",
-                mensaje: "No hay saldo suficiente en la tarjeta",
+                mensaje: "Datos de la tarjeta incorrecta",
               },
             });
           }
         } else {
           res.json({
-            response: {
-              error: "errT",
-              mensaje: "Datos de la tarjeta incorrecta",
-            },
+            response: { error: "errT", mensaje: "La tarjeta no existe" },
           });
         }
+      }
+    });
+  }
+  Usuario.findOne({ email: req.session.email }, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (result.suspendido) {
+        let fS = new Date(
+          result.fechaSuspendido.setDate(result.fechaSuspendido.getDate() + 15)
+        );
+        if (fS >= new Date()) {
+          res.json({
+            response: {
+              error: "errT",
+              mensaje:
+                "Usted esta suspendido por sospecha de Covid. Estara suspendido hasta el " +
+                fS.completa(),
+            },
+          });
+        } else {
+          Usuario.updateOne(
+            { email: req.session.email },
+            {
+              suspendido: false,
+              fechaSuspendido: "",
+            },
+            (err) => {
+              if (err) {
+                console.log(err);
+              }
+            }
+          );
+          compra();
+        }
       } else {
-        res.json({
-          response: { error: "errT", mensaje: "La tarjeta no existe" },
-        });
+        compra();
       }
     }
   });
@@ -2858,45 +2919,85 @@ app.post("/registrar-sintomas", (req, res) => {
 });
 
 app.post("/vender-pasaje", (req, res) => {
-  Viaje.find({ _id: req.body.viaje_id }, (err, viaje) => {
+  function venta() {
+    Viaje.find({ _id: req.body.viaje_id }, (err, viaje) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(viaje[0].asientosDisponibles);
+        if (viaje[0].asientosDisponibles >= req.body.cantidad) {
+          Viaje.findOneAndUpdate(
+            { _id: req.body.viaje_id },
+            { $inc: { asientosDisponibles: -req.body.cantidad } },
+            (err) => {
+              if (err) {
+                console.log(err);
+              }
+            }
+          );
+          p = new Pasaje({
+            emailPasajero: req.body.email_pasaje,
+            insumos: [],
+            cantidad: req.body.cantidad,
+            idViaje: req.body.viaje_id,
+            fecha: viaje[0].fecha,
+            precio: parseFloat(req.body.total),
+            "origen.nombre": viaje[0].ruta.origen.nombre,
+            "origen.provincia": viaje[0].ruta.origen.provincia,
+            "destino.nombre": viaje[0].ruta.destino.nombre,
+            "destino.provincia": viaje[0].ruta.destino.provincia,
+            estadoPasaje: "Pendiente",
+            tipoServicio: viaje[0].combi.tipo,
+          });
+          p.save((err) => {
+            console.log(err);
+          });
+          res.json({ response: "bien", pasaje: p });
+        } else {
+          res.json({
+            response: "mal",
+            error: "err",
+            mensaje:
+              "La Cantidad de pasajes es mayor a la cantidad de asientos disponible",
+          });
+        }
+      }
+    });
+  }
+  Usuario.findOne({ email: req.body.email_pasaje }, (err, result) => {
     if (err) {
       console.log(err);
     } else {
-      console.log(viaje[0].asientosDisponibles);
-      if (viaje[0].asientosDisponibles >= req.body.cantidad) {
-        Viaje.findOneAndUpdate(
-          { _id: req.body.viaje_id },
-          { $inc: { asientosDisponibles: -req.body.cantidad } },
-          (err) => {
-            if (err) {
-              console.log(err);
-            }
-          }
+      if (result.suspendido) {
+        let fS = new Date(
+          result.fechaSuspendido.setDate(result.fechaSuspendido.getDate() + 15)
         );
-        p = new Pasaje({
-          emailPasajero: req.body.email_pasaje,
-          insumos: [],
-          cantidad: req.body.cantidad,
-          idViaje: req.body.viaje_id,
-          fecha: viaje[0].fecha,
-          precio: parseFloat(req.body.total),
-          "origen.nombre": viaje[0].ruta.origen.nombre,
-          "origen.provincia": viaje[0].ruta.origen.provincia,
-          "destino.nombre": viaje[0].ruta.destino.nombre,
-          "destino.provincia": viaje[0].ruta.destino.provincia,
-          estadoPasaje: "Pendiente",
-          tipoServicio: viaje[0].combi.tipo,
-        });
-        p.save((err) => {
-          console.log(err);
-        });
-        res.json({ response: "bien", pasaje: p });
+        if (fS >= new Date()) {
+          res.json({
+            response: {
+              error: "err",
+              mensaje:
+                "El usuario esta suspendido por sospecha de Covid. Estara suspendido hasta el " +
+                fS.completa(),
+            },
+          });
+        } else {
+          Usuario.updateOne(
+            { email: req.body.email_pasaje },
+            {
+              suspendido: false,
+              fechaSuspendido: "",
+            },
+            (err) => {
+              if (err) {
+                console.log(err);
+              }
+            }
+          );
+          venta();
+        }
       } else {
-        res.json({
-          response: "mal",
-          error: "err",
-          mensaje: "cantidad de asientos maxima a la disponible",
-        });
+        venta();
       }
     }
   });
@@ -2904,32 +3005,35 @@ app.post("/vender-pasaje", (req, res) => {
 
 app.get("/pasajes-pasados-pasajero", (req, res) => {
   if (
-    req.session.rol !== "Cliente comun" ||
+    req.session.rol !== "Cliente comun" &&
     req.session.rol !== "Cliente gold"
   ) {
     res.redirect("/");
   } else {
-    Pasaje.find({ estadoPasaje: "Finalizado" }, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("pasajes-pasados-pasajero", { viajes: result });
-      }
-    }).sort({ fecha: -1, llegada: -1 });
-  }
-});
-
-app.get("/pasajes-pasados-chofer", (req, res) => {
-  if (req.session.rol !== "Chofer") {
-    res.redirect("/");
-  } else {
-    Viaje.find(
-      { estadoPasaje: "Finalizado", "chofer.mail": req.session.email },
+    Pasaje.find(
+      { emailPasajero: req.session.email, estadoPasaje: "Finalizado" },
       (err, result) => {
         if (err) {
           console.log(err);
         } else {
-          res.render("pasajes-pasados-pasajero", { viajes: result });
+          res.render("pasajes-pasados-pasajero", { data: result });
+        }
+      }
+    ).sort({ fecha: -1, llegada: -1 });
+  }
+});
+
+app.get("/viajes-chofer-pasados", (req, res) => {
+  if (req.session.rol !== "Chofer") {
+    res.redirect("/");
+  } else {
+    Viaje.find(
+      { estado: "Finalizado", "chofer.mail": req.session.email },
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("viajes-chofer-pasados", { viajes: result });
         }
       }
     ).sort({ fecha: -1, llegada: -1 });

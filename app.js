@@ -2769,64 +2769,72 @@ app.get("/registrar-sintomas/:id", (req, res) => {
 
 app.post("/cancelar-pasaje-chofer", (req, res) => {
   if (req.body.motivo == "Sospechoso de covid") {
-    Usuario.findOneAndUpdate(
-      {
-        email: req.body.emailPasajero,
-      },
-      {
-        suspendido: true,
-        fechaSuspendido: new Date(),
-      },
-      (err) => {
-        if (err) {
-          console.log(err);
-        } else {
-          Pasaje.updateMany(
-            {
-              emailPasajero: req.body.emailPasajero,
-              fecha: { $gte: (new Date()), $lt: (new Date()).setDate(new Date().getDate() + 15) },
-            },
-            {
-              estadoPasaje: "Cancelado",
-              fechaCancelado: now,
-              motivoCancelacion: "Sospechoso de covid",
-            },
-            (err) => {
-              if (err) {
-                console.log(err);
-              } else {
-                Pasaje.find({
+    Pasaje.findOne({ _id: req.body.idPasaje},(err,resultP)=>{
+      if(err){
+        console.log(err)
+      }else{
+        
+        Usuario.findOneAndUpdate(
+          {
+            email: req.body.emailPasajero,
+          },
+          {
+            suspendido: true,
+            fechaSuspendido: new Date(),
+          },
+          (err) => {
+            if (err) {
+              console.log(err);
+            } else {
+              Pasaje.updateMany(
+                {
                   emailPasajero: req.body.emailPasajero,
-                  fecha: { $gte: (new Date()), $lt: (new Date()).setDate(new Date().getDate() + 15) },
-                }, (err, resultPasajes) => {
+                  fecha: { $gte: (resultP.fecha), $lt: (new Date()).setDate(new Date().getDate() + 15) },
+                },
+                {
+                  estadoPasaje: "Cancelado",
+                  fechaCancelado: now,
+                  motivoCancelacion: "Sospechoso de covid",
+                },
+                (err) => {
                   if (err) {
                     console.log(err);
                   } else {
-                    resultPasajes.forEach(viaje => {
-                      Viaje.updateMany(
-                        {
-                          _id: viaje.idViaje,
-                          fecha: { $gte: (new Date()), $lt: (new Date()).setDate(new Date().getDate() + 15) },
-                        },
-                        {
-                          $inc: { asientosDisponibles: viaje.cantidad },
-                        },
-                        (err) => {
-                          if (err) {
-                            console.log(err);
-                          }
-                        }
-                      );
+                    Pasaje.find({
+                      emailPasajero: req.body.emailPasajero,
+                      fecha: { $gte: resultP.fecha, $lt: (new Date()).setDate(new Date().getDate() + 15) },
+                    }, (err, resultPasajes) => {
+                      if (err) {
+                        console.log(err);
+                      } else {
+                        resultPasajes.forEach(viaje => {
+                          Viaje.updateMany(
+                            {
+                              _id: viaje.idViaje,
+                              fecha: { $gte: resultP.fecha, $lt: (new Date()).setDate(new Date().getDate() + 15) },
+                            },
+                            {
+                              $inc: { asientosDisponibles: viaje.cantidad },
+                            },
+                            (err) => {
+                              if (err) {
+                                console.log(err);
+                              }
+                            }
+                          );
+                        });
+                        res.json({ response: "bien" });
+                      }
                     });
-                    res.json({ response: "bien" });
                   }
-                });
-              }
+                }
+              );
             }
-          );
-        }
+          }
+        );
       }
-    );
+    })
+   
   } else {
     if (req.body.motivo == "Ausente") {
       Pasaje.findOneAndUpdate(

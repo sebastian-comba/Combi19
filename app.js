@@ -1949,6 +1949,7 @@ app.post("/cargar-viaje", (req, res) => {
                       fecha: req.body.fecha + "T" + resRuta.hora,
                       llegada: req.body.llegada,
                       precio: req.body.precio,
+                      asientosTotales: req.body.asientos,
                       asientosDisponibles: req.body.asientos,
                       estado: "En espera",
                     });

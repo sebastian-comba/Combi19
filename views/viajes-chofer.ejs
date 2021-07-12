@@ -49,7 +49,7 @@
         </td>
         <td><%= (new Date(Date.parse(viaje.fecha))).completa()%></td>
         <td><%= (new Date(Date.parse(viaje.llegada))).completa() %></td>
-        <td><!--Asientos totales - asientos disponibles? --></td>
+        <td><%= viaje.asientosTotales - viaje.asientosDisponibles %></td>
         <td>
             <form action="/listar-pasajeros/<%= viaje._id %>" method="GET">
               <button type="submit">Listar pasajeros</button>

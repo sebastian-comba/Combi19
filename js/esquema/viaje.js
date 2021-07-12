@@ -26,6 +26,7 @@ const viajeSchema = new mongoose.Schema({
   fecha: { type: Date, required: true, index: true },
   llegada: {type: Date, required: true},
   precio: { type: Number, required: true },
+  asientosTotales: {type: Number, required:true},
   asientosDisponibles: { type: Number, required: true },
   estado: { type: String, required: true },
 });

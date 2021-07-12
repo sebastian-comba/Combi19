@@ -2314,6 +2314,7 @@ app.get("/terminar-viaje/:id", (req, res) => {
     { _id: req.params.id },
     {
       estado: "Finalizado",
+      llegada: new Date(),
     },
     (err, result) => {
       if (!err) {
